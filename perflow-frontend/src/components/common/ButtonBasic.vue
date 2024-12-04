@@ -7,9 +7,6 @@ export const sizes = ['small', 'medium', 'large'];
 
 const emit = defineEmits(['click']);
 
-// const colors = ['orange', 'gray'];
-// const sizes = ['small', 'medium', 'large'];
-
 defineProps({
   // 버튼 색상
   color: {
