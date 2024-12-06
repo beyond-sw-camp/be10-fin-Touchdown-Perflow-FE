@@ -11,7 +11,7 @@ const login = async () => {
   const authStore = useAuthStore();
 
   const response = await api.post(
-      `http://localhost:8080/api/v1/hr/employees/login`,
+      `/hr/employees/login`,
       {
         empId : empId.value,
         password : password.value
@@ -20,10 +20,16 @@ const login = async () => {
 
   const accessToken = response.headers.get(`Authorization`);
   const refreshToken = response.headers.get(`refreshToken`);
-  console.log(accessToken);
-  console.log(refreshToken)
 
   authStore.setTokens(accessToken, refreshToken);
+}
+const logout = async () => {
+
+  await api.post(`/hr/employees/logout`);
+
+  const authStore = useAuthStore();
+
+  authStore.logout();
 }
 </script>
 
@@ -31,6 +37,7 @@ const login = async () => {
   <input type="text" id="id-input" v-model="empId">
   <input type="password" id="password-input" v-model="password">
   <button @click="login">로그인</button>
+  <button @click="logout">로그아웃</button>
 </template>
 
 <style scoped>

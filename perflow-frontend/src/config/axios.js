@@ -14,12 +14,10 @@ api.interceptors.request.use((config) => {
 
     if(config.url.includes('hr/employees/reissue')){
         if(authStore.refreshToken){
-            console.log(`RequestRefreshToken ${authStore.refreshToken}`);
             config.headers['Authorization'] = `${authStore.refreshToken}`;
         }
     } else {
         if(authStore.accessToken){
-            console.log(`RequestAccessToken ${authStore.accessToken}`);
             config.headers['Authorization'] = `${authStore.accessToken}`;
         }
     }

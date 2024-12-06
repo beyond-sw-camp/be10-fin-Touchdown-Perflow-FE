@@ -37,7 +37,6 @@ const rows = [
   <p>*표 예시</p>
   <br>
   <TableBasic :row-key="'id'" :rows="rows" :columns="columns" />
-  <EmpLogin/>
 </template>
 
 <style scoped>
