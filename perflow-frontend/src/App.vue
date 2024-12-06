@@ -2,6 +2,7 @@
 
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import TableBasic from "@/components/common/TableBasic.vue";
+import EmpLogin from "@/views/EmpLogin.vue";
 
 const columns = [
   { label: "문서번호", field: "id" },
@@ -36,7 +37,7 @@ const rows = [
   <p>*표 예시</p>
   <br>
   <TableBasic :row-key="'id'" :rows="rows" :columns="columns" />
-
+  <EmpLogin/>
 </template>
 
 <style scoped>

@@ -3,32 +3,45 @@ import { useAuthStore } from '@/store/authStore';
 
 // Axios 기본 설정
 const api = axios.create({
-    baseURL: '/api/v1',
-    timeout: 5000,
+    baseURL: 'http://localhost:8080/api/v1'
 });
 
 // 요청 인터셉터: Access Token 자동 추가
 api.interceptors.request.use((config) => {
+
+    console.log(`request interceptor 시작!`)
     const authStore = useAuthStore();
-    if (authStore.accessToken) {
-        config.headers['Authorization'] = `${authStore.accessToken}`;
+
+    if(config.url.includes('hr/employees/reissue')){
+        if(authStore.refreshToken){
+            console.log(`RequestRefreshToken ${authStore.refreshToken}`);
+            config.headers['Authorization'] = `${authStore.refreshToken}`;
+        }
+    } else {
+        if(authStore.accessToken){
+            console.log(`RequestAccessToken ${authStore.accessToken}`);
+            config.headers['Authorization'] = `${authStore.accessToken}`;
+        }
     }
+
     return config;
 });
 
 // 응답 인터셉터: Access Token 만료 처리
 api.interceptors.response.use(
-    (response) => response, // 성공 응답은 그대로 반환
+    (response) => {
+        return response
+    }, // 성공 응답은 그대로 반환
     async (error) => {
+
+        console.log(`response interceptor 시작!`)
+
         const authStore = useAuthStore();
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            // 401 Unauthorized + 첫 시도인 경우
-            originalRequest._retry = true;
-
+        if (error.response?.status === 401 || error.response?.status === 403) {
             try {
-                const newToken = await authStore.refreshToken();
+                const newToken = await authStore.refreshAccessToken();
                 originalRequest.headers['Authorization'] = `${newToken}`;
                 return api(originalRequest); // 원래 요청 재시도
             } catch (refreshError) {

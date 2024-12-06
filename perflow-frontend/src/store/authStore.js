@@ -1,28 +1,28 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import api from "@/config/axios.js";
+import {ref} from "vue";
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        accessToken: null,
-        refreshToken: null,
+        accessToken: ref(),
+        refreshToken: ref(),
     }),
     actions: {
         // 로그인 후 토큰 저장
-        setTokens({ accessToken, refreshToken }) {
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
-            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        setTokens( newAccessToken, newRefreshToken ) {
+            this.accessToken = newAccessToken;
+            this.refreshToken = newRefreshToken;
         },
 
         // 토큰 갱신
         async refreshAccessToken() {
             try {
-                const response = await axios.post('/employee/reissue', {
+                const response = await api.post('hr/employees/reissue',{} , {
                     headers : { refreshToken: this.refreshToken }
                 });
 
-                const newAccessToken = response.headers.get(`Authorization`)
-                const newRefreshToken = response.headers.get(`refreshToken`);
+                const newAccessToken = response.headers['Authorization'];
+                const newRefreshToken = response.headers['refreshToken'];
 
                 this.setTokens({ newAccessToken, newRefreshToken });
                 return newAccessToken; // 갱신된 Access Token 반환
@@ -37,7 +37,6 @@ export const useAuthStore = defineStore('auth', {
         logout() {
             this.accessToken = null;
             this.refreshToken = null;
-            delete axios.defaults.headers.common['Authorization'];
         },
     },
 });
