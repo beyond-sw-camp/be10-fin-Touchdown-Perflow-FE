@@ -2,7 +2,7 @@
 
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import TableBasic from "@/components/common/TableBasic.vue";
-import EmpLogin from "@/views/EmpLogin.vue";
+import OrganizationTree from "@/components/common/OrganizationTree.vue";
 
 const columns = [
   { label: "문서번호", field: "id" },
@@ -25,18 +25,19 @@ const rows = [
 
 <template>
   <br>
-  <p>*버튼 예시</p>
-  <ButtonBasic color="orange" label="기본 버튼1"/>
-  <ButtonBasic color="gray" label="기본 버튼2"/>
-  <br>
-  <ButtonBasic size="medium" label="기본 버튼3"/>
-  <br>
-  <ButtonBasic size="large" label="기본 버튼4"/>
-  <br>
-  <br>
-  <p>*표 예시</p>
-  <br>
-  <TableBasic :row-key="'id'" :rows="rows" :columns="columns" />
+<!--  <p>*버튼 예시</p>-->
+<!--  <ButtonBasic color="orange" label="기본 버튼1"/>-->
+<!--  <ButtonBasic color="gray" label="기본 버튼2"/>-->
+<!--  <br>-->
+<!--  <ButtonBasic size="medium" label="기본 버튼3"/>-->
+<!--  <br>-->
+<!--  <ButtonBasic size="large" label="기본 버튼4"/>-->
+<!--  <br>-->
+<!--  <br>-->
+<!--  <p>*표 예시</p>-->
+<!--  <br>-->
+<!--  <TableBasic :row-key="'id'" :rows="rows" :columns="columns" />-->
+  <OrganizationTree/>
 </template>
 
 <style scoped>
