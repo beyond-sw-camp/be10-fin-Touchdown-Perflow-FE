@@ -1,6 +1,6 @@
 <script setup>
 import {useStore} from "@/store/store.js";
-import {computed, ref} from "vue";
+import {ref} from "vue";
 
 // Props로 부서 데이터 전달
 const props = defineProps({
