@@ -75,6 +75,7 @@ const props = defineProps({
   transition: transform 0.2s ease;
   font-size: 12px;
   cursor: pointer;
+  color: #AFA9A9;
 }
 /* 토글 상태에 따른 화살표 회전 */
 .arrow.expanded {
