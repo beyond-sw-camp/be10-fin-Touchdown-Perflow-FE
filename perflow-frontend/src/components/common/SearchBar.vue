@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, ref} from 'vue';
+import { ref } from 'vue';
 
 // Props 정의
 const props = defineProps({
