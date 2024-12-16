@@ -7,6 +7,7 @@ import ApprovalShareBox from "@/components/common/ApprovalShareBox.vue";
 
 <template>
 <div class="form-container">
+
   <!--제목-->
   <InputField
   v-model="title"

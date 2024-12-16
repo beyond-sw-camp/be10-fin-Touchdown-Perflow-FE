@@ -1,5 +1,6 @@
 <script setup>
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
+import {onMounted} from "vue";
 
 defineProps({
   title: { type: String, required: true }, // 결재선, 공유
@@ -7,6 +8,14 @@ defineProps({
 });
 
 const emit = defineEmits(["onSettingsClick"]);
+
+// 툴팁 활성화
+onMounted(() => {
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltipTriggerList.forEach((tooltipTriggerEl) => {
+    new globalThis.bootstrap.Tooltip(tooltipTriggerEl); // globalThis를 사용해 bootstrap 접근
+  });
+});
 </script>
 
 <template>
@@ -73,18 +82,25 @@ const emit = defineEmits(["onSettingsClick"]);
   padding: 15px;
   width: 300px;
   background-color: #fafafa;
-}
-
-.box-header {
   display: flex;
-  justify-content: flex-end; /* 설정 버튼 우측에 정렬 */
-  margin-bottom: 10px;
+  flex-direction: column;
+  align-items: center; /* 수평 중앙 정렬 */
+  justify-content: center; /* 수직 중앙 정렬 */
+  position: relative; /* 상대 위치 설정 */
+  min-height: 150px; /* 최소 높이 설정 */
 }
 
+/* 설정 버튼 */
+.box-header {
+  position: absolute;
+  top: 10px;
+  right: 10px; /* 설정 버튼을 상단 우측에 배치 */
+}
+
+/* 비어있을 때 메시지 */
 .box-empty {
   color: #a0a0a0;
   font-size: 14px;
   text-align: center;
-  padding: 20px 0;
 }
 </style>
