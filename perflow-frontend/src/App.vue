@@ -21,7 +21,6 @@ const rows = [
 </script>
 
 <template>
-  <br>
 <!--  <p>*버튼 예시</p>-->
 <!--  <ButtonBasic color="orange" label="기본 버튼1"/>-->
 <!--  <ButtonBasic color="gray" label="기본 버튼2"/>-->
