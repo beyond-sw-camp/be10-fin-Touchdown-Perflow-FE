@@ -20,7 +20,7 @@ const props = defineProps({
     type: String,
     default: '30px'
   },
-  buttonSize: {
+  imgSize: {
     type: String,
     default: '40px'
   }
@@ -43,7 +43,7 @@ const changePage = (page) => {
         :disabled="currentPage === 1"
     >
       <img src="../../assets/image/previous.png" alt="previous"
-           :style="{ width: props.buttonSize, height: props.buttonSize }"
+           :style="{ width: props.imgSize, height: props.imgSize }"
       >
     </button>
 
@@ -57,7 +57,7 @@ const changePage = (page) => {
         :disabled="currentPage === totalPages"
     >
       <img src="../../assets/image/next.png" alt="next"
-           :style="{ width: props.buttonSize, height: props.buttonSize }"
+           :style="{ width: props.imgSize, height: props.imgSize }"
       >
     </button>
   </div>
