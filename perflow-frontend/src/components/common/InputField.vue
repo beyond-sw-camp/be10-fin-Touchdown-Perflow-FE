@@ -105,9 +105,4 @@ textarea {
   transition: border-color 0.3s;
   resize: none;
 }
-
-input:focus,
-textarea:focus {
-  border-color: #007bff;
-}
 </style>

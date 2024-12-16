@@ -1,6 +1,8 @@
 <script setup>
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import InputField from "@/components/common/InputField.vue";
+import ApprovalShareBox from "@/components/common/ApprovalShareBox.vue";
+
 </script>
 
 <template>
@@ -38,6 +40,22 @@ import InputField from "@/components/common/InputField.vue";
     />
   </div>
 </div>
+  <div class="box-container">
+    <!-- 결재선 -->
+    <ApprovalShareBox
+        title="결재선"
+        placeholder="결재선이 없습니다."
+        @onSettingsClick="() => handleSettingsClick('결재선')"
+    />
+
+    <!-- 공유 -->
+    <ApprovalShareBox
+        title="공유"
+        placeholder="공유처가 없습니다."
+        @onSettingsClick="() => handleSettingsClick('공유')"
+    />
+
+  </div>
 </template>
 
 <style scoped>
