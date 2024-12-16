@@ -3,6 +3,7 @@
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import TableBasic from "@/components/common/TableBasic.vue";
 import OrganizationTree from "@/components/common/OrganizationTree.vue";
+import SideMenuTree from "@/components/common/SideMenuTree.vue";
 
 const columns = [
   { label: "문서번호", field: "id" },
@@ -38,6 +39,7 @@ const rows = [
 <!--  <br>-->
 <!--  <TableBasic :row-key="'id'" :rows="rows" :columns="columns" />-->
   <OrganizationTree/>
+  <SideMenuTree/>
 </template>
 
 <style scoped>
