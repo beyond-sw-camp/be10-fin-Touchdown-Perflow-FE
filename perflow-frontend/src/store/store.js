@@ -38,7 +38,6 @@ export const useStore = defineStore('store', {
         },
         async fetchCompany() {
             this.company = (await api.get("/company")).data;
-            console.log(this.company);
         }
     }
 });

@@ -87,9 +87,10 @@ onMounted(async () => {
 }
 #side-menu {
   width: 300px;
-  height: 1000px;
+  height: 100%;
   font-size: 20px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  position: absolute;
 }
 .company-icon {
   display: flex;
