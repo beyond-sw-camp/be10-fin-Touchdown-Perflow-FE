@@ -81,7 +81,7 @@ const logout = async () => {
 
 /* 입력 필드 스타일 */
 #id-input, #password-input {
-  width: 1000px;
+  width: 500px;
   height: 50px;
   padding: 5px;
   margin-top: 5px;
@@ -93,7 +93,7 @@ const logout = async () => {
 
 /* 로그인 버튼 스타일 */
 .login-button {
-  width: 1000px;
+  width: 500px;
   height: 50px;
   background: linear-gradient(90deg, #F37321, #FFBB00);
   color: white;
