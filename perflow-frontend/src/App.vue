@@ -1,8 +1,4 @@
 <script setup>
-
-import ButtonBasic from "@/components/common/ButtonBasic.vue";
-import TableBasic from "@/components/common/TableBasic.vue";
-import OrganizationTree from "@/components/common/OrganizationTree.vue";
 import SideMenuTree from "@/components/common/SideMenuTree.vue";
 
 const columns = [
@@ -38,8 +34,8 @@ const rows = [
 <!--  <p>*표 예시</p>-->
 <!--  <br>-->
 <!--  <TableBasic :row-key="'id'" :rows="rows" :columns="columns" />-->
-  <OrganizationTree/>
   <SideMenuTree/>
+  <router-view/>
 </template>
 
 <style scoped>

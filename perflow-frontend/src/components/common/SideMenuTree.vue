@@ -2,7 +2,6 @@
 
 import {onMounted} from "vue";
 import {useStore} from "@/store/store.js";
-import OrganizationSelectedEmp from "@/components/common/OrganizationSelectedEmp.vue";
 import SideMenuNode from "@/components/common/SideMenuNode.vue";
 
 const store = useStore();
@@ -14,18 +13,24 @@ onMounted(async () => {
 </script>
 
 <template>
-  <ul class="side_menu">
-    <!--    자식 컴포넌트 (재귀로 계속해서 호출) -->
-    <SideMenuNode
-        v-for="menu in store.$state.allMenu.filter(menu => !menu.parentId)"
-        :key=menu.menuId
-        :parent = menu
-    />
-  </ul>
+  <div id="side-menu">
+    <ul class="side-menu-tree">
+      <!--    자식 컴포넌트 (재귀로 계속해서 호출) -->
+      <SideMenuNode
+          v-for="menu in store.$state.allMenu.filter(menu => !menu.parentId)"
+          :key=menu.menuId
+          :parent = menu
+      />
+    </ul>
+  </div>
 </template>
 
 <style scoped>
-.side_menu {
+.side-menu-tree {
   list-style: none;
+}
+#side-menu {
+  width: 300px;
+  font-size: 20px;
 }
 </style>
