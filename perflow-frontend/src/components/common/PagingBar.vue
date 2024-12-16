@@ -68,7 +68,7 @@ const changePage = (page) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px
+  gap: 5px;
 }
 
 .paging-bar button {
