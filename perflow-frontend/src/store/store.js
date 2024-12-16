@@ -1,11 +1,13 @@
 import {defineStore} from 'pinia';
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import api from "@/config/axios.js";
 
 export const useStore = defineStore('store', {
     state: () => ({
         allDepartment: ref([]),
-        allEmployee: ref({})
+        allEmployee: ref({}),
+        allMenu: ref([]),
+        company: ref({}),
     }),
     actions: {
         // 조직도 갱신
@@ -14,7 +16,7 @@ export const useStore = defineStore('store', {
         },
         // 선택 부서 사원 추가
         async addEmp(deptId) {
-            const response = await api.get("/hr/employees", {
+            const response = await api.get("/employees/depts", {
                 params: {
                     departmentId: deptId // 숫자로 전송
                 }
@@ -30,6 +32,12 @@ export const useStore = defineStore('store', {
         // 선택 부서 사원 삭제
         async removeEmp(deptId) {
             delete this.allEmployee.value[deptId]; // 객체에서 해당 키 삭제
+        },
+        async fetchMenu(){
+            this.allMenu = (await api.get("/menu")).data;
+        },
+        async fetchCompany() {
+            this.company = (await api.get("/company")).data;
         }
     }
 });

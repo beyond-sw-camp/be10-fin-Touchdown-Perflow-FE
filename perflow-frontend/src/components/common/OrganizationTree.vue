@@ -13,7 +13,7 @@ onMounted(async () => {
 </script>
 <!-- 최 상위 부서 컴포넌트 (부모) -->
 <template>
-  <ul class="menu">
+  <ul class="dept_menu">
 <!--    자식 컴포넌트 (재귀로 계속해서 호출) -->
     <OrganizationNode
         v-for="dept in store.$state.allDepartment.filter(dept => !dept.managedDeptId)"
@@ -25,7 +25,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.menu {
+.dept_menu {
   list-style: none;
 }
 </style>
