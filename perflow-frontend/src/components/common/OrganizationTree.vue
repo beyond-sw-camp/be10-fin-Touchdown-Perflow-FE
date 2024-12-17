@@ -1,10 +1,21 @@
 <script setup>
-import {onMounted} from 'vue';
+import {onMounted, ref} from 'vue';
 import {useStore} from '@/store/store.js';
 import OrganizationNode from "@/components/common/OrganizationNode.vue";
 import OrganizationSelectedEmp from "@/components/common/OrganizationSelectedEmp.vue";
 
 const store = useStore();
+
+// 선택된 사원 목록
+const selectedEmployees = ref([]);
+
+const emit = defineEmits(["update:selectedEmployees"]);
+
+// OrganizationSelectedEmp에서 선택된 사원을 받음
+const handleSelectedEmployees = (employees) => {
+  selectedEmployees.value = employees;
+  emit("update:selectedEmployees", employees); // 부모로 이벤트 전달
+};
 
 onMounted(async () => {
   await store.fetchOrg(); // Pinia를 통해 데이터를 가져옵니다.
@@ -28,7 +39,7 @@ onMounted(async () => {
 
     <!-- 사원 목록 -->
     <div class="box right">
-      <OrganizationSelectedEmp/>
+      <OrganizationSelectedEmp @update:selectedEmployees="handleSelectedEmployees" />
     </div>
 
   </div>

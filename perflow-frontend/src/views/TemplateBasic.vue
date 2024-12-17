@@ -5,8 +5,6 @@ import ApprovalShareBox from "@/components/common/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
 import { ref } from "vue";
 import OrganizationTree from "@/components/common/OrganizationTree.vue";
-import ApprovalButtonGroup from "@/components/common/ApprovalButtonGroup.vue";
-import ApprovalList from "@/components/common/ApprovalList.vue";
 
 // 모달 상태
 const isModalOpen = ref(false);
@@ -25,12 +23,19 @@ const saveSettings = () => {
 
 // 사원 업데이트 이벤트 핸들러
 const updateSelectedEmployees = (employees) => {
+  console.log("선택된 사원 목록: ", selectedEmployees);
   selectedEmployees.value = employees;
 };
 
-// ApprovalButtonGroup에서 데이터를 받아 결재 목록에 추가
-const addToApprovalList = (newApprovals) => {
+// 버튼 클릭 시 결재 순서에 추가
+const addToApprovalList = (type) => {
+  const newApprovals = selectedEmployees.value.map((emp) => ({
+    type, // 결재 방식
+    name: emp.name, // 사원 이름
+    position: emp.position, // 직위
+  }));
   approvalList.value.push(...newApprovals);
+  selectedEmployees.value = []; // 선택된 사원 목록 초기화
 };
 </script>
 
@@ -97,19 +102,58 @@ const addToApprovalList = (newApprovals) => {
 
             <!-- 결재 버튼 그룹 -->
             <div class="modal-box center">
-              <ApprovalButtonGroup
-                  :selectedEmployees="selectedEmployees"
-                  @addApproval="addToApprovalList"
-              />
+              <div class="button-group">
+                <ButtonBasic
+                    label="결재"
+                    color="white"
+                    size="medium"
+                    @click="addToApprovalList('결재')"
+                />
+                <ButtonBasic
+                    label="참조"
+                    color="white"
+                    size="medium"
+                    @click="addToApprovalList('참조')"
+                />
+                <ButtonBasic
+                    label="합의"
+                    color="white"
+                    size="medium"
+                    @click="addToApprovalList('합의')"
+                />
+                <ButtonBasic
+                    label="병렬 합의"
+                    color="white"
+                    size="medium"
+                    @click="addToApprovalList('병렬 합의')"
+                />
+              </div>
             </div>
 
             <!-- 결재 목록 -->
             <div class="modal-box right">
-              <ApprovalList :approvalList="approvalList" />
+              <h3>결재 순서</h3>
+              <table class="approval-table">
+                <thead>
+                <tr>
+                  <th>결재 방식</th>
+                  <th>이름</th>
+                  <th>직위</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item, index) in approvalList" :key="index">
+                  <td>{{ item.type }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.position }}</td>
+                </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </template>
       </ModalBasic>
+
       <!-- 공유 -->
       <ApprovalShareBox
           title="공유"
@@ -145,7 +189,9 @@ const addToApprovalList = (newApprovals) => {
 
 .button-group {
   display: flex;
-  gap: 10px;
+  flex-direction: column; /* 버튼 위아래 정렬 */
+  gap: 10px;  /* 버튼 간 간격 */
+  align-items: center;  /* 중앙 정렬 */
 }
 
 /* 모달 내부 레이아웃 */
@@ -176,5 +222,22 @@ const addToApprovalList = (newApprovals) => {
 
 .right {
   background-color: #f9f9f9;
+}
+
+.approval-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.approval-table th,
+.approval-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.approval-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
 }
 </style>
