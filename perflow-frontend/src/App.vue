@@ -55,7 +55,6 @@ const hideSidebar = () => {
       <!-- 라우터 뷰 -->
       <div class="router-view">
         <router-view />
-        <p>App.vue입니다.</p>
       </div>
     </div>
   </div>
