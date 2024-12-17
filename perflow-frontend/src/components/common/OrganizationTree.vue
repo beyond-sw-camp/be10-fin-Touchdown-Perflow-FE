@@ -13,19 +13,64 @@ onMounted(async () => {
 </script>
 <!-- 최 상위 부서 컴포넌트 (부모) -->
 <template>
-  <ul class="dept_menu">
-    <!--    자식 컴포넌트 (재귀로 계속해서 호출) -->
-    <OrganizationNode
-        v-for="dept in store.$state.allDepartment.filter(dept => !dept.managedDeptId)"
-        :key=dept.deptId
-        :parent=dept
-    />
-  </ul>
-  <OrganizationSelectedEmp/>
+  <div class="container">
+    <!--  부서 트리 -->
+    <div class="box left">
+      <ul class="menu">
+        <!--    자식 컴포넌트 (재귀로 계속해서 호출) -->
+        <OrganizationNode
+            v-for="dept in store.$state.allDepartment.filter(dept => !dept.managedDeptId)"
+            :key=dept.deptId
+            :parent = dept
+        />
+      </ul>
+    </div>
+
+    <!-- 사원 목록 -->
+    <div class="box right">
+      <OrganizationSelectedEmp/>
+    </div>
+
+  </div>
+
 </template>
 
 <style scoped>
-.dept_menu {
+
+.container {
+  display: flex; /* Flexbox로 레이아웃 구성 */
+  width: 100%;
+  max-width: 800px; /* 네모 크기 고정 */
+  max-height: 100px;
+  margin: 20px auto; /* 중앙 정렬 */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  overflow: hidden;
+}
+
+/* 공통 박스 스타일 */
+.box {
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto; /* 내용이 길어지면 스크롤 */
+}
+
+/* 왼쪽 영역 (부서 트리) */
+.left {
+  flex: 1; /* 왼쪽 영역 50% */
+  border-right: 1px solid #ddd; /* 가운데 선 추가 */
+}
+
+/* 오른쪽 영역 (사원 리스트) */
+.right {
+  flex: 1; /* 오른쪽 영역 50% */
+}
+
+.menu {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 </style>

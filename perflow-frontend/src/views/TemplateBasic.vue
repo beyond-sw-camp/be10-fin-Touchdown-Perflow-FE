@@ -30,7 +30,7 @@ const handleSettingsClick = (type) => {
 <template>
   <div class="main-container">
     <div class="form-container">
-      <OrganizationTree />
+<!--      <OrganizationTree />-->
       <!--제목-->
       <InputField
           v-model="title"
