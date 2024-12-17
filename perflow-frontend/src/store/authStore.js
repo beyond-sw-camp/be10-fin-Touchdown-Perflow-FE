@@ -1,17 +1,20 @@
 import { defineStore } from 'pinia';
 import api from "@/config/axios.js";
 import {ref} from "vue";
+import router from "@/router/router.js";
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         accessToken: ref(),
         refreshToken: ref(),
+        isLogin: ref(false)
     }),
     actions: {
         // 로그인 후 토큰 저장
         setTokens( newAccessToken, newRefreshToken ) {
             this.accessToken = newAccessToken;
             this.refreshToken = newRefreshToken;
+            this.isLogin = true;
         },
 
         // 토큰 갱신
@@ -37,6 +40,8 @@ export const useAuthStore = defineStore('auth', {
         logout() {
             this.accessToken = null;
             this.refreshToken = null;
+            this.isLogin = false;
+            router.push('/login');
         },
     },
 });
