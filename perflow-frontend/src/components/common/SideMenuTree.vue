@@ -80,7 +80,7 @@ onMounted(async () => {
 }
 #side-menu-top{
   height: 80px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #817F7F;
   display: flex;
   align-items: center;
   padding: 40px;
