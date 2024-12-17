@@ -35,6 +35,25 @@ const fetchEmpList = async (page) => {
     totalPages: response.totalPages
   };
 }
+
+// 사원 목록 검색
+const fetchEmpListByName = async (name) => {
+  const response = (await api.get("/employees/lists/search", {
+    params: {
+      page: 1,
+      name: name
+    }
+  })).data;
+  employees.value = response.employeeList;
+
+  pages.value = {
+    currentPage: response.currentPage,
+    pageSize: response.pageSize,
+    totalItems: response.totalItems,
+    totalPages: response.totalPages
+  };
+}
+
 // 라우팅 시 사용
 const goTo = (url) => {
   router.push(url);
@@ -74,7 +93,7 @@ onMounted(() => {
         <span class="tab active">전체</span>
         <span class="tab">추가현황</span>
       </div>
-      <SearchBar/>
+      <SearchBar @search="fetchEmpListByName"/>
     </div>
   </div>
 

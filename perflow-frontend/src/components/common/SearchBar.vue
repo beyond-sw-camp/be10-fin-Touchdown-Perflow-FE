@@ -42,6 +42,7 @@ const emitSearch = () => {
         :placeholder="placeholder"
         class="search-input"
         :style="{ fontSize: fontSize }"
+        @keyup.enter="emitSearch"
     />
     <!-- 이미지 아이콘 -->
     <img
