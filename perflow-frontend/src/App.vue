@@ -2,23 +2,6 @@
 import SideMenuTree from "@/components/common/SideMenuTree.vue";
 import {ref} from "vue";
 
-const columns = [
-  { label: "문서번호", field: "id" },
-  { label: "문서번호", field: "docId" },
-  { label: "서식", field: "template" },
-  { label: "제목", field: "title" },
-  { label: "결재선", field: "approvalLine" },
-  { label: "작성일", field: "date" },
-  { label: "작성자", field: "author" },
-  { label: "", field: "update" },
-  { label: "", field: "delete" },
-];
-
-const rows = [
-  { id: 1, docId: "2024-LAB001-001", template: "초과근로신청서", title: "개발1팀_홍길동_초과근로신청서_20241204", approvalLine: "결재1-결재2-결재3", date: "2024.12.04 15:28", author: "홍길동", update: "*", delete: "+"},
-  { id: 2, docId: "2024-LAB001-001", template: "초과근로신청서", title: "개발1팀_홍길동_초과근로신청서_20241204", approvalLine: "결재1-결재2-결재3", date: "2024.12.04 15:28", author: "홍길동", update: "*", delete: "+"},
-  { id: 3, docId: "2024-LAB001-001", template: "초과근로신청서", title: "개발1팀_홍길동_초과근로신청서_20241204", approvalLine: "결재1-결재2-결재3", date: "2024.12.04 15:28", author: "홍길동", update: "*", delete: "+"},
-];
 // 사이드바 표시 상태 관리
 const isSidebarOpen = ref(false);
 
@@ -32,7 +15,6 @@ const hideSidebar = () => {
   isSidebarOpen.value = false;
 };
 </script>
-
 
 <template>
   <div class="app-container">
@@ -82,10 +64,10 @@ const hideSidebar = () => {
 /* 사이드바 기본 스타일 */
 .sidebar {
   position: fixed;
-  left: -300px; /* 기본적으로 화면 밖에 숨겨진 상태 */
+  left: -310px; /* 기본적으로 화면 밖에 숨겨진 상태 */
   top: 0;
   bottom: 0;
-  width: 300px;
+  width: 310px;
   transition: left 0.3s ease;
   overflow-x: hidden;
   overflow-y: auto; /* 스크롤이 필요할 때 스크롤바 표시 */
