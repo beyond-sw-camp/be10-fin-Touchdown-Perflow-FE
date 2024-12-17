@@ -70,7 +70,7 @@ button > * {
 .btn-white {
   background-color: #fff;
   color: #3C4651;
-  border: #AFA9A9;
+  border: 1px solid #AFA9A9;
 }
 
 .btn-small {

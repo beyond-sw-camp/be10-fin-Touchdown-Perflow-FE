@@ -1,6 +1,7 @@
 <script setup>
 import SideMenuTree from "@/components/common/SideMenuTree.vue";
 import {ref} from "vue";
+import OrganizationTree from "@/components/common/OrganizationTree.vue";
 
 const columns = [
   { label: "문서번호", field: "id" },
@@ -54,6 +55,8 @@ const hideSidebar = () => {
       <!-- 라우터 뷰 -->
       <div class="router-view">
         <router-view />
+        <p>조직도 트리</p>
+        <OrganizationTree />
       </div>
     </div>
   </div>
