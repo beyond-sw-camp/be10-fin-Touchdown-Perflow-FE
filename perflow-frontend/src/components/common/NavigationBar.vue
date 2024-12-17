@@ -17,6 +17,9 @@ const fetchTimer = () => {
     authStore.startTimer();
   }
 };
+const refresh = () => {
+  authStore.refreshAccessToken();
+}
 onMounted(()=> {
   fetchTimer();
 });
@@ -30,6 +33,7 @@ onMounted(()=> {
     </div>
     <div class="nav-right" v-if="isLogin">
       <p id="timer">남은시간 {{msTime}}</p>
+      <img id="refresh" src="@/assets/image/refresh.png" alt="유효시간 연장" @click="refresh">
     </div>
   </div>
 </template>
@@ -66,9 +70,17 @@ onMounted(()=> {
   position: absolute;
   right: 0;
   padding-right: 30px;
+  display: flex;
 }
 #timer {
-  margin: 0;
+  margin: 0 10px;
   font-weight: bold;
+}
+#refresh {
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
 }
 </style>
