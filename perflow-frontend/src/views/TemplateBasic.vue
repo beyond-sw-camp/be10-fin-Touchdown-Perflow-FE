@@ -5,6 +5,7 @@ import ApprovalShareBox from "@/components/common/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
 import { ref } from "vue";
 import OrganizationTree from "@/components/common/OrganizationTree.vue";
+import draggable from "vuedraggable";
 
 // 모달 상태
 const isModalOpen = ref(false);
@@ -134,20 +135,31 @@ const addToApprovalList = (type) => {
             <div class="modal-box right">
               <h3>결재 순서</h3>
               <table class="approval-table">
+                <!-- 테이블 헤더 -->
                 <thead>
                 <tr>
-                  <th>결재 방식</th>
+                  <th>순서</th>
+                  <th>결재 종류</th>
                   <th>이름</th>
                   <th>직위</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr v-for="(item, index) in approvalList" :key="index">
-                  <td>{{ item.type }}</td>
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.position }}</td>
-                </tr>
-                </tbody>
+
+                <!-- 드래그 가능한 테이블 바디 -->
+                <draggable
+                    v-model="approvalList"
+                    tag="tbody"
+                    item-key="name"
+                >
+                  <template #item="{ element, index }">
+                    <tr>
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ element.type }}</td>
+                      <td>{{ element.name }}</td>
+                      <td>{{ element.position }}</td>
+                    </tr>
+                  </template>
+                </draggable>
               </table>
             </div>
           </div>
