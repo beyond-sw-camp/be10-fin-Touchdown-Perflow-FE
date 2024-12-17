@@ -3,35 +3,41 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import InputField from "@/components/common/InputField.vue";
 import ApprovalShareBox from "@/components/common/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
-import {ref} from "vue";
+import { ref } from "vue";
 import OrganizationTree from "@/components/common/OrganizationTree.vue";
+import ApprovalButtonGroup from "@/components/common/ApprovalButtonGroup.vue";
+import ApprovalList from "@/components/common/ApprovalList.vue";
 
+// 모달 상태
 const isModalOpen = ref(false);
+const selectedEmployees = ref([]); // 체크된 사원 목록
+const approvalList = ref([]); // 결재 목록
 
-const openModal = () => {
-  isModalOpen.value = true; // 모달 열기
-};
+// 모달 열기/닫기
+const openModal = () => (isModalOpen.value = true);
+const closeModal = () => (isModalOpen.value = false);
 
-const closeModal = () => {
-  isModalOpen.value = false; // 모달 닫기
-};
-
+// 설정 저장
 const saveSettings = () => {
   alert("설정이 저장되었습니다!");
-  closeModal(); // 저장 후 모달 닫기
+  closeModal();
 };
 
-const handleSettingsClick = (type) => {
-  console.log(`${type} 설정 버튼이 클릭되었습니다.`);
-  openModal(); // 모달 열기 함수 호출
+// 사원 업데이트 이벤트 핸들러
+const updateSelectedEmployees = (employees) => {
+  selectedEmployees.value = employees;
+};
+
+// ApprovalButtonGroup에서 데이터를 받아 결재 목록에 추가
+const addToApprovalList = (newApprovals) => {
+  approvalList.value.push(...newApprovals);
 };
 </script>
 
 <template>
   <div class="main-container">
     <div class="form-container">
-<!--      <OrganizationTree />-->
-      <!--제목-->
+      <!-- 제목 -->
       <InputField
           v-model="title"
           label="제목"
@@ -39,6 +45,7 @@ const handleSettingsClick = (type) => {
           :isRequired="true"
       />
 
+      <!-- 내용 -->
       <InputField
           v-model="content"
           label="내용"
@@ -55,7 +62,6 @@ const handleSettingsClick = (type) => {
             label="취소하기"
             @click="closeModal"
         />
-
         <ButtonBasic
             color="orange"
             size="medium"
@@ -64,70 +70,111 @@ const handleSettingsClick = (type) => {
         />
       </div>
     </div>
+
+    <!-- 결재선 -->
     <div class="box-container">
-      <!-- 결재선 -->
       <ApprovalShareBox
           title="결재선"
           placeholder="결재선이 없습니다."
-          @onSettingsClick="() => handleSettingsClick('결재선')"
+          @onSettingsClick="openModal"
       />
 
-      <!-- 공용 모달 -->
+      <!-- 모달 창 -->
       <ModalBasic
           :isOpen="isModalOpen"
           title="결재선 설정"
+          width="1000px"
           :button1="{ label: '닫기', color: 'gray', onClick: closeModal }"
           :button2="{ label: '저장하기', color: 'orange', onClick: saveSettings }"
           @close="closeModal"
       >
-        <!-- Custom Content -->
         <template #default>
+          <div class="modal-layout">
             <!-- 조직도 트리 -->
-          <OrganizationTree />
+            <div class="modal-box left">
+              <OrganizationTree @update:selectedEmployees="updateSelectedEmployees" />
+            </div>
+
+            <!-- 결재 버튼 그룹 -->
+            <div class="modal-box center">
+              <ApprovalButtonGroup
+                  :selectedEmployees="selectedEmployees"
+                  @addApproval="addToApprovalList"
+              />
+            </div>
+
+            <!-- 결재 목록 -->
+            <div class="modal-box right">
+              <ApprovalList :approvalList="approvalList" />
+            </div>
+          </div>
         </template>
       </ModalBasic>
-
       <!-- 공유 -->
       <ApprovalShareBox
           title="공유"
           placeholder="공유처가 없습니다."
           @onSettingsClick="() => handleSettingsClick('공유')"
       />
-
     </div>
   </div>
-
 </template>
 
 <style scoped>
-
 .main-container {
-  display: flex; /* flex를 사용해서 가로 배치 */
-  justify-content: center; /* form-container를 기준으로 중앙 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
-  gap: 100px; /* form-container와 box-container 사이 간격 */
-  height: 100vh; /* 전체 화면 높이 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+  height: 100vh;
 }
 
-/* 부모 컨테이너 중앙 배치 */
 .form-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* 컨텐츠 중앙 정렬 */
-  justify-content: center; /* 세로 중앙 */
+  align-items: center;
   gap: 20px;
-  width: 400px; /* 폼의 너비 고정 */
+  width: 400px;
 }
 
 .box-container {
   display: flex;
-  flex-direction: column; /* 위아래 정렬 */
-  gap: 20px; /* 결재선과 공유 사이 간격 */
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* 버튼 그룹 간격 추가 */
 .button-group {
   display: flex;
-  gap: 50px; /* 버튼 사이 간격 */
+  gap: 10px;
+}
+
+/* 모달 내부 레이아웃 */
+.modal-layout {
+  display: flex;
+  gap: 10px;
+  height: 300px;
+}
+
+/* 모달 내부 박스 공통 스타일 */
+.modal-box {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.left {
+  border-right: 1px solid #ccc;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right {
+  background-color: #f9f9f9;
 }
 </style>

@@ -120,7 +120,7 @@ const handleClick = (action) => {
 
 /* 내용 */
 .modal-content {
-  padding: 20px;
+  padding: 0;
   font-size: 14px;
   color: #333;
 }
