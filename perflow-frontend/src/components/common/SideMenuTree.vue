@@ -91,6 +91,7 @@ onMounted(async () => {
   font-size: 20px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
   position: absolute;
+  background-color: white;
 }
 .company-icon {
   display: flex;

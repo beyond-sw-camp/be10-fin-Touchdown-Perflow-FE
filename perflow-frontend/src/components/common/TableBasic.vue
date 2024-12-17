@@ -75,7 +75,6 @@ defineProps({
   table-layout: fixed; /* 열 너비를 균일하게 유지 (필요시) */
 }
 
-
 /* 가운데 정렬 */
 th,
 td {
