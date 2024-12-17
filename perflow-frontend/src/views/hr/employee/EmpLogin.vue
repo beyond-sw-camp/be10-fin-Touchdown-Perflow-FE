@@ -22,14 +22,8 @@ const login = async () => {
   const refreshToken = response.headers.get(`refreshToken`);
 
   authStore.setTokens(accessToken, refreshToken);
-}
-const logout = async () => {
 
-  await api.post(`/logout`);
-
-  const authStore = useAuthStore();
-
-  authStore.logout();
+  alert("로그인 되었습니다.")
 }
 </script>
 

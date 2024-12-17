@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         accessToken: ref(),
         refreshToken: ref(),
+        empName: ref(),
         isLogin: ref(false),
         timerInterval: null,
         remainingTime: 0
@@ -18,8 +19,6 @@ export const useAuthStore = defineStore('auth', {
             this.accessToken = newAccessToken;
             this.refreshToken = newRefreshToken;
             this.isLogin = true;
-            console.log("accessToken : " + this.accessToken);
-            console.log("refreshToken : " + this.refreshToken);
             this.startTimer();
         },
         // 남은 시간 계산 및 실시간 업데이트
@@ -30,6 +29,8 @@ export const useAuthStore = defineStore('auth', {
 
             const decoded = jwtDecode(this.accessToken);
             const expiryTime = decoded.exp * 1000; // 만료 시간 (밀리초)
+
+            this.empName = decoded.name;
 
             // 1초마다 남은 시간 갱신
             this.timerInterval = setInterval(() => {
@@ -42,6 +43,7 @@ export const useAuthStore = defineStore('auth', {
                 this.remainingTime = minutes+'분 '+seconds+'초';
 
                 if (remaining <= 0) {
+                    alert("로그인 유효기간이 지났습니다.")
                     this.logout(); // 남은 시간이 0이면 로그아웃
                 }
             }, 1000);
@@ -75,7 +77,7 @@ export const useAuthStore = defineStore('auth', {
             this.isLogin = false;
             this.remainingTime = 0;
             clearInterval(this.timerInterval);
-            alert("유효기간이 지나 로그아웃 되었습니다.")
+            alert("로그아웃 되었습니다.")
             router.push('/login');
         },
 
