@@ -11,6 +11,7 @@ import draggable from "vuedraggable";
 const isModalOpen = ref(false);
 const selectedEmployees = ref([]); // 체크된 사원 목록
 const approvalList = ref([]); // 결재 목록
+const approvalShareData = ref([]);  // approvalShareBox 에 전달할 데이터
 
 // 모달 열기/닫기
 const openModal = () => (isModalOpen.value = true);
@@ -21,6 +22,11 @@ const saveSettings = () => {
   alert("설정이 저장되었습니다!");
   closeModal();
 };
+
+const saveApprovalList = () => {
+  approvalShareData.value = [...approvalList.value];  // 결재선 데이터 업데이트
+  closeModal();
+}
 
 const selectedRows = ref(new Set());
 
@@ -101,7 +107,8 @@ const addToApprovalList = (type) => {
     <div class="box-container">
       <ApprovalShareBox
           title="결재선"
-          placeholder="결재선이 없습니다."
+          :placeholder="approvalShareData.length ? '' : '결재선이 없습니다.'"
+          :data="approvalShareData"
           @onSettingsClick="openModal"
       />
 
@@ -111,7 +118,7 @@ const addToApprovalList = (type) => {
           title="결재선 설정"
           width="1000px"
           :button1="{ label: '닫기', color: 'gray', onClick: closeModal }"
-          :button2="{ label: '저장하기', color: 'orange', onClick: saveSettings }"
+          :button2="{ label: '저장하기', color: 'orange', onClick: saveApprovalList }"
           @close="closeModal"
       >
         <template #default>
@@ -125,10 +132,10 @@ const addToApprovalList = (type) => {
             <div class="modal-box center">
               <div class="button-group">
                 <ButtonBasic
-                    label="결재"
+                    label="동의"
                     color="white"
                     size="medium"
-                    @click="addToApprovalList('결재')"
+                    @click="addToApprovalList('동의')"
                 />
                 <ButtonBasic
                     label="참조"
@@ -143,10 +150,10 @@ const addToApprovalList = (type) => {
                     @click="addToApprovalList('합의')"
                 />
                 <ButtonBasic
-                    label="병렬 합의"
+                    label="병렬합의"
                     color="white"
                     size="medium"
-                    @click="addToApprovalList('병렬 합의')"
+                    @click="addToApprovalList('병렬합의')"
                 />
               </div>
             </div>
