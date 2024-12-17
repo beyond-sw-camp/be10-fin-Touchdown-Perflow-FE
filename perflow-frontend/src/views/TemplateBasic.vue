@@ -22,6 +22,26 @@ const saveSettings = () => {
   closeModal();
 };
 
+const selectedRows = ref(new Set());
+
+// 체크박스 선택/해제 핸들러
+const toggleRowSelection = (index) => {
+  if (selectedRows.value.has(index)) {
+    selectedRows.value.delete(index); // 이미 선택된 경우 해제
+  } else {
+    selectedRows.value.add(index); // 선택 안 된 경우 추가
+  }
+};
+
+// 선택된 행 삭제
+const deleteSelectedRows = () => {
+  approvalList.value = approvalList.value.filter(
+      (_, index) => !selectedRows.value.has(index)
+  );
+  selectedRows.value.clear(); // 선택 목록 초기화
+};
+
+
 // 사원 업데이트 이벤트 핸들러
 const updateSelectedEmployees = (employees) => {
   console.log("선택된 사원 목록: ", selectedEmployees);
@@ -152,7 +172,10 @@ const addToApprovalList = (type) => {
                     item-key="name"
                 >
                   <template #item="{ element, index }">
-                    <tr>
+                    <tr
+                        @click="toggleRowSelection(index)"
+                        :class="{ 'selected-row': selectedRows.has(index) }"
+                    >
                       <td>{{ index + 1 }}</td>
                       <td>{{ element.type }}</td>
                       <td>{{ element.name }}</td>
@@ -161,6 +184,12 @@ const addToApprovalList = (type) => {
                   </template>
                 </draggable>
               </table>
+              <ButtonBasic
+                  label="삭제"
+                  color="white"
+                  size="small"
+                  @click="deleteSelectedRows"
+              />
             </div>
           </div>
         </template>
@@ -232,18 +261,14 @@ const addToApprovalList = (type) => {
   justify-content: center;
 }
 
-.right {
-  background-color: #f9f9f9;
-}
-
 .approval-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: collapse;  /* 테두리 겹치기 */
 }
 
 .approval-table th,
 .approval-table td {
-  border: 1px solid #ddd;
+  border-top: 1px solid #ddd; /* 가로선만 */
   padding: 8px;
   text-align: center;
 }
@@ -251,5 +276,11 @@ const addToApprovalList = (type) => {
 .approval-table th {
   background-color: #f4f4f4;
   font-weight: bold;
+}
+
+/* 선택된 행 */
+.selected-row {
+  background-color: #f0f0f0; /* 클릭 시 회색 배경 적용 */
+  cursor: pointer;
 }
 </style>
