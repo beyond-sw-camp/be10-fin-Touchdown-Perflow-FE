@@ -10,10 +10,6 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  buttonStyle: {
-    type: String,
-    default: "orange", // 'orange' | 'gray'
-  },
   width: {
     type: String,
     default: "150px", // 기본 너비
@@ -30,6 +26,10 @@ const props = defineProps({
     type: String,
     default: "30px", // 이미지 크기
   },
+  marginLeft: {
+    type: String,
+    default: "40px",
+  }
 });
 
 const emit = defineEmits(["select"]);
@@ -50,8 +50,7 @@ const selectOption = (option) => {
 
 <template>
   <div
-      class="dropdown-container"
-      :class="[`btn-${buttonStyle}`]"
+      class="dropdown-container btn-gray"
       :style="{ width: width, height: height, fontSize: fontSize }"
       @click="toggleMenu"
   >
@@ -62,13 +61,13 @@ const selectOption = (option) => {
           v-if="isMenuOpen"
           src="../../assets/image/arrow_up_2.png"
           alt="up"
-          :style="{ width: imgSize, height: imgSize }"
+          :style="{ width: imgSize, height: imgSize, marginLeft: marginLeft }"
       />
       <img
           v-else
           src="../../assets/image/arrow_down_2.png"
           alt="down"
-          :style="{ width: imgSize, height: imgSize }"
+          :style="{ width: imgSize, height: imgSize, marginLeft: marginLeft }"
       />
     </div>
 
@@ -133,6 +132,7 @@ const selectOption = (option) => {
 
 .options li:hover {
   background-color: #f5f5f5;
+  border-radius: 5px;
 }
 
 </style>
