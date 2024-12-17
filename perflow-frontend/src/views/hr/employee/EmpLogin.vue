@@ -1,7 +1,7 @@
 <script setup>
 import {ref} from "vue";
 import api from "@/config/axios.js";
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from '@/store/authStore.js';
 
 const empId = ref("");
 const password = ref("")
@@ -88,9 +88,12 @@ const logout = async () => {
   border: 1px solid #ccc;
   border-radius: 4px;
   text-align: center; /* 입력 값 중앙 정렬 */
-  font-size: 20px;
+  font-size: 20px !important;
 }
-
+#id-input, #password-input:-webkit-autofill {
+  background-color: white !important; /* 자동완성 시 배경 흰색 */
+  -webkit-box-shadow: 0 0 0 1000px white inset !important; /* 내부 흰색 영역 */
+}
 /* 로그인 버튼 스타일 */
 .login-button {
   width: 500px;
