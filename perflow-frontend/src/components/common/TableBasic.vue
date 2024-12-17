@@ -1,5 +1,9 @@
 <script setup>
 
+import PagingBar from "@/components/common/PagingBar.vue";
+
+const emit = defineEmits(["page-changed"]);
+
 defineProps({
   // 열 정보
   columns: {
@@ -18,7 +22,7 @@ defineProps({
     type: String,
     required: true,
   },
-})
+});
 </script>
 
 <template>
@@ -56,7 +60,6 @@ defineProps({
       </tbody>
     </table>
   </div>
-
 </template>
 
 <style scoped>
@@ -64,7 +67,7 @@ defineProps({
 .table-container {
   border: 1px solid #AFA9A9; /* 바깥 테두리 색상 */
   border-radius: 10px;
-  height: 500px;
+  height: 550px;
   overflow: hidden; /* 테두리 안쪽 내용 잘림 방지 */
 }
 .table {

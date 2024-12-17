@@ -3,15 +3,28 @@
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
 import TableBasic from "@/components/common/TableBasic.vue";
+import PagingBar from "@/components/common/PagingBar.vue";
 
 const employees = ref([]);
-
+const pages = ref({
+  pageSize : Number,
+  totalItems : Number,
+  totalPages : Number,
+  currentPage : Number
+})
 const fetchEmpList = async (page) => {
-  employees.value = (await api.get("/employees/lists", {
+
+  const response = (await api.get("/employees/lists", {
     params: {
       page: page
     }
   })).data;
+  employees.value = response.employeeList;
+
+  pages.value.currentPage = response.currentPage;
+  pages.value.pageSize = response.pageSize;
+  pages.value.totalItems = response.totalItems;
+  pages.value.totalPages = response.totalPages;
 }
 const columns = [
   { field: 'empId',    label: '사번'  },
@@ -26,7 +39,14 @@ onMounted(() => {
 
 <template>
   <div id="empList-div">
-    <TableBasic :row-key="'id'" :rows="employees" :columns="columns" />
+    <TableBasic :row-key="'id'" :rows="employees" :columns="columns" :pages="pages" />
+    <paging-bar :page-size="pages.pageSize"
+                :total-items="pages.totalItems"
+                :total-pages="pages.totalPages"
+                :current-page="pages.currentPage"
+                imgSize="20px" size="20px"
+                @page-changed="fetchEmpList"
+    />
   </div>
 </template>
 
