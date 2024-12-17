@@ -1,14 +1,25 @@
 <script setup>
-import {useStore} from "@/store/store.js";
-import {computed} from "vue";
+import {computed, onMounted} from "vue";
 import {useAuthStore} from "@/store/authStore.js";
-import ButtonBasic from "@/components/common/ButtonBasic.vue";
 
-const authStore = useAuthStore()
+const authStore = useAuthStore();
+
+const msTime = computed(() => {
+  return authStore.$state.remainingTime
+});
 
 const isLogin = computed(()=>{
   return authStore.$state.isLogin;
-})
+});
+
+const fetchTimer = () => {
+  if(isLogin){
+    authStore.startTimer();
+  }
+};
+onMounted(()=> {
+  fetchTimer();
+});
 </script>
 
 <template>
@@ -17,8 +28,8 @@ const isLogin = computed(()=>{
       <img src="@/assets/image/logo.png" alt="로고" id="logo-image">
       <span id="logo-text">Perflow</span>
     </div>
-    <div class="nav-right">
-      <p id="timer">남은시간 20:00:00</p>
+    <div class="nav-right" v-if="isLogin">
+      <p id="timer">남은시간 {{msTime}}</p>
     </div>
   </div>
 </template>
