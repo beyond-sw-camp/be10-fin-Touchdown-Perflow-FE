@@ -1,6 +1,14 @@
 <script>
-export const colors = ['orange', 'gray'];
+export const colors = ['orange', 'gray', 'white'];
 export const sizes = ['small', 'medium', 'large'];
+
+// 사용법 예시
+// <ButtonBasic
+//   color="gray"
+//   size="medium"
+//   label="취소하기"
+//       @click="handleClick"
+// />
 </script>
 
 <script setup>
@@ -57,6 +65,12 @@ button > * {
   background-color: #D9D9D9;
   color: #3C4651;
   border: none;
+}
+
+.btn-white {
+  background-color: #fff;
+  color: #3C4651;
+  border: #AFA9A9;
 }
 
 .btn-small {
