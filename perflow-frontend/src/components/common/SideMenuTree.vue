@@ -84,11 +84,13 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   padding: 40px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 #side-menu {
-  width: 300px;
+  width: 280px;
   height: 100%;
-  font-size: 20px;
+  font-size: 17px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
   position: absolute;
   background-color: white;
