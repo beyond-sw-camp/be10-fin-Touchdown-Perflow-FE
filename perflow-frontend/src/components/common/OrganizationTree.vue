@@ -41,7 +41,8 @@ onMounted(async () => {
   display: flex; /* Flexbox로 레이아웃 구성 */
   width: 100%;
   max-width: 800px; /* 네모 크기 고정 */
-  max-height: 100px;
+  /* max-height: 100px; */
+  height: 150px;
   margin: 20px auto; /* 중앙 정렬 */
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -55,6 +56,20 @@ onMounted(async () => {
   padding: 16px;
   box-sizing: border-box;
   overflow-y: auto; /* 내용이 길어지면 스크롤 */
+}
+
+/* 얇은 스크롤바 (Webkit 기반 브라우저) */
+.box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.box::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 3px;
+}
+
+.box::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
 }
 
 /* 왼쪽 영역 (부서 트리) */
