@@ -18,6 +18,8 @@ export const useAuthStore = defineStore('auth', {
             this.accessToken = newAccessToken;
             this.refreshToken = newRefreshToken;
             this.isLogin = true;
+            console.log("accessToken : " + this.accessToken);
+            console.log("refreshToken : " + this.refreshToken);
             this.startTimer();
         },
         // 남은 시간 계산 및 실시간 업데이트
@@ -48,14 +50,16 @@ export const useAuthStore = defineStore('auth', {
         // 토큰 갱신
         async refreshAccessToken() {
             try {
-                const response = await api.post('hr/employees/reissue',{} , {
+                const response = await api.post('/reissue',{} , {
                     headers : { refreshToken: this.refreshToken }
                 });
 
-                const newAccessToken = response.headers['Authorization'];
-                const newRefreshToken = response.headers['refreshToken'];
+                const newAccessToken = response.headers.get(`Authorization`);
+                const newRefreshToken = response.headers.get(`refreshToken`);
 
-                this.setTokens({ newAccessToken, newRefreshToken });
+                console.log(newAccessToken);
+                console.log(newRefreshToken);
+                this.setTokens( newAccessToken, newRefreshToken );
                 return newAccessToken; // 갱신된 Access Token 반환
             } catch (error) {
                 console.error('Failed to refresh token:', error);

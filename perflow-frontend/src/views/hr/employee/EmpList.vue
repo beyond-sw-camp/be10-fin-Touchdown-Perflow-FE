@@ -100,7 +100,7 @@ onMounted(() => {
   <!-- 표 사용 -->
   <div id="empList-div">
     <p id="total">{{pages.totalItems}}명</p>
-    <TableBasic :row-key="'id'" :rows="employees" :columns="columns" :pages="pages" />
+    <TableBasic :row-key="'id'" :rows="employees" :columns="columns"/>
     <paging-bar :page-size="pages.pageSize"
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"
