@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import EmpLogin from "@/views/hr/employee/EmpLogin.vue";
-import ApprovalHome from "@/views/ApprovalHome.vue";
-import TemplateBasic from "@/views/TemplateBasic.vue";
-import WaitingDoc from "@/views/WaitingDoc.vue";
+import ApprovalHome from "@/views/approval/ApprovalHome.vue";
+import TemplateBasic from "@/views/approval/TemplateBasic.vue";
+import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 
 
