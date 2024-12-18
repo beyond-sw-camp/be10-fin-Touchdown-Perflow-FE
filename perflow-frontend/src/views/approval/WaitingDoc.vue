@@ -4,7 +4,7 @@ import ButtonBasic from '@/components/common/ButtonBasic.vue';
 import PagingBar from "@/components/common/PagingBar.vue";
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import TableBasic from "@/components/common/TableBasic.vue";
+import TableBasic from "@/components/common/TableCheck.vue";
 
 const columns = [
   // { label: "문서번호", field: "docId" },
