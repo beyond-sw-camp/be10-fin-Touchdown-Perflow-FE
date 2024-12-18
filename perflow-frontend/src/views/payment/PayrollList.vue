@@ -51,7 +51,36 @@ const menuItem = [
   {
     label: '다운로드',
     icon: { src: '/src/assets/image/download_2.png' },
-    action: () => api.get(`/hr/payroll-template/download`)
+    action: async () => {
+      try {
+        // 서버에서 파일을 바이너리 형식으로 받아옵니다.
+        const response = await api.get(`/hr/payroll-template/download`, { responseType: 'blob' });
+
+        // Blob 데이터를 URL로 변환합니다.
+        const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+
+        // 현재 날짜로 파일명을 설정합니다.
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+        const fileName = `payroll_${year}_${month}.xlsx`; // 예: payroll_2024_12.xlsx
+
+        // 다운로드를 위한 가상 링크를 생성합니다.
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileName); // 동적으로 파일명 설정
+        document.body.appendChild(link);
+        link.click(); // 다운로드 시작
+
+        // 다운로드 후 링크를 제거합니다.
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url); // URL 객체를 해제합니다.
+      } catch (error) {
+        console.error('파일 다운로드 중 오류 발생:', error);
+        alert('파일 다운로드에 실패했습니다.');
+      }
+    }
   },
   {
     label: "업로드",
@@ -155,6 +184,7 @@ onMounted(() => {
           mode="both"
           :buttonWidth="'150px'"
           :buttonHeight="'50px'"
+          :multiple="false"
           @files-selected="handleFilesSelected"
       />
       <div class="button">
@@ -164,6 +194,7 @@ onMounted(() => {
             label="업로드"
             @click="handleFileUpload"
         />
+        <div style="margin-left: 10px"/>
         <ButtonBasic
             color="gary"
             size="medium"
