@@ -5,10 +5,7 @@ import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import TableBasic from "@/components/common/TableBasic.vue";
 import ThreeMonthChart from "@/views/payment/ThreeMonthChart.vue";
-
-const threeYearsByMonth = ref(null);
-const threeMonths = ref(null);
-const threeYears = ref(null);
+import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
 
 const state = reactive({
   payrolls: [],
@@ -22,7 +19,7 @@ const state = reactive({
 const fetchThreeYearsByMonth = async () => {
   try {
     const response = await api.get(`/hr/payrolls/chart/last-three-years-by-latest-month`);
-    threeYearsByMonth.value = response.data.payrollChart;
+    threeYearsByMonth.value = response.data;
   } catch (error) {
     console.error('해당 월의 3년간 데이터 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -32,7 +29,7 @@ const fetchThreeYearsByMonth = async () => {
 const fetchThreeYears = async () => {
   try {
     const response = await api.get(`/hr/payrolls/chart/last-three-years`);
-    threeYears.value = response.data.payrollYear;
+    threeYears.value = response.data;
   } catch (error) {
     console.error('3년 간 급여 데이터 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -89,11 +86,19 @@ onMounted(() => {
     <h1>급여대장</h1>
   </div>
   <div>
-    <div class="chart">
+    <div class="three-month-chart">
       <ThreeMonthChart />
     </div>
+    <div class="chart">
+      <div class="three-year-by-month-chart">
+        <ThreeYearByMonthChart />
+      </div>
+      <div class="three-year-chart">
+
+      </div>
+    </div>
     <hr>
-    <div>
+    <div class="btn">
       <ExcelDropDown
         buttonName="엑셀"
         :menuItems="menuItem"
