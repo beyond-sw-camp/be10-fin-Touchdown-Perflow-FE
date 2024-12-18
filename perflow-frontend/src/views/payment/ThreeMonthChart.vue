@@ -62,7 +62,7 @@ const fetchThreeMonth = async () => {
             label: '총 급여',
             data: threeMonths.value.values,
             fill: false,
-            borderColor: '#42A5F5',
+            borderColor: '#F97B3D',
             tension: 0.1
           }
         ]
@@ -86,7 +86,7 @@ const chartData = ref({
       label: '총 급여',
       data: [],
       fill: false,
-      borderColor: '#42A5F5',
+      borderColor: '#F97B3D',
       tension: 0.1
     }
   ]
