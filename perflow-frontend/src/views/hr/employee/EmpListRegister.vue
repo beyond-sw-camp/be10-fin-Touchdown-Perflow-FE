@@ -5,6 +5,7 @@ import api from "@/config/axios.js";
 import FileUpload from "@/components/common/FileUpload.vue";
 import {ref} from "vue";
 import {useStore} from "@/store/store.js";
+import ButtonBack from "@/components/common/ButtonBack.vue";
 
 const selectedFile = ref([]);
 const store = useStore();
@@ -70,12 +71,11 @@ const uploadCSV = async (file) => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    store.hideLoading()
     alert("업로드에 성공했습니다.");
   }catch (error){
-    store.hideLoading()
     alert("사원 일괄 등록 중 오류가 발생했습니다.");
   }finally {
+    store.hideLoading();
   }
 };
 </script>
@@ -83,8 +83,13 @@ const uploadCSV = async (file) => {
 <template>
   <div id="emp-list-register-container">
     <div id="container-header">
-      <p id="sub-title">구성원/구성원등록</p>
-      <p id="container-title">구성원</p>
+      <div id="header-left">
+        <p id="sub-title">구성원/구성원등록</p>
+        <p id="container-title">구성원</p>
+      </div>
+      <div>
+        <ButtonBack class="back-button"/>
+      </div>
     </div>
     <div class="container-item" id="notice-container">
       <div id="notice"><img src="@/assets/image/check.png" alt="체크"><p>주의 사항</p></div>
@@ -138,7 +143,19 @@ p, hr {
   gap: 5px;
   color: #3C4651;
 }
-#container-header, .container-item {
+#container-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 900px;
+}
+#header-left{
+  margin-top: 20px;
+}
+.back-button {
+  float: right;
+  margin-top: 50px;
+}
+.container-item {
   width: 900px;
   margin-top: 20px;
 }
