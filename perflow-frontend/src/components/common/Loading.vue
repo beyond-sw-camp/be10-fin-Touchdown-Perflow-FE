@@ -32,7 +32,7 @@ const isLoading = computed(() => {
   width: 60px;
   height: 60px;
   border: 8px solid #f3f3f3;
-  border-top: 8px solid #3498db;
+  border-top: 8px solid #f37321;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
