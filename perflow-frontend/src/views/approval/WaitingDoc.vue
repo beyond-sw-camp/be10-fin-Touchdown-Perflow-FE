@@ -72,6 +72,8 @@ onMounted(() => {
         :columns="columns"
         :rows="waitingDocs"
         rowKey="docId"
+        :showCheckbox="true"
+        @row-selected="handleRowSelected"
     >
       <!-- 날짜 포맷팅 커스터마이징 -->
       <template #createDatetime="{ value }">
