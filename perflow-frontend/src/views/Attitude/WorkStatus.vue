@@ -10,7 +10,7 @@ const selectedWeek = ref(null); // 선택된 주차
 // API 요청 함수
 const fetchAttendanceData = async () => {
   try {
-    const response = await api.get("/leader/attendance/summaries/weekly");
+    const response = await api.get("/hr/attendance/summaries/weekly");
     console.log(response.data);
 
     attendanceData.value = response.data;
@@ -109,18 +109,21 @@ h1 {
 .table-container {
   width: 100%;
   margin: 0 auto;
-  border-collapse: collapse;
   text-align: center;
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 th, td {
-  border: 1px solid #ddd;
+  border: none;
   padding: 10px;
+  text-align: center;
 }
 
 th {
@@ -128,8 +131,24 @@ th {
   font-weight: bold;
 }
 
-tr:nth-child(even) {
+/*tr:nth-child(even) {
   background-color: #f9f9f9;
+}*/
+
+table tr:first-child th:first-child {
+  border-top-left-radius: 10px; /* 좌상단 모서리 둥글게 */
+}
+
+table tr:first-child th:last-child {
+  border-top-right-radius: 10px; /* 우상단 모서리 둥글게 */
+}
+
+table tr:last-child td:first-child {
+  border-bottom-left-radius: 10px; /* 좌하단 모서리 둥글게 */
+}
+
+table tr:last-child td:last-child {
+  border-bottom-right-radius: 10px; /* 우하단 모서리 둥글게 */
 }
 
 tr:hover {
