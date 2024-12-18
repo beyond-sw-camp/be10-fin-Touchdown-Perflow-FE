@@ -10,7 +10,11 @@ import Annual from "@/views/Attitude/Annual.vue";
 import Overtime from "@/views/Attitude/Overtime.vue";
 import AttendanceStatus from "@/views/Attitude/AttendanceStatus.vue";
 import Travel from "@/views/Attitude/Travel.vue";
+import ApprovalHome from "@/views/approval/ApprovalHome.vue";
+import TemplateBasic from "@/views/approval/TemplateBasic.vue";
+import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
+import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 
 
 const routes = [
@@ -19,8 +23,10 @@ const routes = [
     {path: '/', name: 'mainPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
+    {path: '/hr/employees/register/lists', name: 'EmpListRegister', component: EmpListRegister},
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
+    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     { path: '/login', name: 'Login', component: EmpLogin },
     { path: '/hr/employees', name: 'EmpList', component: EmpList },
     { path: '/approval/home', name: 'approvalHome', component: ApprovalHome },

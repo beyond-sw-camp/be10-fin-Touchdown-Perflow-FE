@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         accessToken: ref(),
         refreshToken: ref(),
+        empId: ref(),
         empName: ref(),
         isLogin: ref(false),
         timerInterval: null,
@@ -19,18 +20,25 @@ export const useAuthStore = defineStore('auth', {
             this.accessToken = newAccessToken;
             this.refreshToken = newRefreshToken;
             this.isLogin = true;
+
+            const decoded = jwtDecode(newAccessToken);
+            this.empId = decoded.empId;
+            this.empName = decoded.name;
             this.startTimer();
         },
         // 남은 시간 계산 및 실시간 업데이트
         startTimer() {
+
+            if(!this.isLogin){
+                return
+            }
+
             if (this.timerInterval) {
                 clearInterval(this.timerInterval); // 기존 타이머 초기화
             }
 
             const decoded = jwtDecode(this.accessToken);
             const expiryTime = decoded.exp * 1000; // 만료 시간 (밀리초)
-
-            this.empName = decoded.name;
 
             // 1초마다 남은 시간 갱신
             this.timerInterval = setInterval(() => {
