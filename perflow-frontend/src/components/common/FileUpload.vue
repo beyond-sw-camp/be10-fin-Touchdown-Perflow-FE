@@ -58,6 +58,10 @@ const updateFiles = (files) => {
   selectedFiles.value = files;
   emit('files-selected', files);
 };
+
+const deleteFiles = (index) => {
+  selectedFiles.value.pop(index);
+}
 </script>
 
 <template>
@@ -89,18 +93,19 @@ const updateFiles = (files) => {
         @dragenter="preventDefault"
         @drop="handleDrop"
     >
-      <p class="drop-area-content">
+      <p class="drop-area-content" v-if="selectedFiles.length === 0">
         <img src="../../assets/image/upload.png" alt="업로드" />
         파일을 여기에 드래그 앤 드롭하세요.
       </p>
+      <!-- 선택된 파일 목록 -->
+      <ul v-if="selectedFiles.length">
+        <li v-for="(file, index) in selectedFiles" :key="index" class="upload-file-name">
+          {{ file.name }} <img src="@/assets/image/delete.png" alt="삭제버튼" class="delete-image" @click="deleteFiles(index)">
+        </li>
+      </ul>
     </div>
 
-    <!-- 선택된 파일 목록 -->
-    <ul v-if="selectedFiles.length">
-      <li v-for="(file, index) in selectedFiles" :key="index">
-        {{ file.name }}
-      </li>
-    </ul>
+
   </div>
 </template>
 
@@ -130,7 +135,6 @@ const updateFiles = (files) => {
   text-align: center;
   color: #afa9a9;
   font-weight: bold;
-  cursor: pointer;
   margin-top: 10px;
   font-size: 16px;
   transition: background-color 0.3s;
@@ -156,9 +160,20 @@ const updateFiles = (files) => {
 ul {
   list-style: none;
   padding: 0;
+  display: flex;
+  gap: 20px;
 }
 
 li {
   margin: 5px 0;
+}
+
+.upload-file-name {
+  color: #3c4651;
+}
+.delete-image {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 </style>
