@@ -2,13 +2,13 @@
 import { ref, onMounted } from 'vue';
 import api from "@/config/axios.js";
 import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale } from 'chart.js';
+import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale } from 'chart.js';
 import Up from '../../assets/image/up.png';
 import Down from '../../assets/image/down.png';
 import Flat from '../../assets/image/flat.png';
 
 // Chart.js 구성 요소 등록
-ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale);
+ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale);
 
 // 3개월 급여 데이터 및 상태 관리
 const threeMonths = ref({ labels: [], values: [] });
@@ -43,8 +43,16 @@ const fetchThreeMonth = async () => {
       // 증가율 계산 (전달 대비)
       const [lastMonth, currentMonth] = threeMonths.value.values.slice(-2);
       if (lastMonth && currentMonth) {
-        growthRate.value = Math.round(((currentMonth - lastMonth) / lastMonth) * 100);
+        growthRate.value = ((currentMonth - lastMonth) / lastMonth) * 10000;
+        growthRate.value = parseFloat(growthRate.value.toFixed(1));
+
+      } else {
+        growthRate.value = 0; // 값이 없으면 0으로 설정
       }
+
+      console.log("currentMonth: " ,currentMonth, ", lastMonth: ", lastMonth);
+      console.log("growthRate : ", growthRate.value);
+      console.log("test : ", ((currentMonth - lastMonth) / lastMonth) * 100);
 
       // 차트 데이터 업데이트
       chartData.value = {
@@ -86,23 +94,19 @@ const chartData = ref({
 
 const chartOptions = ref({
   responsive: true,
-  plugins: {
-    title: {
-      display: true,
-      text: '최근 3개월 급여 변화'
-    },
-    tooltip: {
-      callbacks: {
-        label: (tooltipItem) => `₩ ${tooltipItem.raw.toLocaleString()}`
-      }
-    }
-  },
   scales: {
     x: {
-      beginAtZero: true
+      grid: {
+        display: false // x축의 그리드 라인 제거
+      },
     },
     y: {
-      beginAtZero: true
+      grid: {
+        display: false // y축의 그리드 라인 제거
+      },
+      ticks: {
+        display: false // y축의 값 제거
+      }
     }
   }
 });
@@ -112,7 +116,7 @@ const chartOptions = ref({
 <template>
   <div>
     <!-- 차트 제목 -->
-    <h2>최근 3개월 총 급여</h2>
+    <h3>최근 3개월 총 급여</h3>
     <!-- 총 급여 변화율 -->
     <div v-if="threeMonths.values.length" class="growth-container">
       <span class="salary-label">{{ recentMonth }}월 총 급여</span>
@@ -135,22 +139,33 @@ const chartOptions = ref({
     </div>
 
     <!-- 차트 -->
-    <Line v-if="threeMonths.values.length" :data="chartData" :options="chartOptions"/>
+    <Line
+        v-if="threeMonths.values.length"
+        :data="chartData"
+        :options="chartOptions"
+        style="width: 100%; height: 300px;"
+    />
     <p v-else>데이터를 불러오는 중...</p>
   </div>
 </template>
 
 <style scoped>
+h3 {
+  margin-top: 30px;
+  font-weight: bold;
+  color: #3c4651;
+}
+
 .growth-container {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-direction: row;
+  gap: 30px;
   margin: 10px 0;
 }
 
 .salary-label {
   font-size: 18px;
-  font-weight: bold;
+  color: #3c4651;
 }
 
 .growth-rate {
