@@ -18,11 +18,11 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: '30px'
+    default: '20px'
   },
   imgSize: {
     type: String,
-    default: '40px'
+    default: '20px'
   }
 });
 
