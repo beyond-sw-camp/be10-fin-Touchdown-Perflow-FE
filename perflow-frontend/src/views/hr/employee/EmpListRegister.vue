@@ -1,6 +1,15 @@
 <script setup>
 import ButtonLong from "@/components/common/ButtonLong.vue";
+import ButtonBasic from "@/components/common/ButtonBasic.vue"
 import api from "@/config/axios.js";
+import FileUpload from "@/components/common/FileUpload.vue";
+import {ref} from "vue";
+
+const selectedFile = ref([]);
+
+const fetchSelectedFile = (files) => {
+  selectedFile.value = files
+}
 
 const downloadCSV = async () => {
   try {
@@ -41,7 +50,7 @@ const downloadCSV = async () => {
       <p id="sub-title">구성원/구성원등록</p>
       <p id="container-title">구성원</p>
     </div>
-    <div class="container-item">
+    <div class="container-item" id="notice-container">
       <div id="notice"><img src="@/assets/image/check.png" alt="체크"><p>주의 사항</p></div>
       <div id="notice-item">
         <p>1. perflow 제공 양식이 아닐 경우 업로드에 실패할 수 있습니다.</p>
@@ -54,27 +63,39 @@ const downloadCSV = async () => {
     </div>
     <div class="container-item">
       <div class="item-list">
-
+        <ButtonBasic
+            color="orange"
+            size="small"
+            label="필수입력"
+        />
+        <p>사번, 이름, 주민등록번호,  이메일, 연락처</p>
       </div>
+      <hr>
       <div class="item-list">
-
+        <ButtonBasic
+            color="gray"
+            size="small"
+            label="선택입력"
+        />
+        <p>직급, 직책, 부서, 월급, 주소, 성별</p>
       </div>
     </div>
     <ButtonLong label="CSV 엑셀파일 템플릿 다운로드" @click="downloadCSV"/>
     <div class="item-title">
       <p class="number">02</p><p class="title">CSV 파일 업로드 및 등록</p>
     </div>
-    <div class="container-item">
-
-    </div>
+    <FileUpload width="900px" @files-selected="fetchSelectedFile"/>
+    <ButtonLong label="구성원 일괄 등록" @click="downloadCSV"/>
   </div>
+  <p v-for="file in selectedFile">{{file.name}}</p>
 </template>
 
 <style scoped>
-p {
+p, hr {
   padding: 0;
   margin: 0;
 }
+
 #emp-list-register-container {
   display: flex;
   flex-direction: column;
@@ -106,6 +127,9 @@ p {
   font-weight: bold;
   margin-top: 40px;
 }
+#notice-container {
+  padding: 30px;
+}
 .number {
   color: #F37321;
 }
@@ -133,9 +157,14 @@ p {
   border: 1px solid #AFA9A9 ;
   border-radius: 10px;
   height: 250px;
-  padding: 20px;
 }
 .item-list {
   height: 50%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  font-weight: bold;
+  padding-left: 40px;
 }
 </style>
