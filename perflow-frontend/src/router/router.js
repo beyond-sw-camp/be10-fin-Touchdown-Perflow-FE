@@ -13,15 +13,18 @@ import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 import PayrollList from "@/views/payment/PayrollList.vue";
+import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
-
     {path: '/', name: 'mainPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
+    // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register/lists', name: 'EmpListRegister', component: EmpListRegister},
+    {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
+
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
