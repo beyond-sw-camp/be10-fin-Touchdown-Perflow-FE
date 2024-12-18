@@ -4,9 +4,10 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue"
 import api from "@/config/axios.js";
 import FileUpload from "@/components/common/FileUpload.vue";
 import {ref} from "vue";
+import {useStore} from "@/store/store.js";
 
 const selectedFile = ref([]);
-
+const store = useStore();
 const fetchSelectedFile = (files) => {
   selectedFile.value = files
 }
@@ -41,7 +42,42 @@ const downloadCSV = async () => {
   } catch (error) {
     console.error('CSV 다운로드 실패:', error);
   }
-}
+};
+
+
+const triggerFileInput = () => {
+  if(selectedFile.value.length === 0) {
+    alert("선택된 파일이 없습니다.");
+    return;
+  }
+  const confirmed = window.confirm('CSV 파일을 업로드 하시겠습니까?');
+  if (confirmed) {
+    uploadCSV(selectedFile.value.pop(0));
+  }
+};
+
+const uploadCSV = async (file) => {
+  try {
+
+    store.showLoading();
+
+    // FormData 생성 및 데이터 추가
+    const formData = new FormData();
+    formData.append("empCSV", file); // 이미지 파일 추가
+
+    await api.post("/hr/employees/list", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    store.hideLoading()
+    alert("업로드에 성공했습니다.");
+  }catch (error){
+    store.hideLoading()
+    alert("사원 일괄 등록 중 오류가 발생했습니다.");
+  }finally {
+  }
+};
 </script>
 
 <template>
@@ -84,10 +120,9 @@ const downloadCSV = async () => {
     <div class="item-title">
       <p class="number">02</p><p class="title">CSV 파일 업로드 및 등록</p>
     </div>
-    <FileUpload width="900px" @files-selected="fetchSelectedFile"/>
-    <ButtonLong label="구성원 일괄 등록" @click="downloadCSV"/>
+    <FileUpload width="900px" @files-selected="fetchSelectedFile" :multiple="false"/>
+    <ButtonLong label="구성원 일괄 등록" @click="triggerFileInput"/>
   </div>
-  <p v-for="file in selectedFile">{{file.name}}</p>
 </template>
 
 <style scoped>

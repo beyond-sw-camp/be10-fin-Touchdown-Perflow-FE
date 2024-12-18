@@ -8,6 +8,7 @@ export const useStore = defineStore('store', {
         allEmployee: ref({}),
         allMenu: ref([]),
         company: ref({}),
+        isLoading: ref(false)
     }),
     actions: {
         // 조직도 갱신
@@ -38,6 +39,12 @@ export const useStore = defineStore('store', {
         },
         async fetchCompany() {
             this.company = (await api.get("/company")).data;
+        },
+        showLoading() {
+            this.isLoading = true;
+        },
+        hideLoading() {
+            this.isLoading = false;
         }
     },
     persist:true
