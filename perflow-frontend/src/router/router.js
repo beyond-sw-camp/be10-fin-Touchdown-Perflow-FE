@@ -15,6 +15,12 @@ import EmpList from "@/views/hr/employee/EmpList.vue";
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
+
+    {path: '/', name: 'mainPage', component: EmpLogin},
+    {path: '/login', name: 'Login', component: EmpLogin},
+    {path: '/hr/employees', name: 'EmpList', component: EmpList},
+    {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
+    {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
     { path: '/login', name: 'Login', component: EmpLogin },
     { path: '/hr/employees', name: 'EmpList', component: EmpList },
     { path: '/approval/home', name: 'approvalHome', component: ApprovalHome },
@@ -30,7 +36,6 @@ const routes = [
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
     {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
-
 
 
 

@@ -22,14 +22,8 @@ const login = async () => {
   const refreshToken = response.headers.get(`refreshToken`);
 
   authStore.setTokens(accessToken, refreshToken);
-}
-const logout = async () => {
 
-  await api.post(`/logout`);
-
-  const authStore = useAuthStore();
-
-  authStore.logout();
+  alert("로그인 되었습니다.")
 }
 </script>
 
@@ -54,12 +48,12 @@ const logout = async () => {
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */
   align-items: center; /* 가로 중앙 정렬 */
-  gap: 20px; /* 각 요소 간의 간격 */
+  gap: 10px; /* 각 요소 간의 간격 */
   margin: 0 auto; /* 수평 중앙 정렬 */
-  padding-top: 200px;
+  padding-top: 100px;
 }
 .title {
-  font-size: 60px;
+  font-size: 50px;
   font-weight: bold;
   background: linear-gradient(90deg, #F37321, #FFBB00);
   /* 크로스 브라우저 호환을 위해 -webkit-background-clip 사용 */
@@ -83,12 +77,11 @@ const logout = async () => {
 #id-input, #password-input {
   width: 500px;
   height: 50px;
-  padding: 5px;
-  margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
   text-align: center; /* 입력 값 중앙 정렬 */
   font-size: 20px !important;
+  margin-bottom: 5px;
 }
 #id-input, #password-input:-webkit-autofill {
   background-color: white !important; /* 자동완성 시 배경 흰색 */
@@ -105,7 +98,7 @@ const logout = async () => {
   cursor: pointer;
   font-size: 20px;
   font-weight: bold;
-  margin-top: 50px;
+  margin-top: 30px;
 }
 .login-button:hover {
   background-color: #ff5a45;

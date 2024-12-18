@@ -12,7 +12,6 @@ export const sizes = ['small', 'medium', 'large'];
 </script>
 
 <script setup>
-
 const emit = defineEmits(['click']);
 
 defineProps({
