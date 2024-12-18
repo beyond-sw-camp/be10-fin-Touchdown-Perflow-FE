@@ -1,6 +1,8 @@
 <script setup>
 import {useStore} from "@/store/store.js";
 import {ref} from "vue";
+import leftArrow from '@/assets/icons/left_arrow.png'
+import rightArrow from '@/assets/icons/right_arrow.png'
 
 // Props로 부서 데이터 전달
 const props = defineProps({
@@ -17,6 +19,14 @@ const toggle = () => {
   isExpanded.value = !isExpanded.value;
 };
 
+// 부서 클릭 시 호출
+const selectDepartment = () => {
+
+  // 부서 클릭 시 해당 부서 사원 정보 가져옴
+  // store.selectDept(props.parent.deptId);
+  store.selectDept(props.parent.deptId);
+}
+
 const checkDept = (event, deptId) => {
 
   if(event.target.checked){
@@ -29,12 +39,19 @@ const checkDept = (event, deptId) => {
 </script>
 
 <template>
-  <li class="menu">
-    <!-- 현재 부서 이름 출력 -->
-    <input type="checkbox" @click="checkDept($event,props.parent.deptId)">
-    {{ props.parent.name }}
-    <span @click="toggle">{{ isExpanded ? '[-]' : '[+]' }}</span>
-    <!-- 하위 부서 렌더링 -->
+  <li class="dept-item">
+    <!-- 부서명 왼쪽에 이미지 삽입-->
+    <img
+        :src="isExpanded ? rightArrow : leftArrow"
+        @click.stop.prevent="toggle"
+        class="toggle-icon"
+        alt="toggle"
+    />
+    <!-- 부서 클릭 시 해당 부서 사원 정보 로딩 -->
+    <span @click="selectDepartment" class="dept-name">
+      {{ props.parent.name }}
+    </span>
+    <!-- 하위 부서 -->
     <ul v-if="isExpanded" class="menu">
       <OrganizationNode
           v-for="child in store.$state.allDepartment.filter(dept => dept.managedDeptId === parentId)"
@@ -47,5 +64,21 @@ const checkDept = (event, deptId) => {
 <style>
 .menu {
   list-style: none;
+  padding-left: 20px; /* 들여 쓰기 */
+}
+.dept-item {
+  display: block; /* 하위 부서가 수직으로 나열 */
+}
+
+.toggle-icon {
+  width: 10px;
+  height: 10px;
+  vertical-align: middle; /* 이미지와 텍스트 수직 정렬 */
+  margin-right: 8px; /* 이미지 오른쪽에 간격 추가 */
+  cursor: pointer;
+}
+.dept-name {
+  cursor: pointer;
+  white-space: nowrap;  /* 부서명이 길어져도 줄바꿈 x */
 }
 </style>

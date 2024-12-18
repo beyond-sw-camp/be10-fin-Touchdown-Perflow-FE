@@ -31,13 +31,13 @@ defineProps({
 
       <!--테이블 헤더-->
       <thead>
-        <tr>
-          <th v-for="(column, index) in columns"
-              :key="index"
-          >
-            {{ column.label }}
-          </th>
-        </tr>
+      <tr>
+        <th v-for="(column, index) in columns"
+            :key="index"
+        >
+          {{ column.label }}
+        </th>
+      </tr>
       </thead>
 
       <!-- 테이블 바디 -->

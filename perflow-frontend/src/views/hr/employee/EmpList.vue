@@ -2,7 +2,7 @@
 
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import TableBasic from "@/components/common/TableBasic.vue";
+import TableBasic from "@/components/common/TableBasic.vue"
 import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import router from "@/router/router.js";

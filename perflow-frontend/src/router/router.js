@@ -1,8 +1,8 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import EmpLogin from "@/views/hr/employee/EmpLogin.vue";
-import ApprovalHome from "@/views/ApprovalHome.vue";
-import newDoc from "@/views/newDoc.vue";
-import TemplateBasic from "@/views/TemplateBasic.vue";
+import ApprovalHome from "@/views/approval/ApprovalHome.vue";
+import TemplateBasic from "@/views/approval/TemplateBasic.vue";
+import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 
@@ -16,6 +16,7 @@ const routes = [
     {path: '/hr/employees/register/lists', name: 'EmpListRegister', component: EmpListRegister},
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
+    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
 
 ]
 

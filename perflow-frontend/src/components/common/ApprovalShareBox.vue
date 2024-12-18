@@ -5,6 +5,7 @@ import {onMounted} from "vue";
 defineProps({
   title: { type: String, required: true }, // 결재선, 공유
   placeholder: { type: String, required: true }, // 비어있을 때 표시할 메시지
+  data: { type: Array, default: () => [] }  // 결재선 데이터
 });
 
 const emit = defineEmits(["onSettingsClick"]);
@@ -40,6 +41,15 @@ onMounted(() => {
             label="설정"
             @click="emit('onSettingsClick')"
         />
+      </div>
+
+      <!-- 데이터 표시 -->
+      <div v-if="data.length > 0" class="box-content">
+        <div class="approval-item" v-for="(item, index) in data" :key="index">
+          <span class="approval-type" :class="item.type">{{ item.type }}</span>
+          <span class="approval-name">{{ item.name }}</span>
+          <span class="approval-position">{{ item.position }}</span>
+        </div>
       </div>
 
       <!-- 비어있을 때 표시 -->
@@ -95,6 +105,53 @@ onMounted(() => {
   position: absolute;
   top: 10px;
   right: 10px; /* 설정 버튼을 상단 우측에 배치 */
+}
+
+.box-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.approval-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #f4f4f4;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.approval-type {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+}
+
+.approval-type.동의,
+.approval-type.합의 {
+  background-color: #28a745; /* 초록색 */
+}
+
+.approval-type.참조 {
+  background-color: #ff8c00; /* 주황색 */
+}
+
+.approval-type.병렬,
+.approval-type.병렬합의 {
+  background-color: #007bff; /* 파란색 */
+}
+
+.approval-name {
+  font-weight: bold;
+}
+
+.approval-position {
+  color: #6c757d;
 }
 
 /* 비어있을 때 메시지 */
