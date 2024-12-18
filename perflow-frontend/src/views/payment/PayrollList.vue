@@ -1,11 +1,12 @@
 <script setup>
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted } from "vue";
 import api from "@/config/axios.js";
 import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import TableBasic from "@/components/common/TableBasic.vue";
 import ThreeMonthChart from "@/views/payment/ThreeMonthChart.vue";
 import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
+import ThreeYearChart from "@/views/payment/ThreeYearChart.vue";
 
 const state = reactive({
   payrolls: [],
@@ -14,26 +15,6 @@ const state = reactive({
   totalItems:0,
   pageSize: 10
 });
-
-// 해당 월의 3년간 데이터 정보를 가져오는 함수
-const fetchThreeYearsByMonth = async () => {
-  try {
-    const response = await api.get(`/hr/payrolls/chart/last-three-years-by-latest-month`);
-    threeYearsByMonth.value = response.data;
-  } catch (error) {
-    console.error('해당 월의 3년간 데이터 정보를 불러오는 중 에러가 발생했습니다. : ', error);
-  }
-};
-
-// 3년 간 급여 데이터 정보를 가져오는 함수
-const fetchThreeYears = async () => {
-  try {
-    const response = await api.get(`/hr/payrolls/chart/last-three-years`);
-    threeYears.value = response.data;
-  } catch (error) {
-    console.error('3년 간 급여 데이터 정보를 불러오는 중 에러가 발생했습니다. : ', error);
-  }
-};
 
 // 급여대장 목록을 가져오는 함수
 const fetchPayrolls = async (page = 1) => {
@@ -75,8 +56,6 @@ const columns = [
 
 onMounted(() => {
       fetchPayrolls();
-      fetchThreeYearsByMonth();
-      fetchThreeYears()
 });
 
 </script>
@@ -94,7 +73,7 @@ onMounted(() => {
         <ThreeYearByMonthChart />
       </div>
       <div class="three-year-chart">
-
+        <ThreeYearChart />
       </div>
     </div>
     <hr>

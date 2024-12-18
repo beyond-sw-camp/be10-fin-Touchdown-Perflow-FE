@@ -1,7 +1,7 @@
 <script setup>
-import {ref, onMounted} from 'vue';
-import {Bar} from 'vue-chartjs';
-import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale} from 'chart.js';
+import { ref, onMounted } from 'vue';
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import api from "@/config/axios.js";
 import Up from "@/assets/image/up.png";
 import Down from "@/assets/image/down.png";
@@ -10,10 +10,10 @@ import Flat from "@/assets/image/flat.png";
 // Chart.js 구성 요소 등록
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
-// 해당 월의 3년간 급여 데이터
-const threeYearsByMonth = ref([]);
+// 3년 간 급여 데이터
+const threeYears = ref([]);
 const growthRate = ref(0); // 증가율
-const recentMonth = ref(''); // 최근 달
+const recentYear = ref(''); // 최근 년도
 
 // 차트 데이터 설정
 const chartData = ref({
@@ -22,50 +22,45 @@ const chartData = ref({
     {
       label: '총 급여',
       data: [], // 급여 데이터
-      backgroundColor: '#F97B3D', // 막대 색상
+      backgroundColor: '#FFDD00', // 막대 색상
     }
   ]
 });
 
-// 3년간 급여 데이터 가져오는 함수
-const fetchThreeYearsByMonth = async () => {
+// 3년 간 급여 데이터 가져오는 함수
+const fetchThreeYears = async () => {
   try {
-    const response = await api.get('/hr/payrolls/chart/last-three-years-by-latest-month');
-    threeYearsByMonth.value = response.data;
+    const response = await api.get('/hr/payrolls/chart/last-three-years');
+    threeYears.value = response.data;
 
     // 차트 데이터 업데이트
-    chartData.value.labels = threeYearsByMonth.value.map(item => {
-      const date = new Date(item.createDatetime); // createDatetime을 Date 객체로 변환
-      const year = date.getFullYear(); // 연도
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // 월 (1부터 시작하므로 1을 더하고 두 자릿수로 맞춤)
-
-      return `${year}.${month}`; // 원하는 형식으로 반환
+    chartData.value.labels = threeYears.value.map(item => {
+      return item.year
     });
 
-    // 월
-    chartData.value.datasets[0].data = threeYearsByMonth.value.map(item => item.totalAmount); // 급여
+    // 급여 데이터
+    chartData.value.datasets[0].data = threeYears.value.map(item => item.totalAmount); // 급여
 
-    // 최근 달 업데이트
-    recentMonth.value = chartData.value.labels[chartData.value.labels.length - 1].split('.')[1];
+    // 최근 년도 업데이트
+    recentYear.value = chartData.value.labels[chartData.value.labels.length - 1];
 
     // 증가율 계산 (전년도 대비)
-    const [lastMonth, currentMonth] = chartData.value.datasets[0].data.slice(-2);
-    if (lastMonth && currentMonth) {
-      growthRate.value = ((currentMonth - lastMonth) / lastMonth) * 10000;
+    const [lastYear, currentYear] = chartData.value.datasets[0].data.slice(-2);
+    if (lastYear && currentYear) {
+      growthRate.value = ((currentYear - lastYear) / lastYear) * 100;
       growthRate.value = parseFloat(growthRate.value.toFixed(1));
-
     } else {
       growthRate.value = 0; // 값이 없으면 0으로 설정
     }
 
   } catch (error) {
-    console.error('3년간 급여 데이터를 불러오는 중 에러가 발생했습니다: ', error);
+    console.error('3년 간 급여 데이터 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
 };
 
 // 컴포넌트가 마운트될 때 데이터 불러오기
 onMounted(() => {
-  fetchThreeYearsByMonth();
+  fetchThreeYears();
 });
 
 // 차트 옵션 설정
@@ -86,17 +81,17 @@ const chartOptions = ref({
 
 <template>
   <div>
-    <h3>최근 3년간 {{ recentMonth }}월별 급여</h3>
+    <h3>최근 3년간 총 급여</h3>
 
     <div class="growth-container">
-      <div class="salary-label">{{ recentMonth }}월 총 급여 </div>
+      <div class="salary-label">{{ recentYear }}년 총 급여 </div>
       <div
           class="growth-rate"
           :class="{
-            'growth-up': growthRate > 0,
-            'growth-down': growthRate < 0,
-            'growth-equal': growthRate === 0
-          }"
+          'growth-up': growthRate > 0,
+          'growth-down': growthRate < 0,
+          'growth-equal': growthRate === 0
+        }"
       >
         <!-- 증가율 이미지 조건부 표시 -->
         <img
@@ -104,12 +99,12 @@ const chartOptions = ref({
             :alt="growthRate > 0 ? '증가' : growthRate < 0 ? '감소' : '변화 없음'"
         />
         <span>{{ growthRate }}%</span>
-        <span class="comparison-text">전달대비</span>
+        <span class="comparison-text">전년도대비</span>
       </div>
     </div>
     <!-- 바 차트 -->
     <Bar
-        v-if="threeYearsByMonth.length"
+        v-if="threeYears.length"
         :data="chartData"
         :options="chartOptions"
         style="width: 100%; height: 300px;"
@@ -141,7 +136,6 @@ h3 {
   display: flex;
   align-items: center;
   font-size: 18px;
-
 }
 
 .growth-rate img {
