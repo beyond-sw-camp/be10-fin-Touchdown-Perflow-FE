@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted } from "vue";
+import {reactive, onMounted, ref } from "vue";
 import api from "@/config/axios.js";
 import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
@@ -7,6 +7,8 @@ import TableBasic from "@/components/common/TableBasic.vue";
 import ThreeMonthChart from "@/views/payment/ThreeMonthChart.vue";
 import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
 import ThreeYearChart from "@/views/payment/ThreeYearChart.vue";
+import FileUpload from "@/components/common/FileUpload.vue";
+import ButtonBasic from "@/components/common/ButtonBasic.vue";
 
 const state = reactive({
   payrolls: [],
@@ -15,6 +17,11 @@ const state = reactive({
   totalItems:0,
   pageSize: 10
 });
+
+const isFileUploadVisible = ref(false); // 파일 업로드 창 표시 여부
+
+// 선택된 파일 목록을 저장할 변수
+const selectedFiles = ref([]);
 
 // 급여대장 목록을 가져오는 함수
 const fetchPayrolls = async (page = 1) => {
@@ -29,6 +36,7 @@ const fetchPayrolls = async (page = 1) => {
       ...payroll,
       createDatetime: `${payroll.createDatetime.slice(0,4)}.${payroll.createDatetime.slice(5,7)}.${payroll.createDatetime.slice(8,10)}`,
       name: `${payroll.name.slice(13, 15)}월 대장`,  // 예: '202408' -> '2024.08'
+      totalPay: new Intl.NumberFormat('ko-KR').format(payroll.totalPay) + '원'  // 'totalPay' 값을 천단위로 포맷팅하고 원 추가
     }));
     state.currentPage = response.data.currentPage;
     state.totalPages = response.data.totalPages;
@@ -46,11 +54,48 @@ const menuItem = [
     action: () => api.get(`/hr/payroll-template/download`)
   },
   {
-    label: '업로드',
-    icon: { src: '/src/assets/image/upload_2.png' },
-    action: () => api.post(`/hr/payroll-template/upload`)
-  }
+    label: "업로드",
+    icon: { src: "/src/assets/image/upload_2.png" },
+    action: () => (isFileUploadVisible.value = true), // 업로드 창 표시
+  },
 ];
+
+// 파일 업로드 핸들러
+const handleFileUpload = async () => {
+  if (selectedFiles.value.length === 0) {
+    alert("업로드할 파일을 선택해주세요.");
+    return;
+  }
+
+  const formData = new FormData();
+  selectedFiles.value.forEach(file => {
+    formData.append('file', file);
+  });
+
+  try {
+    const response = await api.post('/hr/payroll-template/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log("업로드 성공:", response.data);
+    alert("파일이 성공적으로 업로드되었습니다.");
+    isFileUploadVisible.value = false; // 모달 닫기
+  } catch (error) {
+    console.error("업로드 실패:", error);
+    alert("파일 업로드 중 오류가 발생했습니다.");
+  }
+};
+
+// 파일 선택 이벤트 핸들러
+const handleFilesSelected = (files) => {
+  selectedFiles.value = files;
+};
+
+// 파일 업로드 모달 닫기 함수
+const handleCancel = () => {
+  isFileUploadVisible.value = false; // 모달 숨기기
+};
 
 const columns = [
   { field: 'createDatetime',  label: '작성일' },
@@ -60,7 +105,7 @@ const columns = [
 ];
 
 onMounted(() => {
-      fetchPayrolls();
+  fetchPayrolls();
 });
 
 </script>
@@ -81,7 +126,7 @@ onMounted(() => {
         </div>
       </div>
       <hr>
-      <div class="btn">
+      <div class="excel">
         <ExcelDropDown
           buttonName="엑셀"
           :menuItems="menuItem"
@@ -101,6 +146,29 @@ onMounted(() => {
             :totalItems="state.totalItems"
             :pageSize="state.totalPages"
             @page-changed="fetchPayrolls"
+        />
+      </div>
+    </div>
+    <!-- 파일 업로드 컴포넌트 -->
+    <div v-if="isFileUploadVisible" class="file-upload-modal">
+      <FileUpload
+          mode="both"
+          :buttonWidth="'150px'"
+          :buttonHeight="'50px'"
+          @files-selected="handleFilesSelected"
+      />
+      <div class="button">
+        <ButtonBasic
+            color="orange"
+            size="medium"
+            label="업로드"
+            @click="handleFileUpload"
+        />
+        <ButtonBasic
+            color="gary"
+            size="medium"
+            label="취소"
+            @click="handleCancel"
         />
       </div>
     </div>
@@ -145,7 +213,7 @@ hr {
   width: 900px;
 }
 
-.btn {
+.excel {
   display: flex;
   flex-direction: row-reverse;
   width: 900px;
@@ -159,6 +227,26 @@ hr {
 
 .paging-bar {
   width: 900px
+}
+
+.file-upload-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 450px;
+}
+
+.button {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row-reverse;
+  margin-right: 10px;
 }
 
 </style>

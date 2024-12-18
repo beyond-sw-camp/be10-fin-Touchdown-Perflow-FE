@@ -51,7 +51,7 @@ const fetchThreeYearsByMonth = async () => {
     // 증가율 계산 (전년도 대비)
     const [lastMonth, currentMonth] = chartData.value.datasets[0].data.slice(-2);
     if (lastMonth && currentMonth) {
-      growthRate.value = ((currentMonth - lastMonth) / lastMonth) * 10000;
+      growthRate.value = ((currentMonth - lastMonth) / lastMonth) * 100;
       growthRate.value = parseFloat(growthRate.value.toFixed(1));
 
     } else {
