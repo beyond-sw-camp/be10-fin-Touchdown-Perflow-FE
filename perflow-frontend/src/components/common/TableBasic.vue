@@ -11,7 +11,7 @@
 
 import {ref} from "vue";
 
-const emit = defineEmits(["page-changed", "row-selected"]);
+const emit = defineEmits(["page-changed", "row-selected", "title-clicked"]);
 
 const props = defineProps({
   // 열 정보
@@ -51,13 +51,18 @@ const toggleRowSelection = (row) => {
   emit("row-selected", Array.from(selectedRows.value));
 };
 
+// 특정 열(제목) 클릭 시
+const handleTitleClick = (row) => {
+  emit("title-clicked", row); // 제목 클릭 시 데이터 전달
+}
+
 // row 선택되었는지 확인
 const isRowSelected = (row) => selectedRows.value.has(row);
 
 // 전체 선택/해제 토글
 const toggleAllSelection = (e) => {
   if (e.target.checked) {
-    props.rows.forEach((row) => selectedRows.value.add(row[props.rowKey]));
+    props.rows.forEach((row) => selectedRows.value.add(row));
   } else {
     selectedRows.value.clear();
   }

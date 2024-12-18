@@ -49,6 +49,7 @@ const fetchWaitingDocs = async (page = 1) => {
 const bulkApproveDocs = async () => {
   if (selectedRows.value.length === 0) {
     alert("선택된 문서가 없습니다.");
+    return;
   }
 
   try {
@@ -66,11 +67,11 @@ const bulkApproveDocs = async () => {
     console.log("전달할 데이터: ", approvals);
 
     const requestData = {approvals};
-
     await api.put("approval/docs/bulk", requestData);
 
     alert("문서들이 일괄 승인되었습니다.");
-    fetchWaitingDocs(currentPage.value);  // 목록 새로 고침
+
+    await fetchWaitingDocs(currentPage.value);  // 목록 새로 고침
     selectedRows.value = [];  // 선택 초기화
   } catch (error) {
     console.error("일괄 승인 실패", error);
