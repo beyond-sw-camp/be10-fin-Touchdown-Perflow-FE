@@ -9,6 +9,7 @@ import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
 import ThreeYearChart from "@/views/payment/ThreeYearChart.vue";
 import FileUpload from "@/components/common/FileUpload.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
+import VTooltip from "v-tooltip";
 
 const state = reactive({
   payrolls: [],
@@ -89,6 +90,19 @@ const menuItem = [
   },
 ];
 
+const tooltipVisible = ref(false);
+const tooltipText = "금액을 입력하거나 수정하려면 엑셀 파일을 1. 다운로드 받고 양식에 맞게 값을 입력한 후, 2. 업로드 해주세요.";
+
+const showTooltip = () => {
+  tooltipVisible.value = true;
+  console.log('Tooltip visible show:', tooltipVisible.value);  // 확인용
+};
+
+const hideTooltip = () => {
+  tooltipVisible.value = false;
+  console.log('Tooltip visible hide:', tooltipVisible.value);  // 확인용
+};
+
 // 파일 업로드 핸들러
 const handleFileUpload = async () => {
   if (selectedFiles.value.length === 0) {
@@ -155,11 +169,16 @@ onMounted(() => {
         </div>
       </div>
       <hr>
-      <div class="excel">
-        <ExcelDropDown
-          buttonName="엑셀"
-          :menuItems="menuItem"
-        />
+      <div class="excel" @mouseenter="showTooltip" @mouseleave="hideTooltip">
+        <div @mouseenter="showTooltip" @mouseleave="hideTooltip">
+          <ExcelDropDown
+              buttonName="엑셀"
+              :menuItems="menuItem"
+          />
+          <div v-if="tooltipVisible" class="excel-tooltip">
+            {{ tooltipText }}
+          </div>
+        </div>
       </div>
       <div class="table">
         <TableBasic
@@ -250,6 +269,23 @@ hr {
   width: 900px;
   padding: 0;
   margin: 0 0 15px 0;
+  position: relative;
+}
+
+.excel-tooltip {
+  position: absolute;
+  background-color: white;
+  color: #3C4651;
+  border: 1px solid #ff6600;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  z-index: 10;
+  bottom: 45px; /* 툴팁을 ExcelDropDown 위쪽에 표시하도록 설정 */
+  left: 89.5%;
+  transform: translateX(-50%);
+  width: 190px; /* 툴팁 크기 제한 */
+  word-wrap: break-word; /* 긴 텍스트를 줄바꿈 처리 */
 }
 
 .table {
