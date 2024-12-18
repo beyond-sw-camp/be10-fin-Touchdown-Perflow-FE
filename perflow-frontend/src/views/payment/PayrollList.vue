@@ -24,7 +24,12 @@ const fetchPayrolls = async (page = 1) => {
         page
       }
     });
-    state.payrolls = response.data.payrolls;
+    // 'name' 필드에서 연도와 월을 분리하고, 형식 'YYYY.MM'으로 변환
+    state.payrolls = response.data.payrolls.map(payroll => ({
+      ...payroll,
+      createDatetime: `${payroll.createDatetime.slice(0,4)}.${payroll.createDatetime.slice(5,7)}.${payroll.createDatetime.slice(8,10)}`,
+      name: `${payroll.name.slice(13, 15)}월 대장`,  // 예: '202408' -> '2024.08'
+    }));
     state.currentPage = response.data.currentPage;
     state.totalPages = response.data.totalPages;
     state.totalItems = response.data.totalItems;
@@ -61,45 +66,99 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <h1>급여대장</h1>
-  </div>
-  <div>
-    <div class="three-month-chart">
-      <ThreeMonthChart />
-    </div>
-    <div class="chart">
-      <div class="three-year-by-month-chart">
-        <ThreeYearByMonthChart />
-      </div>
-      <div class="three-year-chart">
-        <ThreeYearChart />
-      </div>
-    </div>
-    <hr>
-    <div class="btn">
-      <ExcelDropDown
-        buttonName="엑셀"
-        :menuItems="menuItem"
-      />
-    </div>
+  <div class="container">
+    <h1 class="title">급여대장</h1>
     <div>
-      <TableBasic
-          :row-key="id"
-          :rows="state.payrolls"
-          :columns="columns"
-      />
-      <PagingBar
-          :currentPage="state.currentPage"
-          :totalPages="state.totalPages"
-          :totalItems="state.totalItems"
-          :pageSize="state.totalPages"
-          @page-changed="fetchPayrolls"
-      />
+      <div class="three-month-chart">
+        <ThreeMonthChart />
+      </div>
+      <div class="chart">
+        <div class="three-year-by-month-chart">
+          <ThreeYearByMonthChart />
+        </div>
+        <div class="three-year-chart">
+          <ThreeYearChart />
+        </div>
+      </div>
+      <hr>
+      <div class="btn">
+        <ExcelDropDown
+          buttonName="엑셀"
+          :menuItems="menuItem"
+        />
+      </div>
+      <div class="table">
+        <TableBasic
+            :row-key="id"
+            :rows="state.payrolls"
+            :columns="columns"
+        />
+      </div>
+      <div class="paging-bar">
+        <PagingBar
+            :currentPage="state.currentPage"
+            :totalPages="state.totalPages"
+            :totalItems="state.totalItems"
+            :pageSize="state.totalPages"
+            @page-changed="fetchPayrolls"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  width: 900px;
+  justify-content: center;
+  margin: 10px 0 10px 0;
+  color: #3c4651;
+}
+
+.three-month-chart {
+  width: 900px;
+  margin-bottom: 10px;
+}
+
+.chart {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 900px;
+}
+
+.three-year-by-month-chart {
+  width: 400px;
+}
+
+.three-year-chart {
+  width: 400px;
+}
+
+hr {
+  width: 900px;
+}
+
+.btn {
+  display: flex;
+  flex-direction: row-reverse;
+  width: 900px;
+  padding: 0;
+  margin: 0 0 15px 0;
+}
+
+.table {
+  width: 900px;
+}
+
+.paging-bar {
+  width: 900px
+}
 
 </style>

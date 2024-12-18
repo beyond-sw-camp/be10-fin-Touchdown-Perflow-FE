@@ -82,7 +82,6 @@ const chartOptions = ref({
 <template>
   <div>
     <h3>최근 3년간 총 급여</h3>
-
     <div class="growth-container">
       <div class="salary-label">{{ recentYear }}년 총 급여 </div>
       <div

@@ -104,7 +104,7 @@ const chartOptions = ref({
             :alt="growthRate > 0 ? '증가' : growthRate < 0 ? '감소' : '변화 없음'"
         />
         <span>{{ growthRate }}%</span>
-        <span class="comparison-text">전달대비</span>
+        <span class="comparison-text">전년도대비</span>
       </div>
     </div>
     <!-- 바 차트 -->
