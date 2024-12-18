@@ -61,8 +61,8 @@ const goTo = (url) => {
 
 // 버튼 드롭다운에 들어갈 버튼 목록
 const menus = [
-  { label: '한명등록', icon: '', action: () => goTo('/employees/register') },
-  { label: 'CSV등록', icon: '', action: () => goTo('/employees/register/lists') },
+  { label: '한명등록', icon: '', action: () => goTo('/hr/employees/register') },
+  { label: 'CSV등록', icon: '', action: () => goTo('/hr/employees/register/lists') },
 ];
 
 // 테이블 맨 위 컬럼 값. dto의 필드명과 맞춰야함.
