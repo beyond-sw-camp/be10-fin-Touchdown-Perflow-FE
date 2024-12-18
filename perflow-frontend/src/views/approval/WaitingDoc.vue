@@ -19,6 +19,8 @@ const totalItems = ref(0);      // 전체 아이템 수
 const currentPage = ref(1);     // 현재 페이지 번호
 const pageSize = 10;            // 페이지당 문서 수
 
+const selectedRows = ref([]);
+
 // 대기 문서 목록 조회
 const fetchWaitingDocs = async (page = 1) => {
   try {
@@ -30,15 +32,56 @@ const fetchWaitingDocs = async (page = 1) => {
       }
     }));
     // api response 에서 데이터 추출
+    console.log("대기 문서 조회 결과: ", response.data.content);
+
     waitingDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
     currentPage.value = response.data.number + 1; // Vue는 1부터 시작
 
   } catch (error) {
-    console.error("대기 문서 목록 불러오기 실패", error);
+    console.error("대기 문서 목록 조회 실패", error);
     waitingDocs.value = [];
   }
+}
+
+// 일괄 승인
+const bulkApproveDocs = async () => {
+  if (selectedRows.value.length === 0) {
+    alert("선택된 문서가 없습니다.");
+  }
+
+  try {
+    console.log("선택된 데이터 확인: ", selectedRows.value)
+    const approvals = selectedRows.value.map((row) => ({
+      docId: row.docId,
+      empId: row.empId, // 현재 로그인 한 사용자의 empId
+      approveLineId: row.approveLineId,
+      approveSbjId: row.approveSbjId,
+      empDeptType: "EMPLOYEE",
+      status: "APPROVED",
+      comment: null,
+    }));
+
+    console.log("전달할 데이터: ", approvals);
+
+    const requestData = {approvals};
+
+    await api.put("approval/docs/bulk", requestData);
+
+    alert("문서들이 일괄 승인되었습니다.");
+    fetchWaitingDocs(currentPage.value);  // 목록 새로 고침
+    selectedRows.value = [];  // 선택 초기화
+  } catch (error) {
+    console.error("일괄 승인 실패", error);
+    alert("일괄 승인에 실패하였습니다.");
+  }
+}
+
+// 선택된 문서 처리
+const handleRowSelected = (selected) => {
+  console.log("선택된 행 데이터:", selected);
+  selectedRows.value = selected;
 }
 
 onMounted(() => {
@@ -61,7 +104,7 @@ onMounted(() => {
     </div>
     <div id="header-bottom" class="flex-between">
       <div class="tabs">
-        <h1>header bottom 영역</h1>
+        <h1>header bottom 영역 - 검색 바 여기에 추가 </h1>
       </div>
     </div>
   </div>
@@ -89,6 +132,13 @@ onMounted(() => {
       :totalItems="totalItems"
       :pageSize="pageSize"
       @page-changed="fetchWaitingDocs"
+  />
+
+  <ButtonBasic
+    color="orange"
+    size="medium"
+    label="일괄 승인하기"
+    @click="bulkApproveDocs"
   />
 </template>
 

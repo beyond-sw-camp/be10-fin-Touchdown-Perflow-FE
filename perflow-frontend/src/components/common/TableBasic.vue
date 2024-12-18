@@ -1,4 +1,14 @@
 <script setup>
+
+// 사용법:
+// <TableBasic
+//   :columns="테이블 열 정보"
+//   :rows="불러오는 데이터"
+//   rowKey="각 행의 고유 키"
+//   :showCheckbox="true"
+//   @row-selected="row 선택 후 처리하는 함수 이름"
+// />
+
 import {ref} from "vue";
 
 const emit = defineEmits(["page-changed", "row-selected"]);
@@ -31,17 +41,18 @@ const selectedRows = ref(new Set());
 
 // 체크박스 토글
 const toggleRowSelection = (row) => {
-  const key = row[props.rowKey];
-  if (selectedRows.value.has(key)) {
-    selectedRows.value.delete(key);
+  // const key = row[props.rowKey];
+  const isSelected = selectedRows.value.has(row);
+  if (selectedRows.value.has(row)) {
+    selectedRows.value.delete(row);
   } else {
-    selectedRows.value.add(key);
+    selectedRows.value.add(row);
   }
   emit("row-selected", Array.from(selectedRows.value));
 };
 
 // row 선택되었는지 확인
-const isRowSelected = (row) => selectedRows.value.has(row[props.rowKey]);
+const isRowSelected = (row) => selectedRows.value.has(row);
 
 // 전체 선택/해제 토글
 const toggleAllSelection = (e) => {
@@ -56,11 +67,10 @@ const toggleAllSelection = (e) => {
 </script>
 
 <template>
-  <div class="table-container">
-    <table class="table">
-
-      <!--테이블 헤더-->
-      <thead>
+    <div class="table-container">
+      <table class="table">
+        <!--테이블 헤더-->
+        <thead>
         <tr>
           <!-- 체크박스 헤더 -->
           <th v-if="showCheckbox">
@@ -76,40 +86,40 @@ const toggleAllSelection = (e) => {
             {{ column.label }}
           </th>
         </tr>
-      </thead>
+        </thead>
 
-      <!-- 테이블 바디 -->
-      <tbody>
-      <tr v-for="row in rows"
-          :key="row[rowKey]"
-          :class="{ selected: isRowSelected(row) }"
-          @click="toggleRowSelection(row)"
-      >
-        <!-- 개별 체크박스 -->
-        <td v-if="showCheckbox">
-          <input
-              type="checkbox"
-              :checked="isRowSelected(row)"
-              @click.stop="toggleRowSelection(row)"
-          />
-        </td>
-        <!-- 데이터 -->
-        <td
-            v-for="(column, index) in columns"
-            :key="index"
+        <!-- 테이블 바디 -->
+        <tbody>
+        <tr v-for="row in rows"
+            :key="row[rowKey]"
+            :class="{ selected: isRowSelected(row) }"
+            @click="toggleRowSelection(row)"
         >
-          <!-- 슬롯을 사용하여 특정 열의 렌더링 커스터마이징 -->
-          <slot
-              :name="column.field"
-              :row="row"
-              :value="row[column.field]"
+          <!-- 개별 체크박스 -->
+          <td v-if="showCheckbox">
+            <input
+                type="checkbox"
+                :checked="isRowSelected(row)"
+                @click.stop="toggleRowSelection(row)"
+            />
+          </td>
+          <!-- 데이터 -->
+          <td
+              v-for="(column, index) in columns"
+              :key="index"
           >
-            {{ row[column.field] }}
-          </slot>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+            <!-- 슬롯을 사용하여 특정 열의 렌더링 커스터마이징 -->
+            <slot
+                :name="column.field"
+                :row="row"
+                :value="row[column.field]"
+            >
+              {{ row[column.field] }}
+            </slot>
+          </td>
+        </tr>
+        </tbody>
+      </table>
   </div>
 </template>
 
@@ -129,7 +139,7 @@ const toggleAllSelection = (e) => {
 /* 가운데 정렬 */
 th,
 td {
-  text-align: center; /* 텍스트 가운데w 정렬 */
+  text-align: center; /* 텍스트 가운데 정렬 */
   vertical-align: middle; /* 세로 가운데 정렬 */
   font-size: 15px;
 }
