@@ -1,7 +1,7 @@
 <script setup>
 import SideMenuTree from "@/components/common/SideMenuTree.vue";
 import {ref} from "vue";
-import OrganizationTree from "@/components/common/OrganizationTree.vue";
+import NavigationBar from "@/components/common/NavigationBar.vue";
 
 // 사이드바 표시 상태 관리
 const isSidebarOpen = ref(false);
@@ -18,6 +18,7 @@ const hideSidebar = () => {
 </script>
 
 <template>
+  <NavigationBar/>
   <div class="app-container">
     <!-- 핫존 영역: 얇은 투명 영역으로 사용자가 마우스 올리면 사이드바가 열림 -->
     <div class="hotzone"
@@ -65,10 +66,10 @@ const hideSidebar = () => {
 /* 사이드바 기본 스타일 */
 .sidebar {
   position: fixed;
-  left: -310px; /* 기본적으로 화면 밖에 숨겨진 상태 */
+  left: -283px; /* 기본적으로 화면 밖에 숨겨진 상태 */
   top: 0;
   bottom: 0;
-  width: 310px;
+  width: 283px;
   transition: left 0.3s ease;
   overflow-x: hidden;
   overflow-y: auto; /* 스크롤이 필요할 때 스크롤바 표시 */

@@ -12,7 +12,7 @@ api.interceptors.request.use((config) => {
     console.log(`request interceptor 시작!`)
     const authStore = useAuthStore();
 
-    if(config.url.includes('hr/employees/reissue')){
+    if(config.url.includes('/reissue')){
         if(authStore.refreshToken){
             config.headers['Authorization'] = `${authStore.refreshToken}`;
         }
