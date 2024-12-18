@@ -67,7 +67,7 @@ defineProps({
 .table-container {
   border: 1px solid #AFA9A9; /* 바깥 테두리 색상 */
   border-radius: 10px;
-  height: 550px;
+  height: 500px;
   overflow: hidden; /* 테두리 안쪽 내용 잘림 방지 */
 }
 .table {
@@ -80,7 +80,7 @@ th,
 td {
   text-align: center; /* 텍스트 가운데w 정렬 */
   vertical-align: middle; /* 세로 가운데 정렬 */
-  font-size: 13px;
+  font-size: 15px;
 }
 th {
   color: #3C4651;
@@ -91,7 +91,7 @@ td {
   color: #3C4651;
 }
 tr {
-  height: 50px;       /* 각 셀(행)의 높이 고정 */
+  height: 45px;       /* 각 셀(행)의 높이 고정 */
   line-height: 20px;  /* 텍스트를 높이 중앙에 위치시키기 */
 }
 

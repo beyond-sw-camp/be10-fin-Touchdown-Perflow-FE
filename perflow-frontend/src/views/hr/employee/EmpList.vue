@@ -93,14 +93,16 @@ onMounted(() => {
         <span class="tab active">전체</span>
         <span class="tab">추가현황</span>
       </div>
-      <SearchBar @search="fetchEmpListByName"/>
+      <SearchBar @search="fetchEmpListByName"
+        height="40px" font-size="15px" placeholder="사원 이름을 입력해주세요."
+      />
     </div>
   </div>
 
   <!-- 표 사용 -->
   <div id="empList-div">
     <p id="total">{{pages.totalItems}}명</p>
-    <TableBasic :row-key="'id'" :rows="employees" :columns="columns" :pages="pages" />
+    <TableBasic :row-key="'id'" :rows="employees" :columns="columns"/>
     <paging-bar :page-size="pages.pageSize"
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"
@@ -121,7 +123,7 @@ onMounted(() => {
 }
 
 #title {
-  font-size: 40px;
+  font-size: 35px;
   font-weight: bold;
   color: #3C4651;
 }
@@ -130,7 +132,7 @@ onMounted(() => {
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */
   align-items: center; /* 가로 중앙 정렬 */
-  margin-top: 120px;
+  margin-top: 50px;
 }
 #header-top, #header-bottom {
   margin-bottom: 10px;
@@ -153,7 +155,7 @@ onMounted(() => {
 .tabs {
   display: flex;
   gap: 20px;
-  font-size: 25px;
+  font-size: 20px;
 }
 
 .tab {

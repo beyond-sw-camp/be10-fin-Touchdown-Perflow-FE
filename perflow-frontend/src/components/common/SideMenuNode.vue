@@ -56,12 +56,12 @@ const props = defineProps({
 }
 .menu-list {
   padding-left: 20px;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   background-color: white;
 }
 .menu-name {
-  width: 200px;
+  width: 180px;
   cursor: pointer;
 }
 .menu-header {

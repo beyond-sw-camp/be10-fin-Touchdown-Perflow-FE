@@ -9,11 +9,13 @@ import PayrollList from "@/views/payment/PayrollList.vue";
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
-     { path: '/login', name: 'Login', component: EmpLogin },
-     { path: '/hr/employees', name: 'EmpList', component: EmpList },
-     { path: '/approval/home', name: 'approvalHome', component: ApprovalHome },
-     { path: '/approval/create', name: 'newDoc', component: TemplateBasic },
-     { path: '/payment/payroll', name: 'Payroll', component: PayrollList },
+
+    {path: '/', name: 'mainPage', component: EmpLogin},
+    {path: '/login', name: 'Login', component: EmpLogin},
+    {path: '/hr/employees', name: 'EmpList', component: EmpList},
+    {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
+    {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
+    { path: '/payment/payroll', name: 'Payroll', component: PayrollList },
 
 
 ]
