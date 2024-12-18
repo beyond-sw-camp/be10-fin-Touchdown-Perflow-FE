@@ -1,8 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import EmpLogin from "@/views/hr/employee/EmpLogin.vue";
-import ApprovalHome from "@/views/ApprovalHome.vue";
-import newDoc from "@/views/newDoc.vue";
-import TemplateBasic from "@/views/TemplateBasic.vue";
 import WorkStatus from "@/views/Attitude/WorkStatus.vue";
 import WorkHours from "@/views/Attitude/WorkHours.vue";
 import Vacation from "@/views/Attitude/Vacation.vue";
@@ -10,6 +7,8 @@ import Annual from "@/views/Attitude/Annual.vue";
 import Overtime from "@/views/Attitude/Overtime.vue";
 import AttendanceStatus from "@/views/Attitude/AttendanceStatus.vue";
 import Travel from "@/views/Attitude/Travel.vue";
+import ApprovalHome from "@/views/approval/ApprovalHome.vue";
+import TemplateBasic from "@/views/approval/TemplateBasic.vue";
 import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
@@ -34,7 +33,7 @@ const routes = [
     {path:'/attitude/annual',name:'annual',component:Annual},
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
-    {path:'/attitude/attendance-status'
+    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus}
 
 ]
 
