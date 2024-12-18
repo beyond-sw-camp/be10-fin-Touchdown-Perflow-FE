@@ -1,0 +1,187 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import api from "@/config/axios.js";
+import { Line } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale } from 'chart.js';
+import Up from '../../assets/image/up.png';
+import Down from '../../assets/image/down.png';
+import Flat from '../../assets/image/flat.png';
+
+// Chart.js 구성 요소 등록
+ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale);
+
+// 3개월 급여 데이터 및 상태 관리
+const threeMonths = ref({ labels: [], values: [] });
+const growthRate = ref(0); // 증가율
+const recentMonth = ref(''); // 최근 달
+
+// 3개월 간 급여 데이터 정보를 가져오는 함수
+const fetchThreeMonth = async () => {
+  try {
+    const response = await api.get(`/hr/payrolls/chart/last-three-months`);
+    console.log(response.data); // API 응답 확인
+
+    const payrollChart = response.data;
+
+    if (payrollChart && Array.isArray(payrollChart)) {
+      // labels (월별 라벨)과 values (급여 금액) 설정
+      threeMonths.value.labels = payrollChart.map(item => {
+        // createDatetime에서 'MM'만 추출 (월)
+        return item.createDatetime.substring(5, 7);  // 'MM' 형식
+      });
+
+      console.log("labels : ", threeMonths.value.labels);
+
+      // 급여 금액을 values에 저장
+      threeMonths.value.values = payrollChart.map(item => item.totalAmount);
+
+      console.log("values : ",threeMonths.value.values);
+
+      // 최근 달 업데이트
+      recentMonth.value = threeMonths.value.labels[threeMonths.value.labels.length - 1];
+
+      // 증가율 계산 (전달 대비)
+      const [lastMonth, currentMonth] = threeMonths.value.values.slice(-2);
+      if (lastMonth && currentMonth) {
+        growthRate.value = Math.round(((currentMonth - lastMonth) / lastMonth) * 100);
+      }
+
+      // 차트 데이터 업데이트
+      chartData.value = {
+        labels: threeMonths.value.labels,
+        datasets: [
+          {
+            label: '총 급여',
+            data: threeMonths.value.values,
+            fill: false,
+            borderColor: '#42A5F5',
+            tension: 0.1
+          }
+        ]
+      };
+    } else {
+      console.error('API 응답 데이터 형식이 예상과 다릅니다.');
+    }
+  } catch (error) {
+    console.error('3개월 간 급여 데이터 정보를 불러오는 중 에러가 발생했습니다. : ', error);
+  }
+};
+
+// 컴포넌트가 마운트될 때 데이터 불러오기
+onMounted(() => fetchThreeMonth());
+
+// 차트 데이터 및 옵션 설정
+const chartData = ref({
+  labels: [],
+  datasets: [
+    {
+      label: '총 급여',
+      data: [],
+      fill: false,
+      borderColor: '#42A5F5',
+      tension: 0.1
+    }
+  ]
+});
+
+const chartOptions = ref({
+  responsive: true,
+  plugins: {
+    title: {
+      display: true,
+      text: '최근 3개월 급여 변화'
+    },
+    tooltip: {
+      callbacks: {
+        label: (tooltipItem) => `₩ ${tooltipItem.raw.toLocaleString()}`
+      }
+    }
+  },
+  scales: {
+    x: {
+      beginAtZero: true
+    },
+    y: {
+      beginAtZero: true
+    }
+  }
+});
+
+</script>
+
+<template>
+  <div>
+    <!-- 차트 제목 -->
+    <h2>최근 3개월 총 급여</h2>
+    <!-- 총 급여 변화율 -->
+    <div v-if="threeMonths.values.length" class="growth-container">
+      <span class="salary-label">{{ recentMonth }}월 총 급여</span>
+      <div
+          class="growth-rate"
+          :class="{
+          'growth-up': growthRate > 0,
+          'growth-down': growthRate < 0,
+          'growth-equal': growthRate === 0
+        }"
+      >
+        <!-- 증가율 이미지 조건부 표시 -->
+        <img
+            :src="growthRate > 0 ? Up : growthRate < 0 ? Down : Flat"
+            :alt="growthRate > 0 ? '증가' : growthRate < 0 ? '감소' : '변화 없음'"
+        />
+        <span>{{ growthRate }}%</span>
+        <span class="comparison-text">전달대비</span>
+      </div>
+    </div>
+
+    <!-- 차트 -->
+    <Line v-if="threeMonths.values.length" :data="chartData" :options="chartOptions"/>
+    <p v-else>데이터를 불러오는 중...</p>
+  </div>
+</template>
+
+<style scoped>
+.growth-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.salary-label {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.growth-rate {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+
+}
+
+.growth-rate img {
+  width: 20px;
+  height: 20px;
+  margin-right: 7px;
+}
+
+/* 증가율 색상 조건 */
+.growth-up {
+  color: #05A730; /* 초록색 */
+}
+
+.growth-down {
+  color: #FC0303; /* 빨간색 */
+}
+
+.growth-equal {
+  color: #afa9a9; /* 회색 */
+}
+
+.comparison-text {
+  margin-left: 7px;
+  color: inherit; /* 부모 색상 상속 */
+  font-size: 13px;
+}
+</style>
