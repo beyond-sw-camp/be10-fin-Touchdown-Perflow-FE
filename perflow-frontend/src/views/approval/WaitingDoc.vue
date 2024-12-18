@@ -2,8 +2,16 @@
 
 import ButtonBasic from '@/components/common/ButtonBasic.vue';
 import PagingBar from "@/components/common/PagingBar.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
+import TableBasic from "@/components/common/TableBasic.vue";
+
+const columns = [
+  // { label: "문서번호", field: "docId" },
+  { label: "제목", field: "title" },
+  { label: "작성자", field: "createUserName" },
+  { label: "작성일", field: "createDatetime" }
+];
 
 const waitingDocs = ref([]);    // 문서 목록
 const totalPages = ref(0);      // 전체 페이지 수
@@ -13,29 +21,34 @@ const pageSize = 10;            // 페이지당 문서 수
 
 // 대기 문서 목록 조회
 const fetchWaitingDocs = async (page = 1) => {
+  try {
 
-  const response = (await api.get("/approval/waiting-docs", {
-    params: {
-      page: page - 1, // Spring의 Pageable은 0부터 시작하므로 -1 처리
-      size: pageSize,
-    }
-  }));
+    const response = (await api.get("/approval/waiting-docs", {
+      params: {
+        page: page - 1, // Spring의 Pageable은 0부터 시작하므로 -1 처리
+        size: pageSize,
+      }
+    }));
+    // api response 에서 데이터 추출
+    waitingDocs.value = response.data.content;
+    totalPages.value = response.data.totalPages;
+    totalItems.value = response.data.totalElements;
+    currentPage.value = response.data.number + 1; // Vue는 1부터 시작
 
-  waitingDocs.value = response.data.content;
-  totalPages.value = response.data.totalPages;
-  totalItems.value = response.data.totalElements;
-  currentPage.value = response.data.number + 1; // Vue는 1부터 시작
+  } catch (error) {
+    console.error("대기 문서 목록 불러오기 실패", error);
+    waitingDocs.value = [];
+  }
 }
 
-// 페이지 변경
-const handlePageChange = (page) => {
-  fetchWaitingDocs(page);
-};
-
+onMounted(() => {
+  fetchWaitingDocs();
+});
 
 </script>
 
 <template>
+  <!-- 헤더 -->
   <div id="header-div">
     <div id="header-top" class="flex-between">
       <p id="title">대기 문서</p>
@@ -43,7 +56,7 @@ const handlePageChange = (page) => {
         color="orange"
         size="medium"
         label="검색하기"
-        @click=""
+        @click="fetchWaitingDocs(1)"
       />
     </div>
     <div id="header-bottom" class="flex-between">
@@ -53,9 +66,28 @@ const handlePageChange = (page) => {
     </div>
   </div>
 
-  <!-- 표 사용 -->
+  <!-- 테이블  -->
   <div id="waiting-doc-list">
+    <TableBasic
+        :columns="columns"
+        :rows="waitingDocs"
+        rowKey="docId"
+    >
+      <!-- 날짜 포맷팅 커스터마이징 -->
+      <template #createDatetime="{ value }">
+        {{ new Date(value).toLocaleString() }}
+      </template>
+    </TableBasic>
   </div>
+
+  <!-- 페이지네이션 -->
+  <PagingBar
+      :currentPage="currentPage"
+      :totalPages="totalPages"
+      :totalItems="totalItems"
+      :pageSize="pageSize"
+      @page-changed="fetchWaitingDocs"
+  />
 </template>
 
 <style scoped>
