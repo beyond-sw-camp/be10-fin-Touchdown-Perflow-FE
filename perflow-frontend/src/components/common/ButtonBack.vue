@@ -6,7 +6,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div id="back-button">
+  <div id="back-button" @click="goBack">
     뒤로가기
   </div>
 </template>
