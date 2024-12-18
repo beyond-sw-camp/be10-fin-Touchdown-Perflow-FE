@@ -3,7 +3,10 @@
 </script>
 
 <template>
-  <h1> 근무시간 페이지 입니다. </h1>
+  <div id="header-div">
+    <h1>근무 시간</h1>
+
+  </div>
 
 </template>
 

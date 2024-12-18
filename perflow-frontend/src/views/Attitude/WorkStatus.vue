@@ -1,12 +1,62 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import api from "@/config/axios.js";
+
+const attendanceData = ref([]); // 전체 근무 데이터
+const filteredData = ref([]); // 선택된 주차의 데이터
+const weeks = ref([]); // 주차 리스트
+const selectedWeek = ref(null); // 선택된 주차
+
+// API 요청 함수
+const fetchAttendanceData = async () => {
+  try {
+    const response = await api.get("/leader/attendance/summaries/weekly");
+    console.log(response.data);
+
+    attendanceData.value = response.data;
+
+    // period 값 추출 및 내림차순 정렬
+    const periods = response.data.map((item) => parseInt(item.period));
+    const uniquePeriods = [...new Set(periods)];
+    weeks.value = uniquePeriods.sort((a, b) => b - a); // 내림차순 정렬
+
+    // 기본 선택값: 가장 큰 주차
+    selectedWeek.value = weeks.value[0];
+    filterByWeek(selectedWeek.value); // 초기 데이터 필터링
+  } catch (error) {
+    console.error("API 호출 실패:", error);
+    alert("데이터를 불러오지 못했습니다.");
+  }
+};
+
+// 주차별 데이터 필터링
+const filterByWeek = (week) => {
+  filteredData.value = attendanceData.value.filter(
+      (item) => parseInt(item.period) === week
+  );
+};
+
+onMounted(() => {
+  fetchAttendanceData();
+});
+
+const formatWorkTime = (hours, minutes) => {
+  if (hours === undefined || minutes === undefined) return "미등록";
+  if (hours < 0) return "미등록"; // 음수 시간일 경우
+  return `${hours}시간 ${minutes}분`;
+};
+
+</script>
+
+
 <template>
-  <div class="work-time-container">
-    <!-- 상단 타이틀과 필터 -->
+  <div class="table-container">
     <div class="header">
       <h1>근무 현황</h1>
       <div class="filter-section">
         <!-- 주차 선택 드롭다운 -->
         <label>기간</label>
-        <select v-model="selectedWeek" @change="fetchAttendanceData">
+        <select v-model="selectedWeek" @change="filterByWeek(selectedWeek)">
           <option v-for="week in weeks" :key="week" :value="week">
             {{ week }}주차
           </option>
@@ -14,100 +64,58 @@
       </div>
     </div>
 
-    <!-- 근무 현황 테이블 -->
-    <div class="table-container">
-      <table>
-        <thead>
-        <tr>
-          <th>이름</th>
-          <th>부서</th>
-          <th>근무 시간</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(record, index) in attendanceData" :key="index">
-          <td>{{ record.name }}</td>
-          <td>{{ record.department }}</td>
-          <td>{{ record.workTime }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+    <table>
+      <thead>
+      <tr>
+        <th>이름</th>
+        <th>주차</th>
+        <th>근무 시간</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="(record, index) in filteredData" :key="index">
+        <td>{{ record.empName }}</td>
+        <td>{{ record.period }}</td>
+        <td>{{ formatWorkTime(record.totalHours, record.totalMinutes) }}</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-import api from "@/config/axios.js";
 
-// 드롭다운 주차 데이터
-const weeks = ref([1, 2, 3, 4, 5]); // 예제 주차 데이터
-const selectedWeek = ref(1); // 초기 선택값
 
-// 근무 시간 데이터
-const attendanceData = ref([]);
-
-// 근무 시간 데이터 조회 함수
-const fetchAttendanceData = async () => {
-  try {
-    const response = await api.get(`/api/v1/emp/attendance/summaries/weekly`, {
-      params: { week: selectedWeek.value },
-    });
-    attendanceData.value = response.data; // API 응답을 테이블에 바인딩
-  } catch (error) {
-    console.error("데이터 조회 실패", error);
-  }
-};
-
-onMounted(() => {
-  fetchAttendanceData(); // 컴포넌트 마운트 시 초기 데이터 조회
-});
-</script>
 
 <style scoped>
-.work-time-container {
-  width: 80%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-between; /* 양쪽 끝으로 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
   margin-bottom: 20px;
-}
-
-.header h1 {
-  font-size: 24px;
-  font-weight: bold;
 }
 
 .filter-section {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 10px; /* 라벨과 드롭다운 사이 여백 */
 }
 
-.filter-section label {
+h1 {
+  margin: 0; /* 기본 마진 제거 */
+  font-size: 24px; /* 글자 크기 조절 */
   font-weight: bold;
-}
-
-.filter-section select {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .table-container {
   width: 100%;
-  overflow-x: auto;
+  margin: 0 auto;
+  border-collapse: collapse;
+  text-align: center;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  text-align: center;
 }
 
 th, td {
@@ -127,4 +135,14 @@ tr:nth-child(even) {
 tr:hover {
   background-color: #f1f1f1;
 }
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#container-header, .container-item {
+  width: 900px;
+  margin-top: 20px;
+}
+
 </style>

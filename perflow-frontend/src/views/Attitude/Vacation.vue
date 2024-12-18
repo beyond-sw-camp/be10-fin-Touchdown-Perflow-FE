@@ -3,7 +3,10 @@
 </script>
 
 <template>
-  <h1> 휴가 페이지 입니다. </h1>
+  <div id="header-div">
+    <h1>휴가</h1>
+
+  </div>
 
 </template>
 
