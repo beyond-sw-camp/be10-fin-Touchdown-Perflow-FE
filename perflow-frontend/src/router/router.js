@@ -1,8 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import EmpLogin from "@/views/hr/employee/EmpLogin.vue";
-import ApprovalHome from "@/views/ApprovalHome.vue";
-import newDoc from "@/views/newDoc.vue";
-import TemplateBasic from "@/views/TemplateBasic.vue";
 import WorkStatus from "@/views/Attitude/WorkStatus.vue";
 import WorkHours from "@/views/Attitude/WorkHours.vue";
 import Vacation from "@/views/Attitude/Vacation.vue";
@@ -15,6 +12,7 @@ import TemplateBasic from "@/views/approval/TemplateBasic.vue";
 import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
+import PayrollList from "@/views/payment/PayrollList.vue";
 
 
 const routes = [
@@ -27,13 +25,7 @@ const routes = [
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
-    { path: '/login', name: 'Login', component: EmpLogin },
-    { path: '/hr/employees', name: 'EmpList', component: EmpList },
-    { path: '/approval/home', name: 'approvalHome', component: ApprovalHome },
-    { path: '/approval/create', name: 'newDoc', component: TemplateBasic },
-    { path: '/login', name: 'Login', component: EmpLogin },
-    { path: '/approval/home', name: 'approvalHome', component: ApprovalHome },
-    { path: '/approval/create', name: 'newDoc', component: TemplateBasic },
+    {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
     //근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
@@ -41,14 +33,7 @@ const routes = [
     {path:'/attitude/annual',name:'annual',component:Annual},
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
-    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
-
-
-
-
-
-
-
+    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus}
 
 ]
 
