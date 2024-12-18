@@ -23,6 +23,11 @@ export const useAuthStore = defineStore('auth', {
         },
         // 남은 시간 계산 및 실시간 업데이트
         startTimer() {
+
+            if(!this.isLogin){
+                return
+            }
+
             if (this.timerInterval) {
                 clearInterval(this.timerInterval); // 기존 타이머 초기화
             }
