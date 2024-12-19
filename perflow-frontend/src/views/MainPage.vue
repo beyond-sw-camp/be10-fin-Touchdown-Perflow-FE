@@ -19,6 +19,7 @@ const personalKPI = ref([]);
 const announcement = ref(null);
 const waitingApproval = ref(null);
 
+const waitingApprovalCount = ref(0);
 const empId = authStore.empId;
 
 // 사원 정보를 가져오는 함수
@@ -115,7 +116,9 @@ const fetchAnnouncement = async () => {
 const fetchWaitingApproval = async () => {
   try {
     const response = await api.get(`/approval/waiting-docs`);
-    waitingApproval.value = response.data;
+    waitingApproval.value = response.data.content;
+    // docId의 개수를 셈
+    waitingApprovalCount.value = waitingApproval.value.filter(doc => doc.docId).length;
   } catch (error) {
     console.error('대기 문서 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -331,7 +334,7 @@ onMounted(() => {
         <div class="waiting">
           <div class="stat-item-a" @click="goToWaiting">
             <h4>대기문서</h4>
-            <p>8</p>
+            <p>{{ waitingApprovalCount }}</p>
           </div>
           <div class="stat-item-b" @click="goToProcessed">
             <h4>처리문서</h4>
