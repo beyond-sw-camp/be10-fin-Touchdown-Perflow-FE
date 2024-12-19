@@ -2,7 +2,7 @@
 
 import ModifyInputFeild from "@/components/modifyer/ModifyInputFeild.vue";
 import {computed, reactive, ref} from "vue";
-import AddressInputFeild from "@/components/modifyer/AddressInputFeild.vue";
+import AddressInputFeild from "@/components/modifyer/AddressInputField.vue";
 import SubmitButton from "@/components/modifyer/SubmitButton.vue";
 import api from "@/config/axios.js";
 
