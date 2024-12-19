@@ -46,7 +46,10 @@ onMounted(() => {
       <!-- 데이터 표시 -->
       <div v-if="data.length > 0" class="box-content">
         <div class="approval-item" v-for="(item, index) in data" :key="index">
-          <span class="approval-type" :class="item.type">{{ item.type }}</span>
+          <span class="approval-type" :class="item.type || 'default-type'"
+          >
+            {{ item.type || '공유' }}
+          </span>
           <span class="approval-name">{{ item.name }}</span>
           <span class="approval-position">{{ item.position }}</span>
         </div>
@@ -161,5 +164,10 @@ onMounted(() => {
   color: #a0a0a0;
   font-size: 14px;
   text-align: center;
+}
+
+.approval-type.default-type {
+  background-color: #bd76f8; /* 회색 배경 */
+  color: white;
 }
 </style>
