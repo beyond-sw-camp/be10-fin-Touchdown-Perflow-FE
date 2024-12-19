@@ -1,7 +1,10 @@
 <script setup>
 
 import ModifyInputFeild from "@/components/modifyer/ModifyInputFeild.vue";
-import {ref} from "vue";
+import {computed, reactive, ref} from "vue";
+import AddressInputFeild from "@/components/modifyer/AddressInputFeild.vue";
+import SubmitButton from "@/components/modifyer/SubmitButton.vue";
+import api from "@/config/axios.js";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -14,7 +17,12 @@ const emit = defineEmits(['close-sidebar'])
 
 const email = ref("");
 const contact = ref("");
-const address = ref("");
+// 반응형 객체로 totalAddress 정의
+const address = reactive({
+});
+const updateAddress = (value) => {
+  address.value = value;
+}
 
 const updateEmail = (value) => {
   email.value = value;
@@ -22,10 +30,21 @@ const updateEmail = (value) => {
 const updateContact = (value) => {
   contact.value = value;
 }
-const updateAddress = (value) => {
-  address.value = value;
-}
+const updateEmployee = async () => {
+  const totalAddress = address.value.postcode + " " + address.value.roadAddress + " " + address.value.extraAddress
+  try {
+    await api.put("/employees",{
+      address: totalAddress,
+      email: email.value,
+      contact: contact.value
+    });
+    alert("정보 수정 성공!.")
+    location.reload(true);
+  } catch (error) {
+    alert("정보 수정중 오류가 발생했습니다.")
+  }
 
+}
 
 function closeSidebar() {
   emit('close-sidebar')
@@ -41,6 +60,8 @@ function closeSidebar() {
   <div id="modify-contents">
     <ModifyInputFeild title="연락처" @update-value="updateContact"/>
     <ModifyInputFeild title="이메일" @update-value="updateEmail"/>
+    <AddressInputFeild @update-value="updateAddress"/>
+    <SubmitButton @submit="updateEmployee"/>
   </div>
 </div>
 </template>
