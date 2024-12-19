@@ -21,14 +21,16 @@ function onInputChange(event) {
 <template>
   <div id="input-container">
     <p id="title">{{props.title}}</p>
-    <input class="input-text" type="text"
+    <input class="input-text" type="text" id="front"
            @input="onInputChange"
            :placeholder=props.placeholder1
+           maxlength="6"
     >
     <p id="rrn-dash">-</p>
-    <input class="input-text" type="password"
+    <input class="input-text" type="password" id="back"
            @input="onInputChange"
            :placeholder=props.placeholder2
+           maxlength="7"
     >
   </div>
 </template>
