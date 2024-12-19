@@ -124,7 +124,7 @@ const goToKPI = () => {
 };
 
 const goToAnnouncement = () => {
-  router.push(``)
+  router.push(`/announcements`)
 };
 
 const goToApproval = () => {
