@@ -182,7 +182,23 @@ const createNewDoc = async () => {
 </script>
 
 <template>
+
+  <!-- 헤더 -->
+  <div id="header-div">
+    <div id="header-top" class="flex-between">
+      <p id="title">문서 작성하기</p>
+    </div>
+    <div id="header-bottom" class="flex-between">
+      <div class="tabs">
+        <h1>header bottom 영역 - 검색 바 여기에 추가 </h1>
+      </div>
+    </div>
+  </div>
+
   <div class="main-container">
+    <!-- 빈 컨테이너 -->
+    <div class="empty-container"></div>
+
     <div class="form-container">
       <!-- 제목 -->
       <InputField
@@ -252,30 +268,59 @@ const createNewDoc = async () => {
             <!-- 결재 버튼 그룹 -->
             <div class="modal-box center">
               <div class="button-group">
-                <ButtonBasic
-                    label="동의"
-                    color="white"
-                    size="medium"
-                    @click="addToApprovalList('동의')"
-                />
-                <ButtonBasic
-                    label="참조"
-                    color="white"
-                    size="medium"
-                    @click="addToApprovalList('참조')"
-                />
-                <ButtonBasic
-                    label="합의"
-                    color="white"
-                    size="medium"
-                    @click="addToApprovalList('합의')"
-                />
-                <ButtonBasic
-                    label="병렬합의"
-                    color="white"
-                    size="medium"
-                    @click="addToApprovalList('병렬합의')"
-                />
+                <button class="custom-button">
+                  <span>동의</span>
+                  <img src="@/assets/icons/arrow_forward_slim.png" alt="arrow" class="arrow-icon" />
+                </button>
+                <button class="custom-button">
+                  <span>합의</span>
+                  <img src="@/assets/icons/arrow_forward_slim.png" alt="arrow" class="arrow-icon" />
+                </button>
+                <button class="custom-button">
+                  <span>참조</span>
+                  <img src="@/assets/icons/arrow_forward_slim.png" alt="arrow" class="arrow-icon" />
+                </button>
+                <button class="custom-button">
+                  <span>병렬</span>
+                  <img src="@/assets/icons/arrow_forward_slim.png" alt="arrow" class="arrow-icon" />
+                </button>
+                <button class="custom-button">
+                  <span>병렬합의</span>
+                  <img src="@/assets/icons/arrow_forward_slim.png" alt="arrow" class="arrow-icon" />
+                </button>
+
+
+<!--                <ButtonBasic-->
+<!--                    label="동의"-->
+<!--                    color="white"-->
+<!--                    size="medium"-->
+<!--                    @click="addToApprovalList('동의')"-->
+<!--                />-->
+
+<!--                <ButtonBasic-->
+<!--                    label="참조"-->
+<!--                    color="white"-->
+<!--                    size="medium"-->
+<!--                    @click="addToApprovalList('참조')"-->
+<!--                />-->
+<!--                <ButtonBasic-->
+<!--                    label="합의"-->
+<!--                    color="white"-->
+<!--                    size="medium"-->
+<!--                    @click="addToApprovalList('합의')"-->
+<!--                />-->
+<!--                <ButtonBasic-->
+<!--                    label="병렬"-->
+<!--                    color="white"-->
+<!--                    size="medium"-->
+<!--                    @click="addToApprovalList('병렬')"-->
+<!--                />-->
+<!--                <ButtonBasic-->
+<!--                    label="병렬합의"-->
+<!--                    color="white"-->
+<!--                    size="medium"-->
+<!--                    @click="addToApprovalList('병렬합의')"-->
+<!--                />-->
               </div>
             </div>
 
@@ -396,34 +441,57 @@ const createNewDoc = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 100px;
-  height: 100vh;
+  gap: 20px;  /* form-container, box-container 사이 간격*/
+  /* height: 100vh; */
+}
+
+.empty-container {
+  flex: 0.3;
+  max-width: 300px;
 }
 
 .form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 400px;
+  flex: 1;
+  max-width: 600px;
 }
 
 .box-container {
+  flex: 0.3;
+  max-width: 300px;
+}
+
+.modal-layout {
+  display: flex;
+  gap: 10px;
+  height: 100%;
+}
+.modal-box.center {
+  flex: 0.3;
+  height: 100%; /* 자식 요소도 부모 높이에 맞춤 */
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+}
+
+.modal-box.left,
+.modal-box.right {
+  flex: 1;
 }
 
 .button-group {
   display: flex;
-  flex-direction: column; /* 버튼 위아래 정렬 */
+  flex-direction: column; /* 버튼 세로 정렬 */
   gap: 10px; /* 버튼 간 간격 */
+  justify-content: center;  /* 버튼 중앙 정렬 */
   align-items: center; /* 중앙 정렬 */
 }
 
 /* 모달 내부 레이아웃 */
 .modal-layout {
   display: flex;
+  flex-direction: row;
   gap: 10px;
   height: 300px;
 }
@@ -435,16 +503,6 @@ const createNewDoc = async () => {
   border-radius: 8px;
   padding: 16px;
   overflow-y: auto;
-}
-
-.left {
-  border-right: 1px solid #ccc;
-}
-
-.center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .approval-table {
@@ -469,6 +527,7 @@ const createNewDoc = async () => {
   background-color: #f0f0f0; /* 클릭 시 회색 배경 적용 */
   cursor: pointer;
 }
+
 .share-table {
   width: 100%;
   border-collapse: collapse;
@@ -477,7 +536,7 @@ const createNewDoc = async () => {
 
 .share-table th,
 .share-table td {
-  border: 1px solid #ddd;
+  border-top: 1px solid #ddd; /* 가로선만 */
   text-align: center;
   padding: 8px;
 }
@@ -485,6 +544,62 @@ const createNewDoc = async () => {
 .share-table th {
   background-color: #f4f4f4;
   font-weight: bold;
+}
+
+#title {
+  font-size: 40px;
+  font-weight: bold;
+  color: #3C4651;
+}
+#header-div {
+  display: flex;
+  flex-direction: column; /* 세로 방향으로 정렬 */
+  justify-content: center; /* 세로 중앙 정렬 */
+  align-items: center; /* 가로 중앙 정렬 */
+  margin-top: 120px;
+}
+#header-top, #header-bottom {
+  margin-bottom: 10px;
+  width: 900px;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 결재선 모달 창 버튼 */
+
+.custom-button {
+  display: flex;
+  justify-content: space-between; /* 버튼 내부 요소 간격 분리 */
+  align-items: center; /* 버튼 높이 정렬 */
+  padding: 5px 13px; /* 버튼 내부 여백 */
+  width: 100px; /* 버튼의 고정 너비 */
+  height: 40px; /* 버튼 높이 */
+  background-color: white; /* 버튼 배경색 */
+  color: #3C4651; /* 버튼 텍스트 색상 */
+  border: 1px solid #ddd; /* 버튼 테두리 */
+  border-radius: 8px; /* 버튼 모서리 둥글기 */
+  font-size: 14px; /* 텍스트 크기 */
+  font-weight: 500; /* 텍스트 두께 */
+  cursor: pointer; /* 커서 포인터 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 버튼 그림자 */
+}
+
+.custom-button:hover {
+  background-color: #f9f9f9; /* 호버 시 배경색 */
+}
+
+.custom-button:active {
+  background-color: #eee; /* 클릭 시 배경색 */
+}
+
+.arrow-icon {
+  width: 12px; /* 아이콘 너비 */
+  height: auto; /* 아이콘 비율 유지 */
+  margin-left: 5px; /* 텍스트와 아이콘 사이 간격 */
 }
 
 </style>
