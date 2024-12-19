@@ -117,11 +117,13 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background-color: #f4f4f4;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
+  padding: 8px 12px;  /* 내부 여백 */
+  border-radius: 10px;
+  background-color: #ffffff;
+  border: 0.5px solid #D9D9D9;
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+  font-size: 13px;
+  width: 160px;
 }
 
 .approval-type {
