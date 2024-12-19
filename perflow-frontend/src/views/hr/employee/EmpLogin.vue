@@ -32,11 +32,11 @@ const login = async () => {
     <p class="title">Perflow 로그인</p>
     <div class="input-group">
       <span class="input-title">사번</span><br>
-      <input type="text" id="id-input" v-model="empId">
+      <input type="text" id="id-input" v-model="empId" @keyup.enter="login">
     </div>
     <div class="input-group">
       <span class="input-title">비밀번호</span><br>
-      <input type="password" id="password-input" v-model="password">
+      <input type="password" id="password-input" v-model="password" @keyup.enter="login">
     </div>
     <button @click="login" class="login-button">로그인</button>
   </article>

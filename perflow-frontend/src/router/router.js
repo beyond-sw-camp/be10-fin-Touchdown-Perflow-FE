@@ -1,8 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import EmpLogin from "@/views/hr/employee/EmpLogin.vue";
-
 import WorkStatus from "@/views/Attitude/WorkStatusForHRWeek.vue";
-
 import WorkHours from "@/views/Attitude/WorkHours.vue";
 import Vacation from "@/views/Attitude/Vacation.vue";
 import Annual from "@/views/Attitude/Annual.vue";
@@ -17,14 +15,17 @@ import PersonalKPIView from "@/views/performance/PersonalKPIView.vue";
 import TeamKPIView from "@/views/performance/TeamKPIView.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 import PayrollList from "@/views/payment/PayrollList.vue";
+import EmpMyPage from "@/views/hr/employee/EmpMyPage.vue";
 import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
+
     {path: '/', name: 'mainPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
+    {path: '/hr/myPage', name: 'myPage', component: EmpMyPage},
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register/lists', name: 'EmpListRegister', component: EmpListRegister},
@@ -46,14 +47,6 @@ const routes = [
     {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
-    //근태
-    {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
-    {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
-    {path:'/attitude/vacation',name:'vacation',component:Vacation},
-    {path:'/attitude/annual',name:'annual',component:Annual},
-    {path:'/attitude/overtime',name:'overtime',component:Overtime},
-    {path:'/attitude/travel',name:'travel',component:Travel},
-    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
     {path:'/announcements', name: 'announcements-list', component: AnnList}
 
 ]

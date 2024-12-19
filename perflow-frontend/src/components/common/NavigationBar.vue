@@ -3,6 +3,7 @@ import {computed, onMounted, ref} from "vue";
 import {useAuthStore} from "@/store/authStore.js";
 import {useStore} from "@/store/store.js";
 import api from "@/config/axios.js";
+import router from "@/router/router.js";
 
 const authStore = useAuthStore();
 const store = useStore();
@@ -47,6 +48,10 @@ const logout = async () => {
   authStore.logout();
 }
 
+const goTo = (url) => {
+  router.push(url);
+}
+
 onMounted(()=> {
   fetchTimer();
 });
@@ -64,6 +69,7 @@ onMounted(()=> {
       <div
           class="user-icon"
           :style="{ backgroundColor: bgColor }"
+          @click="goTo('/hr/myPage')"
       >
         {{ initial }}
       </div>
@@ -128,6 +134,7 @@ onMounted(()=> {
   color: #fff;       /* 텍스트 색상 */
   font-weight: bold; /* 문자 강조 */
   border-radius: 4px;/* 모서리를 약간 둥글게 */
+  cursor: pointer;
 }
 #logout-image {
   width: 30px;
