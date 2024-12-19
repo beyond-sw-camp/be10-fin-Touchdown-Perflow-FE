@@ -6,19 +6,38 @@ import OrganizationSelectedEmp from "@/components/common/OrganizationSelectedEmp
 
 const store = useStore();
 
+const props = defineProps({
+  context: {
+    type: String,
+    required: true  // approval or share 값 받기
+  }
+})
+
 // 선택된 사원 목록
 const selectedEmployees = ref([]);
 
-const emit = defineEmits(["update:selectedEmployees"]);
+const emit = defineEmits(["update:selectedApprovalEmployees", "update:selectedShareEmployees"]);
 
-// OrganizationSelectedEmp에서 선택된 사원을 받음
+// organizationtree 에서 선택된 사원 받기
 const handleSelectedEmployees = (employees) => {
-  selectedEmployees.value = employees;
-  emit("update:selectedEmployees", employees); // 부모로 이벤트 전달
+  console.log(`[OrganizationTree] handleSelectedEmployees 호출. 선택된 사원 목록:`, employees);
+
+  // selectedEmployees.value = employees;
+
+  if (props.context === "approval") {
+    console.log(`[OrganizationTree] 결재선 설정 이벤트 emit`);
+    emit("update:selectedApprovalEmployees", employees); // 결재선 설정 이벤트
+  } else if (props.context === "share") {
+    console.log(`[OrganizationTree] 공유 설정 이벤트 emit: `, employees);
+    emit("update:selectedShareEmployees", employees); // 공유 설정 이벤트
+  }
 };
 
+
 onMounted(async () => {
+  console.log(`[OrganizationTree] onMounted 호출 - 조직도 데이터 로딩`);
   await store.fetchOrg(); // Pinia를 통해 데이터를 가져옵니다.
+  console.log(`[OrganizationTree] 조직도 데이터 로딩 완료`);
 });
 
 </script>
@@ -39,7 +58,13 @@ onMounted(async () => {
 
     <!-- 사원 목록 -->
     <div class="box right">
-      <OrganizationSelectedEmp @update:selectedEmployees="handleSelectedEmployees" />
+<!--      <OrganizationSelectedEmp context="approval" @update:selectedEmployees="handleSelectedEmployees" />-->
+      <OrganizationSelectedEmp
+          :context="props.context"
+          @update:selectedApprovalEmployees="handleSelectedEmployees"
+          @update:selectedShareEmployees="handleSelectedEmployees"
+      />
+
     </div>
 
   </div>

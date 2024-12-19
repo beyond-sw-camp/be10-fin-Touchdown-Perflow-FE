@@ -3,29 +3,57 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import InputField from "@/components/common/InputField.vue";
 import ApprovalShareBox from "@/components/common/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
-import { ref } from "vue";
+import {ref} from "vue";
 import OrganizationTree from "@/components/common/OrganizationTree.vue";
 import draggable from "vuedraggable";
 
-// 모달 상태
-const isModalOpen = ref(false);
-const selectedEmployees = ref([]); // 체크된 사원 목록
+const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
+const selectedShareEmployees = ref([]); // 체크된 사원 목록
+
 const approvalList = ref([]); // 결재 목록
-const approvalShareData = ref([]);  // approvalShareBox 에 전달할 데이터
+const approvalData = ref([]);  // approvalShareBox 에 전달할 데이터
+
+const shareList = ref([]);  // 공유 목록
+const shareData = ref([]);  // 모달에서 선택한, approvalShareBox 에 전달할 데이터
+
+
+// 모달 상태
+const isApprovalModalOpen = ref(false);
+const isShareModalOpen = ref(false);  // 공유 모달 상태
 
 // 모달 열기/닫기
-const openModal = () => (isModalOpen.value = true);
-const closeModal = () => (isModalOpen.value = false);
+const openApprovalModal = () => (isApprovalModalOpen.value = true);
+const closeApprovalModal = () => (isApprovalModalOpen.value = false);
+
+const openShareModal = () => (isShareModalOpen.value = true);
+const closeShareModal = () => (isShareModalOpen.value = false);
 
 // 설정 저장
-const saveSettings = () => {
-  alert("설정이 저장되었습니다!");
-  closeModal();
+const saveApprovalSettings = () => {
+  approvalData.value = [...approvalList.value];
+  console.log("결재선 설정 저장: approvalData: ", approvalData.value);
+  closeApprovalModal();
 };
 
-const saveApprovalList = () => {
-  approvalShareData.value = [...approvalList.value];  // 결재선 데이터 업데이트
-  closeModal();
+const saveShareSettings = () => {
+  shareData.value = [...shareList.value]; // 선택된 공유 데이터
+  console.log("공유 설정 저장 - shareData: ", shareData.value);
+  closeShareModal();
+}
+
+// 조직도에서 선택된 사원 업데이트
+const updateApprovalSelectedEmployees = (employees) => {
+  console.log("updateApprovalSelectedEmployees 호출");
+  console.log("조직도에서 선택된 결재선 사원 목록: ", employees);
+  selectedApprovalEmployees.value = employees;
+  console.log("업데이트 된 selectedApprovalEmployees: ", selectedApprovalEmployees.value);
+};
+
+const updateShareSelectedEmployees = (employees) => {
+  console.log("선택된 공유 사원 목록: ", employees);
+  selectedShareEmployees.value = employees;
+  shareData.value = employees;  // 공유 리스트 업데이트
+  console.log("업데이트 된 shareData: ", shareData.value);
 }
 
 const selectedRows = ref(new Set());
@@ -47,23 +75,31 @@ const deleteSelectedRows = () => {
   selectedRows.value.clear(); // 선택 목록 초기화
 };
 
-
-// 사원 업데이트 이벤트 핸들러
-const updateSelectedEmployees = (employees) => {
-  console.log("선택된 사원 목록: ", selectedEmployees);
-  selectedEmployees.value = employees;
-};
-
 // 버튼 클릭 시 결재 순서에 추가
 const addToApprovalList = (type) => {
-  const newApprovals = selectedEmployees.value.map((emp) => ({
+  console.log("addToApprovalList 메소드 호출");
+  const newApprovals = selectedApprovalEmployees.value.map((emp) => ({
     type, // 결재 방식
     name: emp.name, // 사원 이름
     position: emp.position, // 직위
   }));
   approvalList.value.push(...newApprovals);
-  selectedEmployees.value = []; // 선택된 사원 목록 초기화
+  console.log("결재선 추가 - 업데이트 된 approvalList: ", approvalList.value);
+  selectedApprovalEmployees.value = []; // 선택 목록 초기화
 };
+
+const addToShareList = () => {
+  console.log("addToShareList 메소드 호출");
+  const newShares = selectedShareEmployees.value.map((emp) => ({
+    empId: emp.empId,
+    name: emp.name,
+    position: emp.position,
+  }));
+  shareList.value.push(...newShares);
+  console.log("공유 추가 - 업데이트 된 shareList: ", shareList.value);
+  selectedShareEmployees.value = []; // 선택 목록 초기화
+};
+
 </script>
 
 <template>
@@ -92,13 +128,13 @@ const addToApprovalList = (type) => {
             color="gray"
             size="medium"
             label="취소하기"
-            @click="closeModal"
+            @click="closeApprovalModal"
         />
         <ButtonBasic
             color="orange"
             size="medium"
             label="상신하기"
-            @click="saveSettings"
+            @click="saveApprovalSettings"
         />
       </div>
     </div>
@@ -107,25 +143,28 @@ const addToApprovalList = (type) => {
     <div class="box-container">
       <ApprovalShareBox
           title="결재선"
-          :placeholder="approvalShareData.length ? '' : '결재선이 없습니다.'"
-          :data="approvalShareData"
-          @onSettingsClick="openModal"
+          :placeholder="approvalData.length ? '' : '결재선이 없습니다.'"
+          :data="approvalData"
+          @onSettingsClick="openApprovalModal"
       />
 
       <!-- 모달 창 -->
       <ModalBasic
-          :isOpen="isModalOpen"
+          :isOpen="isApprovalModalOpen"
           title="결재선 설정"
           width="1000px"
-          :button1="{ label: '닫기', color: 'gray', onClick: closeModal }"
-          :button2="{ label: '저장하기', color: 'orange', onClick: saveApprovalList }"
-          @close="closeModal"
+          :button1="{ label: '닫기', color: 'gray', onClick: closeApprovalModal }"
+          :button2="{ label: '저장하기', color: 'orange', onClick: saveApprovalSettings }"
+          @close="closeApprovalModal"
       >
         <template #default>
           <div class="modal-layout">
             <!-- 조직도 트리 -->
             <div class="modal-box left">
-              <OrganizationTree @update:selectedEmployees="updateSelectedEmployees" />
+              <OrganizationTree
+                  context="approval"
+                  @update:selectedApprovalEmployees="updateApprovalSelectedEmployees"
+              />
             </div>
 
             <!-- 결재 버튼 그룹 -->
@@ -205,9 +244,47 @@ const addToApprovalList = (type) => {
       <!-- 공유 -->
       <ApprovalShareBox
           title="공유"
-          placeholder="공유처가 없습니다."
-          @onSettingsClick="() => handleSettingsClick('공유')"
+          :placeholder="shareList.length ? '' : '공유처가 없습니다.'"
+          :data="shareList"
+          @onSettingsClick="openShareModal"
       />
+
+      <ModalBasic
+          :isOpen="isShareModalOpen"
+          title="공유 설정"
+          width="800px"
+          :button1="{ label: '닫기', color: 'gray', onClick: closeShareModal }"
+          :button2="{ label: '저장하기', color: 'orange', onClick: saveShareSettings }"
+          @close="closeShareModal"
+      >
+        <template #default>
+          <div class="modal-layout">
+            <!-- 조직도 트리 -->
+            <div class="modal-box left">
+              <OrganizationTree
+                  context="share"
+                  @update:selectedShareEmployees="updateShareSelectedEmployees"
+              />
+              <ButtonBasic
+                  label="추가"
+                  color="white"
+                  size="medium"
+                  @click="addToShareList"
+              />
+            </div>
+
+            <!-- 공유 목록 -->
+            <div class="modal-box right">
+              <h3>공유 리스트</h3>
+              <ul>
+                <li v-for="emp in shareData.value" :key="emp.empId">
+                  {{ emp.name }} - {{ emp.position }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </template>
+      </ModalBasic>
     </div>
   </div>
 </template>
@@ -238,8 +315,8 @@ const addToApprovalList = (type) => {
 .button-group {
   display: flex;
   flex-direction: column; /* 버튼 위아래 정렬 */
-  gap: 10px;  /* 버튼 간 간격 */
-  align-items: center;  /* 중앙 정렬 */
+  gap: 10px; /* 버튼 간 간격 */
+  align-items: center; /* 중앙 정렬 */
 }
 
 /* 모달 내부 레이아웃 */
@@ -270,7 +347,7 @@ const addToApprovalList = (type) => {
 
 .approval-table {
   width: 100%;
-  border-collapse: collapse;  /* 테두리 겹치기 */
+  border-collapse: collapse; /* 테두리 겹치기 */
 }
 
 .approval-table th,
