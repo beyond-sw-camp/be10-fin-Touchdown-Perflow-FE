@@ -17,6 +17,7 @@ import PersonalKPIView from "@/views/performance/PersonalKPIView.vue";
 import TeamKPIView from "@/views/performance/TeamKPIView.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 import PayrollList from "@/views/payment/PayrollList.vue";
+import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 
 
@@ -52,7 +53,8 @@ const routes = [
     {path:'/attitude/annual',name:'annual',component:Annual},
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
-    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus}
+    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
+    {path:'/announcements', name: 'announcements-list', component: AnnList}
 
 ]
 
