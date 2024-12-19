@@ -9,7 +9,7 @@ import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
 import ThreeYearChart from "@/views/payment/ThreeYearChart.vue";
 import FileUpload from "@/components/common/FileUpload.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
-import VTooltip from "v-tooltip";
+import ToolTip from "@/components/common/ToolTip.vue";
 
 const state = reactive({
   payrolls: [],
@@ -93,15 +93,9 @@ const menuItem = [
 const tooltipVisible = ref(false);
 const tooltipText = "금액을 입력하거나 수정하려면 엑셀 파일을 1. 다운로드 받고 양식에 맞게 값을 입력한 후, 2. 업로드 해주세요.";
 
-const showTooltip = () => {
-  tooltipVisible.value = true;
-  console.log('Tooltip visible show:', tooltipVisible.value);  // 확인용
-};
-
-const hideTooltip = () => {
-  tooltipVisible.value = false;
-  console.log('Tooltip visible hide:', tooltipVisible.value);  // 확인용
-};
+// 툴팁 위치와 크기 설정
+const tooltipPosition = { bottom: "45px", left: "89.5%" };
+const tooltipWidth = "190px";
 
 // 파일 업로드 핸들러
 const handleFileUpload = async () => {
@@ -169,15 +163,19 @@ onMounted(() => {
         </div>
       </div>
       <hr>
-      <div class="excel" @mouseenter="showTooltip" @mouseleave="hideTooltip">
-        <div @mouseenter="showTooltip" @mouseleave="hideTooltip">
+      <div class="excel">
+        <div @mouseenter="tooltipVisible=true" @mouseleave="tooltipVisible=false">
           <ExcelDropDown
               buttonName="엑셀"
               :menuItems="menuItem"
           />
-          <div v-if="tooltipVisible" class="excel-tooltip">
-            {{ tooltipText }}
-          </div>
+          <!-- 툴팁 -->
+          <ToolTip
+              :text="tooltipText"
+              :visible.sync="tooltipVisible"
+              :position="tooltipPosition"
+              :width="tooltipWidth"
+          />
         </div>
       </div>
       <div class="table">
@@ -215,7 +213,7 @@ onMounted(() => {
         />
         <div style="margin-left: 10px"/>
         <ButtonBasic
-            color="gary"
+            color="gray"
             size="medium"
             label="취소"
             @click="handleCancel"
