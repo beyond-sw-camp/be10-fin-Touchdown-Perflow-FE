@@ -2,12 +2,12 @@
 import {ref, onMounted, computed } from "vue";
 import api from "@/config/axios.js";
 import { useRouter } from "vue-router";
-import On from '../assets/image/work_on.png';
-import Off from '../assets/image/work_off.png';
 import MainPageButton from "@/components/common/MainPageButton.vue";
 import TableMini from "@/components/common/TableMini.vue";
+import { useAuthStore } from "@/store/authStore.js";
 
 const router = useRouter();
+const authStore = useAuthStore();
 const employee = ref(null);
 const commute = ref(null);
 const attendance = ref(null);
@@ -18,6 +18,8 @@ const teamKPI = ref([]);
 const personalKPI = ref([]);
 const announcement = ref(null);
 const waitingApproval = ref(null);
+
+const empId = authStore.empId;
 
 // 사원 정보를 가져오는 함수
 const fetchEmp = async () => {
@@ -82,7 +84,7 @@ const fetchVacation = async () => {
 // 팀 kpi 정보를 가져오는 함수
 const fetchTeamKPI = async () => {
   try {
-    const response = await api.get(`/perfomances/kpi/team/${empId}`);
+    const response = await api.get(`/leader/perfomances/kpi/team/${empId}`);
     teamKPI.value = response.data.kpiLists;
   } catch (error) {
     console.error('팀 kpi 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -92,7 +94,7 @@ const fetchTeamKPI = async () => {
 // 개인 kpi 정보를 가져오는 함수
 const fetchPersonalKPI = async () => {
   try {
-    const response = await api.get(`/perfomances/kpi/personal/${empId}`);
+    const response = await api.get(`perfomances/kpi/personal/${empId}`);
     personalKPI.value = response.data.kpiLists;
   } catch (error) {
     console.error('개인 kpi 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -143,11 +145,9 @@ const kpiRows = computed(() => {
   // 팀 데이터와 개인 데이터를 합쳐서 하나의 배열로 반환
   const allData = [...teamKPI.value, ...personalKPI.value];
 
-  return allData.map((item) => {
-    // 진척도 계산 (currentValue / goalValue * 100)
+  // 진척도 계산 및 데이터 생성
+  const mappedData = allData.map((item) => {
     const progress = item.goalValue > 0 ? (item.currentValue / item.goalValue) * 100 : 0;
-
-    //동적으로 구분(Category) 값 설정: 팀인지, 개인인지 구분
     const category = item.personalType === "TEAM" ? "팀" : "개인";
 
     return {
@@ -155,8 +155,19 @@ const kpiRows = computed(() => {
       goal: item.goal,
       targetValue: `${item.goalValue}${item.goalValueUnit}`,
       progress: `${Math.round(progress)}%`,
+    };
+  });
+
+  // '팀' 데이터가 위로 오도록 정렬
+  return mappedData.sort((a, b) => {
+    if (a.category === "팀" && b.category !== "팀") {
+      return -1; // '팀'이 우선
     }
-  })
+    if (a.category !== "팀" && b.category === "팀") {
+      return 1; // '개인'이 나중
+    }
+    return 0; // 순서 유지
+  });
 });
 
 const kpiColumns = [
