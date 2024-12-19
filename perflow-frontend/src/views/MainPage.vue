@@ -105,7 +105,7 @@ const fetchPersonalKPI = async () => {
 const fetchAnnouncement = async () => {
   try {
     const response = await api.get(`/announcements`);
-    announcement.value = response.data;
+    announcement.value = response.data.content;
   } catch (error) {
     console.error('공지사항 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -183,18 +183,18 @@ const annRows = computed(() => {
     ...item,
     title: truncateTitle(item.title),
     createDatetime: formatDate(item.createDatetime),
-  }));
+  }))
+      .sort((a, b) => new Date(b.createDatetime) - new Date(a.createDatetime)); // 작성일 기준 최신순 정렬
 });
 
 // title이 10자 이상일 경우 ... 추가하는 함수
 const truncateTitle = (title) => {
-  return title.length > 8 ? title.substring(0, 10) + '...' : title;
+  return title.length > 8 ? title.substring(0, 8) + '...' : title;
 };
 
 // 날짜 포맷팅 함수
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('ko-KR'); // 한국어 형식 (YYYY-MM-DD)
+  return `${dateString.slice(0, 4)}.${dateString.slice(5, 7)}.${dateString.slice(8, 10)}`;
 };
 
 const annColumns = [
