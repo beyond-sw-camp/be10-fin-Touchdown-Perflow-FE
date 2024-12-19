@@ -182,6 +182,7 @@ table{
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  width: 90%;
 }
 
 .filter-section {
@@ -200,9 +201,9 @@ button {
 }
 
 button.active {
-  background-color: #007bff;
+  background-color: #D9D9D9;
   color: white;
-  border-color: #007bff;
+  border-color: #D9D9D9;
 }
 
 h1 {
@@ -218,8 +219,7 @@ h1 {
   overflow-x: auto;
 }
 
-th,
-td {
+th, td {
   text-align: center;
   vertical-align: middle;
   font-size: 15px;
