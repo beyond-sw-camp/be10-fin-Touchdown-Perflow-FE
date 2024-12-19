@@ -13,6 +13,7 @@ import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 import PayrollList from "@/views/payment/PayrollList.vue";
+import MainPage from "@/views/MainPage.vue";
 
 
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
+    {path: '/main-page', name: 'MainPage', component: MainPage},
     //근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
