@@ -1,15 +1,15 @@
 <script setup>
-import {ref, onMounted, computed } from "vue";
+import {computed, onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import { useRouter } from "vue-router";
-import MainPageButton from "@/components/common/MainPageButton.vue";
+import {useRouter} from "vue-router";
+import On from "../assets/image/work_on.png";
+import Off from "../assets/image/work_off.png";
 import TableMini from "@/components/common/TableMini.vue";
-import { useAuthStore } from "@/store/authStore.js";
+import {useAuthStore} from "@/store/authStore.js";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const employee = ref(null);
-const commute = ref(null);
 const attendance = ref(null);
 const annual = ref(null);
 const company = ref(null);
@@ -22,6 +22,10 @@ const waitingApproval = ref(null);
 // 급여일까지 남은 일수를 저장할 변수
 const diffDays = ref(0);
 const waitingApprovalCount = ref(0);
+const commuteStatus = ref('OFF');
+const commuteStartTime = ref(null);
+const commuteTime = ref(0); // 출퇴근 시간 차이 (분 단위로 계산됨)
+
 const empId = authStore.empId;
 
 // 사원 정보를 가져오는 함수
@@ -31,16 +35,6 @@ const fetchEmp = async () => {
     employee.value = response.data;
   } catch (error) {
     console.error('사원 정보를 불러오는 중 에러가 발생했습니다. : ', error);
-  }
-};
-
-// 출퇴근 정보를 가져오는 함수
-const fetchCommute = async () => {
-  try {
-    const response = await api.get(``);
-    commute.value = response.data;
-  } catch (error) {
-    console.error('출퇴근 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
 };
 
@@ -232,8 +226,7 @@ const annRows = computed(() => {
     ...item,
     title: truncateTitle(item.title),
     createDatetime: formatDate(item.createDatetime),
-  }))
-      .sort((a, b) => new Date(b.createDatetime) - new Date(a.createDatetime)); // 작성일 기준 최신순 정렬
+  }));
 });
 
 // title이 10자 이상일 경우 ... 추가하는 함수
@@ -252,9 +245,54 @@ const annColumns = [
   { field: 'createDatetime', label: '작성일' }
 ];
 
+// 현재 날짜 표시
+const currentDate = computed(() => {
+  const now = new Date();
+  return `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+});
+
+// 출퇴근 시간 계산
+const formattedCommuteTime = computed(() => {
+  const hours = Math.floor(commuteTime.value / 60);
+  const minutes = commuteTime.value % 60;
+  return `${hours}시간 ${minutes}분`;
+});
+
+// 출근 시작 시간부터 현재 시간까지의 차이 계산
+const calculateCommuteTime = () => {
+  if (commuteStartTime.value) {
+    const now = new Date();
+    commuteTime.value = Math.floor((now - commuteStartTime.value) / (1000 * 60)); // 분 단위로 계산
+  }
+};
+
+// ON 버튼 클릭 시 모달 창 띄우기
+const handleOn = () => {
+  isModalVisible.value = true; // 모달을 표시
+};
+
+// 모달에서 인증 완료 시 출근 시간 기록
+const handleConfirm = () => {
+  commuteStatus.value = 'ON';
+  commuteStartTime.value = new Date(); // 출근 시작 시간 기록
+  setInterval(calculateCommuteTime, 60000); // 1분마다 출퇴근 시간 계산
+  isModalVisible.value = false; // 모달 닫기
+};
+
+// 모달에서 취소 버튼 클릭 시
+const handleCancel = () => {
+  isModalVisible.value = false; // 모달 닫기
+};
+
+// OFF 버튼 클릭 시 출퇴근 시간 멈추기
+const handleOff = () => {
+  commuteStatus.value = 'OFF';
+  commuteStartTime.value = null;
+  commuteTime.value = 0; // 시간 초기화
+};
+
 onMounted(() => {
   fetchEmp();
-  // fetchCommute();
   fetchAttendance();
   // fetchAnnual();
   fetchPayDate();
@@ -280,22 +318,31 @@ onMounted(() => {
       </div>
       <div class="commute">
         <h4>출퇴근</h4>
-        <h5>현재 날짜</h5>
+        <h5>{{ currentDate }}</h5>
         <div class="time">
-          <img src="../assets/image/work_on.png" alt="on"/>
-          <p>6시간 10분</p>
+          <img :src="commuteStatus === 'ON' ? On : Off" alt="commute status"/>
+          <p>{{ formattedCommuteTime }}</p>
         </div>
-        <div class="button">
-          <MainPageButton
-            color="gray"
-            label="ON"
-            @click="handleOn"
-          />
-          <MainPageButton
-            color="orange"
-            label="OFF"
-            @click="handleOff"
-          />
+        <div class="btn">
+          <div class="button-container">
+            <button
+                :class="commuteStatus === 'ON' ? 'btn-gray' : 'btn-orange'"
+                @click="handleOn"
+                :disabled="commuteStatus === 'ON'"
+            >
+              ON
+              <p v-if="commuteStatus === 'ON'" class="commute-time">
+               /{{ commuteStartTime ? commuteStartTime.toLocaleTimeString() : '' }}
+              </p>
+            </button>
+          </div>
+          <button
+              :class="commuteStatus === 'OFF' ? 'btn-gray' : 'btn-orange'"
+              @click="handleOff"
+              :disabled="commuteStatus === 'OFF'"
+          >
+            OFF
+          </button>
         </div>
       </div>
     </div>
@@ -304,7 +351,7 @@ onMounted(() => {
       <div class="attendance">
         <img src="../assets/image/alarm.png" alt="clock" />
         <h4>근무시간</h4>
-        <p>{{ attendance?.totalHours }}31시간 {{ attendance?.totalMinutes }}50분 </p>
+        <p>31시간 50분</p>
       </div>
       <div class="annual">
         <img src="../assets/image/travel.png" alt="plane" />
@@ -487,11 +534,48 @@ onMounted(() => {
   font-weight: bold;
 }
 
-.button {
+.btn {
   display: flex;
   gap: 10px;
   justify-content: space-between;
   margin: 17px 50px 20px 50px;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+}
+
+.button-container p {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.btn-orange {
+  width: 150px;
+  height: 41px;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  background-image: linear-gradient(to right, #f37321 0%, #fb0 100%);
+}
+
+.btn-gray {
+  width: 160px;
+  height: 41px;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+  background-color: #D9D9D9;
 }
 
 /* 근무시간, 남은 연차, 남은 급여일 섹션 */
