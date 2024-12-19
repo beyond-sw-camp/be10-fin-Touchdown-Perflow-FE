@@ -112,7 +112,6 @@ const onPageChanged = (page) => {
 };
 const columns = [
   {field: "empName", label: "이름"},
-  {field: "period", label: "주차"},
   {field: "workTime", label: "근무 시간"},
 ];
 
