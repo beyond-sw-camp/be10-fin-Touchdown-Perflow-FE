@@ -50,9 +50,10 @@ const updateApprovalSelectedEmployees = (employees) => {
 };
 
 const updateShareSelectedEmployees = (employees) => {
+  console.log("updateShareSelectedEmployees 호출");
   console.log("선택된 공유 사원 목록: ", employees);
   selectedShareEmployees.value = employees;
-  shareData.value = employees;  // 공유 리스트 업데이트
+  // shareData.value = employees;  // 공유 리스트 업데이트
   console.log("업데이트 된 shareData: ", shareData.value);
 }
 
@@ -89,15 +90,16 @@ const addToApprovalList = (type) => {
 };
 
 const addToShareList = () => {
-  console.log("addToShareList 메소드 호출");
-  const newShares = selectedShareEmployees.value.map((emp) => ({
+  // 추가 한 사람 다시 추가 못하도록
+  const newShares = selectedShareEmployees.value.filter(
+      (emp) => !shareList.value.some((share) => share.empId === emp.empId)
+  ).map((emp) => ({
     empId: emp.empId,
     name: emp.name,
     position: emp.position,
   }));
   shareList.value.push(...newShares);
-  console.log("공유 추가 - 업데이트 된 shareList: ", shareList.value);
-  selectedShareEmployees.value = []; // 선택 목록 초기화
+  selectedShareEmployees.value = [];  // 선택 목록 초기화
 };
 
 </script>
@@ -244,8 +246,8 @@ const addToShareList = () => {
       <!-- 공유 -->
       <ApprovalShareBox
           title="공유"
-          :placeholder="shareList.length ? '' : '공유처가 없습니다.'"
-          :data="shareList"
+          :placeholder="shareData.length ? '' : '공유처가 없습니다.'"
+          :data="shareData"
           @onSettingsClick="openShareModal"
       />
 
@@ -276,11 +278,22 @@ const addToShareList = () => {
             <!-- 공유 목록 -->
             <div class="modal-box right">
               <h3>공유 리스트</h3>
-              <ul>
-                <li v-for="emp in shareData.value" :key="emp.empId">
-                  {{ emp.name }} - {{ emp.position }}
-                </li>
-              </ul>
+              <table class="share-table">
+                <thead>
+                <tr>
+                  <th>순서</th>
+                  <th>이름</th>
+                  <th>직위</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(emp, index) in shareList" :key="emp.empId">
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ emp.name }}</td>
+                  <td>{{ emp.position }}</td>
+                </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </template>
@@ -367,4 +380,22 @@ const addToShareList = () => {
   background-color: #f0f0f0; /* 클릭 시 회색 배경 적용 */
   cursor: pointer;
 }
+.share-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.share-table th,
+.share-table td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 8px;
+}
+
+.share-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
 </style>
