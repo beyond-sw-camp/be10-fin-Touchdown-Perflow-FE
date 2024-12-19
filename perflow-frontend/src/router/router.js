@@ -47,8 +47,6 @@ const routes = [
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
     {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
-    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
-    {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
     {path:'/announcements', name: 'announcements-list', component: AnnList}
 
 ]
