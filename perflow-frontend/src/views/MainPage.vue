@@ -12,13 +12,15 @@ const employee = ref(null);
 const commute = ref(null);
 const attendance = ref(null);
 const annual = ref(null);
-const payDate = ref(null);
+const company = ref(null);
 const vacation = ref([]);
 const teamKPI = ref([]);
 const personalKPI = ref([]);
 const announcement = ref(null);
 const waitingApproval = ref(null);
 
+// 급여일까지 남은 일수를 저장할 변수
+const diffDays = ref(0);
 const waitingApprovalCount = ref(0);
 const empId = authStore.empId;
 
@@ -62,13 +64,36 @@ const fetchAnnual = async () => {
   }
 };
 
-// 급여일 정보를 가져오는 함수
+// 회사 정보를 가져오는 함수
 const fetchPayDate = async () => {
   try {
     const response = await api.get(`/company`);
-    payDate.value = response.data;
+    company.value = response.data;  // 급여 지급일 (Unix timestamp)
+
+    const paymentDay = company.value.paymentDatetime;  // 급여 지급일 (매월 10일, Integer 타입)
+
+    // 현재 날짜 가져오기
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();  // 현재 연도
+    const currentMonth = currentDate.getMonth();  // 현재 월 (0부터 시작, 0 = 1월)
+
+    // 이번 달의 10일
+    let paymentDate = new Date(currentYear, currentMonth, paymentDay);
+
+    // 만약 오늘이 지급일 이후라면, 다음 달로 설정
+    if (currentDate.getDate() > paymentDay) {
+      paymentDate = new Date(currentYear, currentMonth + 1, paymentDay);  // 다음 달로 설정
+    }
+
+    // 현재 날짜와 급여 지급일의 차이 계산 (밀리초 단위)
+    const diffTime = paymentDate - currentDate;
+
+    // 밀리초를 일 단위로 변환
+    diffDays.value = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;  // 결과를 diffDays에 저장
+
+    console.log(`다음 급여 지급일은 ${paymentDate.toLocaleDateString()}이고, 현재 날짜와 급여 지급일 사이의 차이: ${diffDays}일`);
   } catch (error) {
-    console.error('급여일 정보를 불러오는 중 에러가 발생했습니다. : ', error);
+    console.error('회사 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
 };
 
@@ -268,7 +293,7 @@ onMounted(() => {
       <div class="pay">
         <img src="../assets/image/payments.png" alt="money" />
         <h4>남은 급여일</h4>
-        <p>28일전</p>
+        <p>{{ diffDays }}일전</p>
       </div>
     </div>
     <!-- 예정 휴가, kpi 정보 -->
