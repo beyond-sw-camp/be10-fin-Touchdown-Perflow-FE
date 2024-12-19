@@ -7,6 +7,8 @@ import {ref} from "vue";
 import OrganizationTree from "@/components/common/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createBasicDoc} from "@/config/approval.js";
+import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
+import SearchBar from "@/components/common/SearchBar.vue";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -183,7 +185,22 @@ const createNewDoc = async () => {
 </script>
 
 <template>
+
+  <div id="header-div">
+    <div id="header-top" class="flex-between">
+      <p id="title">결재 문서 생성</p>
+    </div>
+    <div id="header-bottom" class="flex-between">
+      <div class="tabs">
+        <span class="tab active">기본 서식</span>
+      </div>
+    </div>
+  </div>
+
   <div class="main-container">
+    <!-- 빈 컨테이너 -->
+    <div class="empty-container"></div>
+
     <div class="form-container">
       <!-- 제목 -->
       <InputField
@@ -191,6 +208,7 @@ const createNewDoc = async () => {
           label="제목"
           placeholder="제목을 입력해 주세요."
           :isRequired="true"
+          width="600px"
       />
 
       <!-- 내용 -->
@@ -200,7 +218,8 @@ const createNewDoc = async () => {
           placeholder="내용을 입력해 주세요."
           type="textarea"
           :isRequired="true"
-          height="300px"
+          height="400px"
+          width="600px"
       />
 
       <div class="button-group">
@@ -252,7 +271,7 @@ const createNewDoc = async () => {
 
             <!-- 결재 버튼 그룹 -->
             <div class="modal-box center">
-              <div class="button-group">
+              <div class="approval-button-group">
                 <ButtonBasic
                     label="동의"
                     color="white"
@@ -282,44 +301,49 @@ const createNewDoc = async () => {
 
             <!-- 결재 목록 -->
             <div class="modal-box right">
-              <h3>결재 순서</h3>
-              <table class="approval-table">
-                <!-- 테이블 헤더 -->
-                <thead>
-                <tr>
-                  <th>순서</th>
-                  <th>결재 종류</th>
-                  <th>이름</th>
-                  <th>직위</th>
-                </tr>
-                </thead>
+              <div class="table-container">
+                <table class="approval-table">
+                  <!-- 테이블 헤더 -->
+                  <thead>
+                  <tr>
+                    <th>순서</th>
+                    <th>결재 종류</th>
+                    <th>이름</th>
+                    <th>직위</th>
+                  </tr>
+                  </thead>
 
-                <!-- 드래그 가능한 테이블 바디 -->
-                <draggable
-                    v-model="approvalList"
-                    tag="tbody"
-                    item-key="name"
-                >
-                  <template #item="{ element, index }">
-                    <tr
-                        @click="toggleApproveRowSelection(index)"
-                        :class="{ 'selected-row': selectedApproveRows.has(index) }"
-                    >
-                      <td>{{ index + 1 }}</td>
-                      <td>{{ element.type }}</td>
-                      <td>{{ element.name }}</td>
-                      <td>{{ element.position }}</td>
-                    </tr>
-                  </template>
-                </draggable>
-              </table>
-              <ButtonBasic
-                  label="삭제"
-                  color="white"
-                  size="small"
-                  @click="deleteApproveSelectedRows"
-              />
-            </div>
+                  <!-- 드래그 가능한 테이블 바디 -->
+                  <draggable
+                      v-model="approvalList"
+                      tag="tbody"
+                      item-key="name"
+                  >
+                    <template #item="{ element, index }">
+                      <tr
+                          @click="toggleApproveRowSelection(index)"
+                          :class="{ 'selected-row': selectedApproveRows.has(index) }"
+                      >
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ element.type }}</td>
+                        <td>{{ element.name }}</td>
+                        <td>{{ element.position }}</td>
+                      </tr>
+                    </template>
+                  </draggable>
+                </table>
+              </div>
+
+              <div class="button-container">
+                <ButtonBasic
+                    label="삭제"
+                    color="white"
+                    size="small"
+                    @click="deleteApproveSelectedRows"
+                />
+                </div>
+              </div>
+
           </div>
         </template>
       </ModalBasic>
@@ -351,7 +375,7 @@ const createNewDoc = async () => {
               <ButtonBasic
                   label="추가"
                   color="white"
-                  size="medium"
+                  size="small"
                   @click="addToShareList"
               />
             </div>
@@ -359,31 +383,35 @@ const createNewDoc = async () => {
             <!-- 공유 목록 -->
             <div class="modal-box right">
               <h3>공유 리스트</h3>
-              <table class="share-table">
-                <thead>
-                <tr>
-                  <th>이름</th>
-                  <th>직위</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr
-                    v-for="(emp, index) in shareList"
-                    :key="emp.empId"
-                    :class="{ 'selected-row': selectedShareRows.has(index) }"
-                    @click="toggleShareRowSelection(index)"
-                >
-                  <td>{{ emp.name }}</td>
-                  <td>{{ emp.position }}</td>
-                </tr>
-                </tbody>
-              </table>
-              <ButtonBasic
-                  label="삭제"
-                  color="white"
-                  size="small"
-                  @click="deleteShareSelectedRows"
-              />
+              <div class="table-container">
+                <table class="share-table">
+                  <thead>
+                  <tr>
+                    <th>이름</th>
+                    <th>직위</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr
+                      v-for="(emp, index) in shareList"
+                      :key="emp.empId"
+                      :class="{ 'selected-row': selectedShareRows.has(index) }"
+                      @click="toggleShareRowSelection(index)"
+                  >
+                    <td>{{ emp.name }}</td>
+                    <td>{{ emp.position }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="button-container">
+                <ButtonBasic
+                    label="삭제"
+                    color="white"
+                    size="small"
+                    @click="deleteShareSelectedRows"
+                />
+              </div>
             </div>
           </div>
         </template>
@@ -395,21 +423,28 @@ const createNewDoc = async () => {
 <style scoped>
 .main-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 100px;
-  height: 100vh;
+  justify-content: center;  /* 중앙 정렬 */
+  align-items: center;  /* 세로 정렬 */
+  gap: 0px;
+}
+
+.empty-container {
+  flex: 0.3;
+  max-width: 300px;
 }
 
 .form-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 0px;
   width: 400px;
+  margin-top: 50px;
 }
 
 .box-container {
+  flex: 0.3;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -417,9 +452,18 @@ const createNewDoc = async () => {
 
 .button-group {
   display: flex;
-  flex-direction: column; /* 버튼 위아래 정렬 */
-  gap: 10px; /* 버튼 간 간격 */
+  flex-direction: row; /* 버튼 가로 정렬 */
+  gap: 40px; /* 버튼 간 간격 */
   align-items: center; /* 중앙 정렬 */
+}
+
+.approval-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin: 20px;
+  width: fit-content; /* 자식인 buttonbasic 의 폭에 맞춤 */
 }
 
 /* 모달 내부 레이아웃 */
@@ -432,14 +476,48 @@ const createNewDoc = async () => {
 /* 모달 내부 박스 공통 스타일 */
 .modal-box {
   flex: 1;
-  border: 1px solid #ddd;
+  border: none;
   border-radius: 8px;
   padding: 16px;
   overflow-y: auto;
 }
 
-.left {
-  border-right: 1px solid #ccc;
+.modal-box.center {
+  max-width: fit-content;
+  padding: 0;
+  margin: auto;
+}
+
+.modal-box.left {
+  height: fit-content; /* 자식 컴포넌트 크기에 맞춤*/
+  padding-right: 0;
+}
+
+.modal-box.right {
+  display: flex;
+  flex-direction: column;
+  height: 300px; /* 전체 높이를 고정 */
+}
+
+.share-table,
+.approval-table {
+  flex: 1; /* 테이블이 가능한 최대 공간을 차지 */
+  overflow-y: auto; /* 내용이 많아지면 스크롤 */
+  margin: 0;
+  border-spacing: 0; /* 셀 간의 간격 제거 */
+  border-collapse: separate; /* 둥근 테두리 유지 */
+}
+
+.table-container {
+  flex: 1;
+  overflow-y: auto; /* 테이블에 스크롤 추가 */
+  margin-bottom: 10px; /* 버튼과 테이블 간의 간격 */
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* 버튼을 오른쪽 정렬 */
+  margin-top: 10px; /* 테이블과 버튼 사이의 간격 */
 }
 
 .center {
@@ -450,20 +528,31 @@ const createNewDoc = async () => {
 
 .approval-table {
   width: 100%;
-  border-collapse: collapse; /* 테두리 겹치기 */
+  border: 1px solid #D9D9D9; /* 테이블 바깥 테두리 */
+  border-radius: 10px; /* 둥근 테두리 */
+  border-spacing: 0; /* 셀 간의 간격 제거 */
+  border-collapse: separate; /* border-spacing 적용을 위해 separate 설정 */
+  overflow: hidden; /* 둥근 테두리를 유지 */
+  margin-top: 10px;
 }
 
 .approval-table th,
 .approval-table td {
-  border-top: 1px solid #ddd; /* 가로선만 */
+  border: none; /* 내부 셀의 모든 테두리 제거 */
+  border-bottom: 1px solid #D9D9D9; /* 셀 아래 가로선만 표시 */
   padding: 8px;
   text-align: center;
+}
+
+.approval-table tr:last-child td {
+  border-bottom: none; /* 마지막 행의 아래쪽 가로선 제거 */
 }
 
 .approval-table th {
   background-color: #f4f4f4;
   font-weight: bold;
 }
+
 
 /* 선택된 행 */
 .selected-row {
@@ -473,20 +562,62 @@ const createNewDoc = async () => {
 
 .share-table {
   width: 100%;
-  border-collapse: collapse;
+  border: 1px solid #D9D9D9; /* 테이블 바깥 테두리 */
+  border-radius: 10px; /* 둥근 테두리 */
+  border-spacing: 0; /* 셀 간의 간격 제거 */
+  border-collapse: separate; /* border-spacing 적용을 위해 separate 설정 */
+  overflow: hidden; /* 둥근 테두리를 유지 */
   margin-top: 10px;
 }
 
 .share-table th,
 .share-table td {
-  border: 1px solid #ddd;
-  text-align: center;
+  border: none; /* 내부 셀의 모든 테두리 제거 */
+  border-bottom: 1px solid #D9D9D9; /* 셀 아래 가로선만 표시 */
   padding: 8px;
+  text-align: center;
+}
+
+.share-table tr:last-child td {
+  border-bottom: none; /* 마지막 행의 아래쪽 가로선 제거 */
 }
 
 .share-table th {
   background-color: #f4f4f4;
   font-weight: bold;
+}
+
+
+#title {
+  font-size: 35px;
+  font-weight: bold;
+  color: #3C4651;
+}
+#header-div {
+  display: flex;
+  flex-direction: column; /* 세로 방향으로 정렬 */
+  justify-content: center; /* 세로 중앙 정렬 */
+  align-items: center; /* 가로 중앙 정렬 */
+  margin-top: 50px;
+}
+#header-top, #header-bottom {
+  margin-bottom: 10px;
+  width: 900px;
+}
+.tabs {
+  display: flex;
+  gap: 20px;
+  font-size: 20px;
+}
+
+.tab {
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.tab.active {
+  font-weight: bold;
+  border-bottom: 2px solid #ff6600;
 }
 
 </style>

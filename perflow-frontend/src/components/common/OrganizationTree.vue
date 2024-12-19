@@ -78,7 +78,7 @@ onMounted(async () => {
   width: 100%;
   max-width: 800px; /* 네모 크기 고정 */
   /* max-height: 100px; */
-  height: 150px;
+  height: 200px;
   margin: 20px auto; /* 중앙 정렬 */
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -124,4 +124,5 @@ onMounted(async () => {
   padding: 0;
   margin: 0;
 }
+
 </style>
