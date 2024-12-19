@@ -6,6 +6,7 @@ import ModalBasic from "@/components/common/ModalBasic.vue";
 import {ref} from "vue";
 import OrganizationTree from "@/components/common/OrganizationTree.vue";
 import draggable from "vuedraggable";
+import {createBasicDoc} from "@/config/approval.js";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -96,10 +97,21 @@ const deleteShareSelectedRows = () => {
 // 버튼 클릭 시 결재 순서에 추가
 const addToApprovalList = (type) => {
   console.log("addToApprovalList 메소드 호출");
+
+  const typeMapping = {
+    동의: "SEQ",
+    참조: "CC",
+    합의: "AGR",
+    병렬: "PLL",
+    병렬합의: "PLLAGR"
+  };
+
   const newApprovals = selectedApprovalEmployees.value.map((emp) => ({
-    type, // 결재 방식
+    displayType: type,  // 결재방식 - 한글 값
+    approveType: typeMapping[type], // 결재방식 - enum 값
     name: emp.name, // 사원 이름
     position: emp.position, // 직위
+    empId: emp.empId,
   }));
   approvalList.value.push(...newApprovals);
   console.log("결재선 추가 - 업데이트 된 approvalList: ", approvalList.value);
@@ -117,6 +129,54 @@ const addToShareList = () => {
   }));
   shareList.value.push(...newShares);
   selectedShareEmployees.value = [];  // 선택 목록 초기화
+};
+
+const title = ref('');  // 문서 제목
+const content = ref('');  // 문서 내용
+
+// 결재 문서 데이터
+const docData = () => {
+  return {
+    templateId: 4, // 기본 서식 id
+    title: title.value, // 문서 제목
+    fields: {
+      CONTENT: content.value, // 기본 서식의 필드 데이터
+    },
+    approveLines: approvalList.value.map((line, index) => ({
+      groupId: null,
+      approveType: line.approveType,
+      approveLineOrder: index + 1,
+      pllGroupId: null,
+      approveTemplateTypes: 'MANUAL',
+      approveSbjs: [
+        {
+          empDeptType: 'EMPLOYEE',
+          empId: line.empId,
+        },
+      ],
+    })),
+    shares: shareList.value.map((share) => ({
+      shareEmpDeptType: 'EMPLOYEE',
+      employees: [share.empId],
+    })),
+  };
+};
+
+const createNewDoc = async () => {
+
+  if(!title.value || !content.value) {
+    alert('빈 칸을 모두 채워주세요.');
+    return;
+  }
+
+  try {
+    const data = docData();
+    const response = await createBasicDoc(data);
+    alert('결재 문서 생성 완료');
+  } catch (error) {
+    alert(`결재 문서 생성에 실패했습니다. 오류: ${error.message}`);
+    console.error(error);
+  }
 };
 
 </script>
@@ -147,13 +207,13 @@ const addToShareList = () => {
             color="gray"
             size="medium"
             label="취소하기"
-            @click="closeApprovalModal"
+            @click=""
         />
         <ButtonBasic
             color="orange"
             size="medium"
             label="상신하기"
-            @click="saveApprovalSettings"
+            @click="createNewDoc"
         />
       </div>
     </div>
@@ -163,7 +223,10 @@ const addToShareList = () => {
       <ApprovalShareBox
           title="결재선"
           :placeholder="approvalData.length ? '' : '결재선이 없습니다.'"
-          :data="approvalData"
+          :data="approvalData.map((item) => ({
+          ...item,
+          type: item.displayType  // 한글 값만 표시
+          }))"
           @onSettingsClick="openApprovalModal"
       />
 
