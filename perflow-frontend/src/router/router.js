@@ -13,6 +13,7 @@ import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 import PayrollList from "@/views/payment/PayrollList.vue";
+import AnnList from "@/views/announcement/AnnList.vue";
 
 
 const routes = [
@@ -33,7 +34,8 @@ const routes = [
     {path:'/attitude/annual',name:'annual',component:Annual},
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
-    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus}
+    {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
+    {path:'/announcements', name: 'announcements-list', component: AnnList}
 
 ]
 
