@@ -1,6 +1,12 @@
 <script setup>
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
+import api from "@/config/axios.js";
+import {useRoute} from "vue-router";
+import router from "@/router/router.js";
+import {jwtDecode} from "jwt-decode";
 
+const route = useRoute();
+const token = computed(() => route.query.token);
 const password = ref("");
 const passwordCheck = ref("");
 
@@ -8,7 +14,22 @@ const validPwd = computed(()=>{
   return password.value === passwordCheck.value;
 });
 
-const pwdRegister = async () => {
+const pwdRegister = async (token) => {
+
+  try {
+    const decodedToken = jwtDecode(token);
+    const empId = decodedToken.empId;
+
+    await api.put("/employee/pwd",{
+      empId : empId,
+      password : password.value
+    });
+    alert("비밀번호 등록에 성공했습니다! 로그인 페이지로 이동합니다!");
+    router.push("/login")
+  } catch (error) {
+    console.log(error)
+    alert("비밀번호 등록에 실패했습니다. 입력값을 확인해주세요.");
+  }
 
 }
 </script>
@@ -30,7 +51,7 @@ const pwdRegister = async () => {
     <p v-if="validPwd&&passwordCheck" id="pwd-check-true">
       비밀번호가 일치합니다!.
     </p>
-    <button @click="pwdRegister" class="register-button" :disabled="!validPwd">로그인</button>
+    <button @click="pwdRegister(token)" class="register-button" :disabled="!validPwd||!passwordCheck">비밀번호 등록</button>
   </article>
 </template>
 
@@ -56,6 +77,14 @@ const pwdRegister = async () => {
 .input-title {
   font-weight: bold;
   font-size: 20px;
+}
+#id-input {
+  width: 500px;
+  height: 50px;
+  border-radius: 4px;
+  text-align: center; /* 입력 값 중앙 정렬 */
+  font-size: 20px !important;
+  margin-bottom: 5px;
 }
 /* 각 입력 필드를 감싸는 그룹 */
 .input-group {
