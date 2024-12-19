@@ -130,8 +130,29 @@ const fetchPersonalKPI = async () => {
 // 공지사항 정보를 가져오는 함수
 const fetchAnnouncement = async () => {
   try {
-    const response = await api.get(`/announcements`);
-    announcement.value = response.data.content;
+    // 1. 첫 번째 요청으로 페이지 정보만 가져옵니다 (페이지 번호와 전체 데이터 수)
+    const pageResponse = await api.get(`/announcements`, {
+      params: { size: 10 }  // 한 페이지에 표시할 데이터 수
+    });
+
+    // 2. 마지막 페이지 번호 가져오기
+    const lastPage = pageResponse.data.totalPages - 1;
+
+    // 3. 마지막 페이지의 데이터를 가져옵니다.
+    const response = await api.get(`/announcements`, {
+      params: {
+        page: lastPage,  // 마지막 페이지
+        size: 10         // 한 페이지에 표시할 데이터 수
+      }
+    });
+
+    // 4. 최신순으로 정렬 (만약 이미 최신순으로 가져오지 않았다면)
+    announcement.value = response.data.content.sort((a, b) => {
+      const dateA = new Date(a.createDatetime);
+      const dateB = new Date(b.createDatetime);
+      return dateB - dateA; // 내림차순 정렬
+    });
+
   } catch (error) {
     console.error('공지사항 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
