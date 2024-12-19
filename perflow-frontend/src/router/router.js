@@ -1,6 +1,8 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import EmpLogin from "@/views/hr/employee/EmpLogin.vue";
-import WorkStatus from "@/views/Attitude/WorkStatus.vue";
+
+import WorkStatus from "@/views/Attitude/WorkStatusForHRWeek.vue";
+
 import WorkHours from "@/views/Attitude/WorkHours.vue";
 import Vacation from "@/views/Attitude/Vacation.vue";
 import Annual from "@/views/Attitude/Annual.vue";
