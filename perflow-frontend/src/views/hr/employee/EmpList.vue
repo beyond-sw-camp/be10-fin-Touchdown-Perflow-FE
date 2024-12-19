@@ -107,7 +107,6 @@ onMounted(() => {
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"
                 :current-page="pages.currentPage"
-                imgSize="20px" size="20px"
                 @page-changed="fetchEmpList"
     />
   </div>
