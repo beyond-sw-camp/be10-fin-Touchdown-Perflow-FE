@@ -57,23 +57,40 @@ const updateShareSelectedEmployees = (employees) => {
   console.log("업데이트 된 shareData: ", shareData.value);
 }
 
-const selectedRows = ref(new Set());
+const selectedApproveRows = ref(new Set());
+const selectedShareRows = ref(new Set());
 
 // 체크박스 선택/해제 핸들러
-const toggleRowSelection = (index) => {
-  if (selectedRows.value.has(index)) {
-    selectedRows.value.delete(index); // 이미 선택된 경우 해제
+const toggleApproveRowSelection = (index) => {
+  if (selectedApproveRows.value.has(index)) {
+    selectedApproveRows.value.delete(index); // 이미 선택된 경우 해제
   } else {
-    selectedRows.value.add(index); // 선택 안 된 경우 추가
+    selectedApproveRows.value.add(index); // 선택 안 된 경우 추가
   }
 };
 
+const toggleShareRowSelection = (index) => {
+  if (selectedShareRows.value.has(index)) {
+    selectedShareRows.value.delete(index); // 이미 선택된 경우 해제
+  } else {
+    selectedShareRows.value.add(index); // 선택 안 된 경우 추가
+  }
+};
+
+
 // 선택된 행 삭제
-const deleteSelectedRows = () => {
+const deleteApproveSelectedRows = () => {
   approvalList.value = approvalList.value.filter(
-      (_, index) => !selectedRows.value.has(index)
+      (_, index) => !selectedApproveRows.value.has(index)
   );
-  selectedRows.value.clear(); // 선택 목록 초기화
+  selectedApproveRows.value.clear(); // 선택 목록 초기화
+};
+
+const deleteShareSelectedRows = () => {
+  shareList.value = shareList.value.filter(
+      (_, index) => !selectedShareRows.value.has(index)
+  );
+  selectedShareRows.value.clear(); // 선택 목록 초기화
 };
 
 // 버튼 클릭 시 결재 순서에 추가
@@ -221,8 +238,8 @@ const addToShareList = () => {
                 >
                   <template #item="{ element, index }">
                     <tr
-                        @click="toggleRowSelection(index)"
-                        :class="{ 'selected-row': selectedRows.has(index) }"
+                        @click="toggleApproveRowSelection(index)"
+                        :class="{ 'selected-row': selectedApproveRows.has(index) }"
                     >
                       <td>{{ index + 1 }}</td>
                       <td>{{ element.type }}</td>
@@ -236,7 +253,7 @@ const addToShareList = () => {
                   label="삭제"
                   color="white"
                   size="small"
-                  @click="deleteSelectedRows"
+                  @click="deleteApproveSelectedRows"
               />
             </div>
           </div>
@@ -281,19 +298,28 @@ const addToShareList = () => {
               <table class="share-table">
                 <thead>
                 <tr>
-                  <th>순서</th>
                   <th>이름</th>
                   <th>직위</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(emp, index) in shareList" :key="emp.empId">
-                  <td>{{ index + 1 }}</td>
+                <tr
+                    v-for="(emp, index) in shareList"
+                    :key="emp.empId"
+                    :class="{ 'selected-row': selectedShareRows.has(index) }"
+                    @click="toggleShareRowSelection(index)"
+                >
                   <td>{{ emp.name }}</td>
                   <td>{{ emp.position }}</td>
                 </tr>
                 </tbody>
               </table>
+              <ButtonBasic
+                label="삭제"
+                color="white"
+                size="small"
+                @click="deleteShareSelectedRows"
+              />
             </div>
           </div>
         </template>
