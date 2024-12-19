@@ -17,21 +17,21 @@ function onInputChange(event) {
 </script>
 
 <template>
-  <div id="input-container">
-    <p id="title">{{props.title}}</p>
-    <input id="input-text" type="text" @input="onInputChange">
+  <div class="input-container">
+    <p class="title">{{props.title}}</p>
+    <input class="input-text" type="text" @input="onInputChange">
   </div>
 </template>
 
 <style scoped>
-#input-container {
+.input-container {
   margin-bottom: 30px;
 }
-#title {
+.title {
   font-weight: bold;
   margin-bottom: 15px;
 }
-#input-text {
+.input-text {
   width: 350px;
   height: 50px;
   border-radius: 5px;

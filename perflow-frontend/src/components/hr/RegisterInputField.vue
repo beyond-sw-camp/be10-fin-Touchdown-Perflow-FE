@@ -19,13 +19,12 @@ function onInputChange(event) {
   emit('update-value', inputValue.value); // 부모에게 값 전달
 }
 
-
 </script>
 
 <template>
-  <div id="input-container">
-    <p id="title">{{props.title}}</p>
-    <input id="input-text" type="text"
+  <div class="input-container">
+    <p class="title">{{props.title}}</p>
+    <input class="input-text" type="text"
            @input="onInputChange"
            :placeholder=props.placeholder
            :class="[`input-${size}`]"
@@ -38,15 +37,15 @@ p {
   padding: 0;
   margin: 0;
 }
-#input-container {
+.input-container {
   display: grid;
-  grid-template-columns: 100px 400px;
+  grid-template-columns: 80px 400px;
   align-items: center;
 }
-#title {
+.title {
   font-weight: bold;
 }
-#input-text {
+.input-text {
   height: 40px;
   border-radius: 5px;
   border: 1px solid #D9D9D9;
