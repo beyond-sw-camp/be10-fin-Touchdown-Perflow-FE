@@ -10,7 +10,7 @@ import {useAuthStore} from "@/store/authStore.js";
 const router = useRouter();
 const authStore = useAuthStore();
 const employee = ref(null);
-const attendance = ref(null);
+const attendance = ref([]);
 const annual = ref(null);
 const company = ref(null);
 const vacation = ref([]);
@@ -26,6 +26,7 @@ const processedApprovalCount = ref(0);
 const commuteStatus = ref('OFF');
 const commuteStartTime = ref(null);
 const commuteTime = ref(0); // 출퇴근 시간 차이 (분 단위로 계산됨)
+const latest = ref({});
 
 const empId = authStore.empId;
 
@@ -44,6 +45,17 @@ const fetchAttendance = async () => {
   try {
     const response = await api.get(`/emp/attendance/summaries/weekly`);
     attendance.value = response.data;
+
+    console.log("attendance: ", attendance.value);
+
+    // 데이터가 배열인지 확인
+    if (Array.isArray(attendance.value) && attendance.value.length > 0) {
+      // 가장 최근 주차 데이터 선택
+      latest.value = attendance.value.sort((a, b) => b.period.localeCompare(a.period))[0];
+      console.log('가장 최근 주차 데이터:', latest);
+    } else {
+      console.warn('서버에서 유효한 데이터가 반환되지 않았습니다.', attendance.value);
+    }
   } catch (error) {
     console.error('일주일 총 근무시간 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -365,7 +377,7 @@ onMounted(() => {
       <div class="attendance">
         <img src="../assets/image/alarm.png" alt="clock" />
         <h4>근무시간</h4>
-        <p>31시간 50분</p>
+        <p>{{ latest.totalHours }}시간 {{ latest.totalMinutes }}분</p>
       </div>
       <div class="annual">
         <img src="../assets/image/travel.png" alt="plane" />
