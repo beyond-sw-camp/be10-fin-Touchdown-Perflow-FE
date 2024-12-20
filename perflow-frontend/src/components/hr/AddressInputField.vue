@@ -75,19 +75,27 @@ onMounted(() => {
 </script>
 
 <template>
+  <div id="address-input-container">
   <p id="title">주소</p>
-  <input type="text" class="input-address-number" placeholder="우편번호" v-model="totalAddress.postcode" @input="onAddressNumberChange">
-  <input type="button" @click="execDaumPostcode" value="우편번호 찾기" id="address-button"><br>
-  <input type="text" class="input-address" placeholder="도로명주소" v-model="totalAddress.roadAddress" @input="onRoadAddressChange">
-  <span id="guide" style="color:#999;display:none"></span>
-  <input type="text" class="input-address" placeholder="상세주소" v-model="totalAddress.extraAddress" @input="onExtraAddressChange">
+    <div>
+      <input type="text" class="input-address-number" placeholder="우편번호" v-model="totalAddress.postcode" @input="onAddressNumberChange">
+      <input type="button" @click="execDaumPostcode" value="우편번호 찾기" id="address-button"><br>
+    </div>
+    <input type="text" class="input-address" placeholder="도로명주소" v-model="totalAddress.roadAddress" @input="onRoadAddressChange">
+    <span id="guide" style="color:#999;display:none"></span>
+    <input type="text" class="input-address" placeholder="상세주소" v-model="totalAddress.extraAddress" @input="onExtraAddressChange">
+  </div>
 </template>
 
 <style scoped>
+#address-input-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .input-address-number {
   width: 200px;
   height: 40px;
-  margin-bottom: 20px;
   margin-right: 10px;
   border-radius: 5px;
   border: 1px solid #D9D9D9;
@@ -97,7 +105,6 @@ onMounted(() => {
   width: 350px;
   height: 40px;
   padding: 5px;
-  margin-bottom: 10px;
   border-radius: 5px;
   border: 1px solid #D9D9D9;
 }
@@ -108,6 +115,6 @@ onMounted(() => {
 }
 #title {
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 </style>
