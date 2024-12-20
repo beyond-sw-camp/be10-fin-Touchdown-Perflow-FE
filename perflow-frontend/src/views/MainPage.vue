@@ -18,10 +18,11 @@ const teamKPI = ref([]);
 const personalKPI = ref([]);
 const announcement = ref(null);
 const waitingApproval = ref(null);
+const processedApproval = ref(null);
 
-// 급여일까지 남은 일수를 저장할 변수
 const diffDays = ref(0);
 const waitingApprovalCount = ref(0);
+const processedApprovalCount = ref(0);
 const commuteStatus = ref('OFF');
 const commuteStartTime = ref(null);
 const commuteTime = ref(0); // 출퇴근 시간 차이 (분 단위로 계산됨)
@@ -164,6 +165,18 @@ const fetchWaitingApproval = async () => {
   }
 };
 
+// 처리 문서 정보를 가져오는 함수
+const fetchProcessedApproval = async () => {
+  try {
+    const response = await api.get(`/approval/processed-docs`);
+    processedApproval.value = response.data.content;
+    // docId의 개수를 셈
+    processedApprovalCount.value = processedApproval.value.filter(doc => doc.docId).length;
+  } catch (error) {
+    console.error('처리 문서 정보를 불러오는 중 에러가 발생했습니다. : ', error);
+  }
+};
+
 const goToKPI = () => {
   router.push(``)
 };
@@ -301,6 +314,7 @@ onMounted(() => {
   fetchPersonalKPI();
   fetchAnnouncement();
   fetchWaitingApproval();
+  fetchProcessedApproval();
 })
 
 </script>
@@ -431,7 +445,7 @@ onMounted(() => {
           </div>
           <div class="stat-item-b" @click="goToProcessed">
             <h4>처리문서</h4>
-            <p>1</p>
+            <p>{{ processedApprovalCount }}</p>
           </div>
         </div>
       </div>
