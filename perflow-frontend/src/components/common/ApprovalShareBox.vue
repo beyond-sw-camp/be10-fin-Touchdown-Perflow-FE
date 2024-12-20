@@ -46,7 +46,10 @@ onMounted(() => {
       <!-- 데이터 표시 -->
       <div v-if="data.length > 0" class="box-content">
         <div class="approval-item" v-for="(item, index) in data" :key="index">
-          <span class="approval-type" :class="item.type">{{ item.type }}</span>
+          <span class="approval-type" :class="item.type || 'default-type'"
+          >
+            {{ item.type || '공유' }}
+          </span>
           <span class="approval-name">{{ item.name }}</span>
           <span class="approval-position">{{ item.position }}</span>
         </div>
@@ -117,11 +120,13 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background-color: #f4f4f4;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
+  padding: 8px 12px;  /* 내부 여백 */
+  border-radius: 10px;
+  background-color: #ffffff;
+  border: 0.5px solid #D9D9D9;
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+  font-size: 13px;
+  width: 160px;
 }
 
 .approval-type {
@@ -159,5 +164,10 @@ onMounted(() => {
   color: #a0a0a0;
   font-size: 14px;
   text-align: center;
+}
+
+.approval-type.default-type {
+  background-color: #bd76f8; /* 회색 배경 */
+  color: white;
 }
 </style>

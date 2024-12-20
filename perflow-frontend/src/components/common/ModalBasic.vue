@@ -3,12 +3,12 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 
 // 사용법
 // <ModalBasic
-//   :isOpen="isModalOpen"
+//   :isOpen="isApprovalModalOpen"
 //   title="결재선 설정"
-//   :button1="{ label: '닫기', color: 'gray', onClick: closeModal }"
-//   :button2="{ label: '저장하기', color: 'orange', onClick: saveSettings }"
+//   :button1="{ label: '닫기', color: 'gray', onClick: closeApprovalModal }"
+//   :button2="{ label: '저장하기', color: 'orange', onClick: saveApprovalSettings }"
 //   width="600px"
-//   @close="closeModal"
+//   @close="closeApprovalModal"
 // >
 const props = defineProps({
   isOpen: { type: Boolean, default: false }, // 모달 열림 여부

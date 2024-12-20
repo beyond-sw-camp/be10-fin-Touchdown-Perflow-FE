@@ -4,10 +4,19 @@ import {useStore} from "@/store/store.js";
 import {ref} from "vue";
 
 const store = useStore();
-const emit = defineEmits(["update:selectedEmployees"]); // 부모 컴포넌트로 이벤트 전달
+
+const props = defineProps({
+  context: {
+    type: String,
+    required: true,
+  }
+})
+
+const emit = defineEmits(["update:selectedApprovalEmployees", "update:selectedShareEmployees"]); // 부모 컴포넌트로 이벤트 전달
 const selectedEmployees = ref([]); // 선택된 사원 목록
 
 const handleCheckboxChange = (employee, event) => {
+  console.log(`[OrganizationSelectedEmp] handleCheckboxChange 호출됨. 사원: ${employee.name}, 체크 상태: ${event.target.checked}`);
   if (event.target.checked) {
     selectedEmployees.value.push(employee); // 체크 시 추가
   } else {
@@ -15,7 +24,18 @@ const handleCheckboxChange = (employee, event) => {
         (e) => e.empId !== employee.empId
     ); // 체크 해제 시 삭제
   }
-  emit("update:selectedEmployees", selectedEmployees.value); // 부모로 이벤트 전달
+
+  console.log(`[OrganizationSelectedEmp] 현재 selectedEmployees 목록:`, selectedEmployees.value);
+
+  if (props.context === "approval") {
+    console.log(`[OrganizationSelectedEmp] 결재선 설정 이벤트 emit`);
+    emit("update:selectedApprovalEmployees", selectedEmployees.value);
+  } else if (props.context === "share") {
+    console.log(`[OrganizationSelectedEmp] 공유 설정 이벤트 emit`);
+    emit("update:selectedShareEmployees", selectedEmployees.value);
+  }
+
+  // emit("update:selectedApprovalEmployees", selectedEmployees.value); // 부모로 이벤트 전달
 };
 </script>
 
