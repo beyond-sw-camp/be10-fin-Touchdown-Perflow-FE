@@ -25,9 +25,9 @@ import MainPage from "@/views/MainPage.vue";
 const routes = [
     // { path: '/', name: 'Home', component: Home },
 
-    {path: '/', name: 'mainPage', component: EmpLogin},
+    {path: '/', name: 'LoginPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
-    {path: '/hr/myPage', name: 'myPage', component: EmpMyPage},
+    {path: '/hr/my-page', name: 'myPage', component: EmpMyPage},
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},

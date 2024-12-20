@@ -59,7 +59,7 @@ onMounted(()=> {
 
 <template>
   <div id="nav">
-    <div id="nav-logo">
+    <div id="nav-logo" @click="goTo('/main-page')">
       <img src="@/assets/image/logo.png" alt="로고" id="logo-image">
       <span id="logo-text">Perflow</span>
     </div>
@@ -69,7 +69,7 @@ onMounted(()=> {
       <div
           class="user-icon"
           :style="{ backgroundColor: bgColor }"
-          @click="goTo('/hr/myPage')"
+          @click="goTo('/hr/my-page')"
       >
         {{ initial }}
       </div>
@@ -92,6 +92,7 @@ onMounted(()=> {
   justify-content: center;
   align-items: center;
   margin: 0 auto; /* 가운데 정렬 */
+  cursor: pointer;
 }
 #logo-image {
   width: 50px;
