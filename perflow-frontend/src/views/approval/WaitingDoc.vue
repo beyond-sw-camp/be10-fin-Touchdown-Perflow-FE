@@ -5,6 +5,8 @@ import PagingBar from "@/components/common/PagingBar.vue";
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
 import TableBasic from "@/components/common/TableCheck.vue";
+import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
+import SearchBar from "@/components/common/SearchBar.vue";
 
 const columns = [
   // { label: "문서번호", field: "docId" },
@@ -96,51 +98,49 @@ onMounted(() => {
   <div id="header-div">
     <div id="header-top" class="flex-between">
       <p id="title">대기 문서</p>
-      <ButtonBasic
-        color="orange"
-        size="medium"
-        label="검색하기"
-        @click="fetchWaitingDocs(1)"
+    </div>
+  </div>
+
+  <div id="waiting-doc-container">
+
+  </div>
+
+  <!-- 테이블과 버튼 컨테이너 -->
+  <div id="waiting-doc-container">
+    <!-- 테이블 -->
+    <div id="waiting-doc-list">
+      <TableBasic
+          :columns="columns"
+          :rows="waitingDocs"
+          rowKey="docId"
+          :showCheckbox="true"
+          @row-selected="handleRowSelected"
+      >
+        <!-- 날짜 포맷팅 커스터마이징 -->
+        <template #createDatetime="{ value }">
+          {{ new Date(value).toLocaleString() }}
+        </template>
+      </TableBasic>
+      <!-- 페이지네이션 -->
+      <PagingBar
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          :totalItems="totalItems"
+          :pageSize="pageSize"
+          @page-changed="fetchWaitingDocs"
       />
     </div>
-    <div id="header-bottom" class="flex-between">
-      <div class="tabs">
-        <h1>header bottom 영역 - 검색 바 여기에 추가 </h1>
-      </div>
+
+    <!-- 버튼 -->
+    <div id="bulk-approve-container">
+      <ButtonBasic
+          color="orange"
+          size="medium"
+          label="일괄 승인하기"
+          @click="bulkApproveDocs"
+      />
     </div>
   </div>
-
-  <!-- 테이블  -->
-  <div id="waiting-doc-list">
-    <TableBasic
-        :columns="columns"
-        :rows="waitingDocs"
-        rowKey="docId"
-        :showCheckbox="true"
-        @row-selected="handleRowSelected"
-    >
-      <!-- 날짜 포맷팅 커스터마이징 -->
-      <template #createDatetime="{ value }">
-        {{ new Date(value).toLocaleString() }}
-      </template>
-    </TableBasic>
-  </div>
-
-  <!-- 페이지네이션 -->
-  <PagingBar
-      :currentPage="currentPage"
-      :totalPages="totalPages"
-      :totalItems="totalItems"
-      :pageSize="pageSize"
-      @page-changed="fetchWaitingDocs"
-  />
-
-  <ButtonBasic
-    color="orange"
-    size="medium"
-    label="일괄 승인하기"
-    @click="bulkApproveDocs"
-  />
 </template>
 
 <style scoped>
@@ -152,9 +152,8 @@ onMounted(() => {
   gap: 10px; /* 각 요소 간의 간격 */
   margin: 0 auto; /* 수평 중앙 정렬 */
 }
-
 #title {
-  font-size: 40px;
+  font-size: 35px;
   font-weight: bold;
   color: #3C4651;
 }
@@ -163,32 +162,29 @@ onMounted(() => {
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */
   align-items: center; /* 가로 중앙 정렬 */
-  margin-top: 120px;
+  margin-top: 50px;
 }
 #header-top, #header-bottom {
   margin-bottom: 10px;
   width: 900px;
 }
 
-.flex-between {
+#waiting-doc-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* 테이블과 버튼을 세로로 배치 */
+  gap: 10px; /* 테이블과 버튼 간 간격 */
+  width: 900px; /* 테이블과 버튼이 같은 폭 */
+  margin: 0 auto; /* 중앙 정렬 */
 }
 
-.tabs {
+#waiting-doc-list {
   display: flex;
-  gap: 20px;
-  font-size: 25px;
+  flex-direction: column; /* 테이블과 페이지네이션을 세로로 배치 */
+  gap: 10px; /* 테이블과 페이지네이션 간 간격 */
 }
 
-.tab {
-  cursor: pointer;
-  padding: 5px 10px;
-}
-
-.tab.active {
-  font-weight: bold;
-  border-bottom: 2px solid #ff6600;
+#bulk-approve-container {
+  display: flex;
+  justify-content: flex-end; /* 버튼을 오른쪽 끝으로 배치 */
 }
 </style>
