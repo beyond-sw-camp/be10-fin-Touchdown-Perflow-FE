@@ -2,6 +2,7 @@
 import SideMenuTree from "@/components/common/SideMenuTree.vue";
 import {ref} from "vue";
 import NavigationBar from "@/components/common/NavigationBar.vue";
+import Loading from "@/components/common/Loading.vue";
 
 // 사이드바 표시 상태 관리
 const isSidebarOpen = ref(false);
@@ -18,6 +19,7 @@ const hideSidebar = () => {
 </script>
 
 <template>
+  <Loading/>
   <NavigationBar/>
   <div class="app-container">
     <!-- 핫존 영역: 얇은 투명 영역으로 사용자가 마우스 올리면 사이드바가 열림 -->

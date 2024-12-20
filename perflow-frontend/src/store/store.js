@@ -25,6 +25,7 @@ export const useStore = defineStore('store', {
         currentDept: ref(null), // 현재 선택한 부서
         currentEmployees: ref([]),   // 선택된 부서와 하위 부서의 사원
         company: ref({}),
+        isLoading: ref(false)
     }),
     actions: {
         // 조직도 갱신
@@ -57,6 +58,12 @@ export const useStore = defineStore('store', {
         },
         async fetchCompany() {
             this.company = (await api.get("/company")).data;
+        },
+        showLoading() {
+            this.isLoading = true;
+        },
+        hideLoading() {
+            this.isLoading = false;
         }
     },
     persist:true

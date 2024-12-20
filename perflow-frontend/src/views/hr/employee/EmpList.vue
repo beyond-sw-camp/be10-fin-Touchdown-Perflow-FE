@@ -2,7 +2,7 @@
 
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import TableBasic from "@/components/common/TableBasic.vue";
+import TableBasic from "@/components/common/TableBasic.vue"
 import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import router from "@/router/router.js";
@@ -61,8 +61,8 @@ const goTo = (url) => {
 
 // 버튼 드롭다운에 들어갈 버튼 목록
 const menus = [
-  { label: '한명등록', icon: '', action: () => goTo('/employees/register') },
-  { label: 'CSV등록', icon: '', action: () => goTo('/employees/register/lists') },
+  { label: '한명등록', icon: '', action: () => goTo('/hr/employees/register') },
+  { label: 'CSV등록', icon: '', action: () => goTo('/hr/employees/register/lists') },
 ];
 
 // 테이블 맨 위 컬럼 값. dto의 필드명과 맞춰야함.
@@ -107,7 +107,6 @@ onMounted(() => {
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"
                 :current-page="pages.currentPage"
-                imgSize="20px" size="20px"
                 @page-changed="fetchEmpList"
     />
   </div>

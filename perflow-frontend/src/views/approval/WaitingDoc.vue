@@ -4,7 +4,7 @@ import ButtonBasic from '@/components/common/ButtonBasic.vue';
 import PagingBar from "@/components/common/PagingBar.vue";
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import TableBasic from "@/components/common/TableBasic.vue";
+import TableBasic from "@/components/common/TableCheck.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import SearchBar from "@/components/common/SearchBar.vue";
 

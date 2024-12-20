@@ -1,9 +1,4 @@
 <script setup>
-
-import PagingBar from "@/components/common/PagingBar.vue";
-
-const emit = defineEmits(["page-changed"]);
-
 defineProps({
   // 열 정보
   columns: {
@@ -67,21 +62,23 @@ defineProps({
 .table-container {
   border: 1px solid #AFA9A9; /* 바깥 테두리 색상 */
   border-radius: 10px;
-  height: 500px;
+  height: 270px;
   overflow: hidden; /* 테두리 안쪽 내용 잘림 방지 */
 }
+
 .table {
-  width: 900px;
+  width: 400px;
   table-layout: fixed; /* 열 너비를 균일하게 유지 (필요시) */
 }
 
 /* 가운데 정렬 */
 th,
 td {
-  text-align: center; /* 텍스트 가운데w 정렬 */
+  text-align: center; /* 텍스트 가운데 정렬 */
   vertical-align: middle; /* 세로 가운데 정렬 */
   font-size: 15px;
 }
+
 th {
   color: #3C4651;
   font-weight: bold;
@@ -90,9 +87,10 @@ th {
 td {
   color: #3C4651;
 }
+
 tr {
-  height: 45px;       /* 각 셀(행)의 높이 고정 */
-  line-height: 20px;  /* 텍스트를 높이 중앙에 위치시키기 */
+  height: 45px; /* 각 셀(행)의 높이 고정 */
+  line-height: 20px; /* 텍스트를 높이 중앙에 위치시키기 */
 }
 
 </style>
