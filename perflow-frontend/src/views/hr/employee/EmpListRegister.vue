@@ -5,7 +5,8 @@ import api from "@/config/axios.js";
 import FileUpload from "@/components/common/FileUpload.vue";
 import {ref} from "vue";
 import {useStore} from "@/store/store.js";
-import ButtonBack from "@/components/common/ButtonBack.vue";
+import HeaderContainer from "@/components/hr/HeaderContainer.vue";
+import router from "@/router/router.js";
 
 const selectedFile = ref([]);
 const store = useStore();
@@ -72,6 +73,7 @@ const uploadCSV = async (file) => {
       }
     });
     alert("업로드에 성공했습니다.");
+    await router.push("/hr/employees");
   }catch (error){
     alert("사원 일괄 등록 중 오류가 발생했습니다.");
   }finally {
@@ -82,15 +84,10 @@ const uploadCSV = async (file) => {
 
 <template>
   <div id="emp-list-register-container">
-    <div id="container-header">
-      <div id="header-left">
-        <p id="sub-title">구성원/구성원등록</p>
-        <p id="container-title">구성원</p>
-      </div>
-      <div>
-        <ButtonBack class="back-button"/>
-      </div>
-    </div>
+    <HeaderContainer
+      title="구성원"
+      flow="구성원/구성원등록"
+    />
     <div class="container-item" id="notice-container">
       <div id="notice"><img src="@/assets/image/check.png" alt="체크"><p>주의 사항</p></div>
       <div id="notice-item">

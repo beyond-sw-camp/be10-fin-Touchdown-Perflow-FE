@@ -32,7 +32,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits(["select","select-id"]);
 
 const isMenuOpen = ref(false);
 const selectedOption = ref(props.defaultOption);
@@ -41,10 +41,11 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
-const selectOption = (option) => {
+const selectOption = (option, id) => {
   selectedOption.value = option;
   isMenuOpen.value = false;
   emit("select", option);
+  emit("select-id", id);
 };
 </script>
 
@@ -80,7 +81,7 @@ const selectOption = (option) => {
       <li
           v-for="(option, index) in options"
           :key="index"
-          @click.stop="selectOption(option.label)"
+          @click.stop="selectOption(option.label, option.id)"
       >
         {{ option.label }}
       </li>
@@ -123,6 +124,8 @@ const selectOption = (option) => {
   left: 0;   /* 왼쪽 정렬 */
   z-index: 10; /* 다른 요소 위에 표시 */
   margin-top: 4px;
+  height: 200px;
+  overflow-y: auto; /* 스크롤이 필요할 때 스크롤바 표시 */
 }
 
 .options li {

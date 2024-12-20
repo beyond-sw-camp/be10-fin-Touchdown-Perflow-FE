@@ -18,6 +18,7 @@ import PayrollList from "@/views/payment/PayrollList.vue";
 import EmpMyPage from "@/views/hr/employee/EmpMyPage.vue";
 import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
+import EmpRegister from "@/views/hr/employee/EmpRegister.vue";
 
 
 const routes = [
@@ -28,6 +29,7 @@ const routes = [
     {path: '/hr/myPage', name: 'myPage', component: EmpMyPage},
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
+    {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
     {path: '/hr/employees/register/lists', name: 'EmpListRegister', component: EmpListRegister},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
