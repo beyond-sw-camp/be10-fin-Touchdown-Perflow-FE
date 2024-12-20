@@ -9,6 +9,7 @@ import draggable from "vuedraggable";
 import {createBasicDoc} from "@/config/approval.js";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import SearchBar from "@/components/common/SearchBar.vue";
+import router from "@/router/router.js";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -176,11 +177,16 @@ const createNewDoc = async () => {
     const data = docData();
     const response = await createBasicDoc(data);
     alert('결재 문서 생성 완료');
+    goTo("/approval/waiting");
   } catch (error) {
     alert(`결재 문서 생성에 실패했습니다. 오류: ${error.message}`);
     console.error(error);
   }
 };
+
+const goTo = (url) => {
+  router.push(url);
+}
 
 </script>
 
