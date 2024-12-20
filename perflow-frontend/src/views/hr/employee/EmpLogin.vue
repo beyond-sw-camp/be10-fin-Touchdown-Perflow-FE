@@ -2,6 +2,7 @@
 import {ref} from "vue";
 import api from "@/config/axios.js";
 import { useAuthStore } from '@/store/authStore.js';
+import router from "@/router/router.js";
 
 const empId = ref("");
 const password = ref("")
@@ -24,6 +25,7 @@ const login = async () => {
   authStore.setTokens(accessToken, refreshToken);
 
   alert("로그인 되었습니다.")
+  await router.push("/main-page");
 }
 </script>
 

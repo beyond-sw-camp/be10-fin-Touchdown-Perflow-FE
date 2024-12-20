@@ -1,9 +1,14 @@
 <script setup>
 import SideMenuTree from "@/components/common/SideMenuTree.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import NavigationBar from "@/components/common/NavigationBar.vue";
 import Loading from "@/components/common/Loading.vue";
+import {useAuthStore} from "@/store/authStore.js";
 
+const authStore = useAuthStore();
+const isLogin = computed(()=>{
+  return authStore.isLogin;
+})
 // 사이드바 표시 상태 관리
 const isSidebarOpen = ref(false);
 
@@ -31,6 +36,7 @@ const hideSidebar = () => {
     <div class="sidebar"
          :class="{ open: isSidebarOpen }"
          @mouseleave="hideSidebar"
+         v-if="isLogin"
     >
       <SideMenuTree />
     </div>
