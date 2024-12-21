@@ -1,9 +1,12 @@
 <script setup>
 const emit = defineEmits(['submit']);
+const props = defineProps({
+  text:String
+})
 </script>
 
 <template>
-  <button class="submit-button" @click="emit('submit')">로그인</button>
+  <button class="submit-button" @click="emit('submit')">{{props.text}}</button>
 </template>
 
 <style scoped>

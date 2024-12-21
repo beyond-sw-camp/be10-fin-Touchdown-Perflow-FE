@@ -71,7 +71,7 @@ onMounted(()=>{
     <ModifyInputFeild title="이름" @update-value="updateName"/>
     <ModifyInputFeild title="역할" @update-value="updateResponsibility"/>
     <ButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="deptList" @select-id="updateDept"/>
-    <SubmitButton @submit="registerJob"/>
+    <SubmitButton @submit="registerJob" text="등록하기"/>
   </div>
 </div>
 </template>

@@ -13,14 +13,13 @@ import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import PersonalKPIView from "@/views/performance/PersonalKPIView.vue";
 import TeamKPIView from "@/views/performance/TeamKPIView.vue";
-import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 import PayrollList from "@/views/payment/PayrollList.vue";
 import EmpMyPage from "@/views/hr/employee/EmpMyPage.vue";
 import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 import EmpRegister from "@/views/hr/employee/EmpRegister.vue";
 import MainPage from "@/views/MainPage.vue";
-import PositionList from "@/views/hr/employee/JobList.vue";
+import PositionList from "@/views/hr/employee/PositionList.vue";
 import JobList from "@/views/hr/employee/JobList.vue";
 
 
@@ -33,7 +32,8 @@ const routes = [
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
-    {path: '/hr/job', name: 'PositionList', component: JobList},
+    {path: '/hr/job', name: 'JobList', component: JobList},
+    {path: '/hr/position', name: 'PositionList', component: PositionList},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
