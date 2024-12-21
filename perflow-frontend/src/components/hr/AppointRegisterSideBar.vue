@@ -5,6 +5,7 @@ import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import DateSearchBar from "@/components/common/DateSearchBar.vue";
+import EmpButtonDropDown from "@/components/common/SearchButtonDropDown.vue";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -125,7 +126,7 @@ onMounted(()=>{
   <div id="modify-contents">
     <div>
       <p>사원명</p>
-      <ButtonDropDown default-option="사원을 선택하세요"
+      <EmpButtonDropDown default-option="사원을 선택하세요"
                       width="220px" height="40px" font-size="13px" :options="empList" @select-id="updateEmpId"/>
     </div>
     <div>
@@ -151,7 +152,7 @@ onMounted(()=>{
     </div>
     <div>
       <p>발령날짜</p>
-      <DateSearchBar @date="updateAppointDate"/>
+      <DateSearchBar @date="updateAppointDate" @date-selected="updateAppointDate"/>
     </div>
     <SubmitButton @submit="registerAppoint" text="등록하기"/>
   </div>
