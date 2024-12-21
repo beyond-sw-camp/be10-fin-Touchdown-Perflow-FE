@@ -6,6 +6,7 @@ import TableBasic from "@/components/common/TableBasic.vue"
 import PagingBar from "@/components/common/PagingBar.vue";
 import router from "@/router/router.js";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
+import PositionRegisterSideBar from "@/components/hr/JobRegisterSideBar.vue";
 
 const jobs = ref([]);
 
@@ -42,11 +43,20 @@ const goTo = (url) => {
 
 // 테이블 맨 위 컬럼 값. dto의 필드명과 맞춰야함.
 const columns = [
-  { field: 'jobId',    label: '직위번호'  },
-  { field: 'name', label: '직위명'  },
+  { field: 'jobId',    label: '직책번호'  },
+  { field: 'name', label: '직책명'  },
   { field: 'deptName',      label: '담당부서명'  },
   { field: 'responsibility',     label: '설명'  },
 ];
+
+const isSidebarOpen = ref(false)
+
+function showSidebar() {
+  isSidebarOpen.value = true;
+}
+function hideSidebar() {
+  isSidebarOpen.value = false;
+}
 
 onMounted(() => {
   fetchJobList(1)
@@ -55,18 +65,20 @@ onMounted(() => {
 </script>
 
 <template>
+  <PositionRegisterSideBar :isSidebarOpen="isSidebarOpen" @close-sidebar="hideSidebar" title="직위 등록"/>
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">직위 관리</p>
+      <p id="title">직책 관리</p>
       <ButtonBasic
           label="등록 하기"
           size="medium"
+          @click="showSidebar"
       />
     </div>
   </div>
 
   <!-- 표 사용 -->
-  <div id="empList-div">
+  <div id="jobList-div">
     <p id="total">{{pages.totalItems}}개</p>
     <TableBasic :row-key="'id'" :rows="jobs" :columns="columns"/>
     <paging-bar :page-size="pages.pageSize"
@@ -79,7 +91,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-#empList-div {
+#jobList-div {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */
@@ -100,7 +112,7 @@ onMounted(() => {
   align-items: center; /* 가로 중앙 정렬 */
   margin-top: 50px;
 }
-#header-top, #header-bottom {
+#header-top {
   margin-bottom: 10px;
   width: 900px;
 }
@@ -118,19 +130,4 @@ onMounted(() => {
   align-items: center;
 }
 
-.tabs {
-  display: flex;
-  gap: 20px;
-  font-size: 20px;
-}
-
-.tab {
-  cursor: pointer;
-  padding: 5px 10px;
-}
-
-.tab.active {
-  font-weight: bold;
-  border-bottom: 2px solid #ff6600;
-}
 </style>

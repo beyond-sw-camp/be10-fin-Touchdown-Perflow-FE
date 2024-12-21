@@ -20,7 +20,8 @@ import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 import EmpRegister from "@/views/hr/employee/EmpRegister.vue";
 import MainPage from "@/views/MainPage.vue";
-import PositionList from "@/views/hr/employee/PositionList.vue";
+import PositionList from "@/views/hr/employee/JobList.vue";
+import JobList from "@/views/hr/employee/JobList.vue";
 
 
 const routes = [
@@ -32,7 +33,7 @@ const routes = [
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
-    {path: '/hr/position', name: 'PositionList', component: PositionList},
+    {path: '/hr/job', name: 'PositionList', component: JobList},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
