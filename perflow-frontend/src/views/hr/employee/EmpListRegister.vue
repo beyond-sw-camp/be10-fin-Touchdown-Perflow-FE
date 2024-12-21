@@ -75,7 +75,11 @@ const uploadCSV = async (file) => {
     alert("업로드에 성공했습니다.");
     await router.push("/hr/employees");
   }catch (error){
-    alert("사원 일괄 등록 중 오류가 발생했습니다.");
+    if (error.response.data.message){
+      alert(error.response.data.message);
+    } else {
+      alert("사원 일괄 등록 중 오류가 발생했습니다.");
+    }
   }finally {
     store.hideLoading();
   }

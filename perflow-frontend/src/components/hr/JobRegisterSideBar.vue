@@ -43,7 +43,11 @@ const registerJob = async () => {
     alert("직책 등록 성공!.")
     location.reload(true);
   } catch (error) {
-    alert("직책 등록 중 오류가 발생했습니다.")
+    if (error.response.data.message){
+      alert(error.response.data.message);
+    } else {
+      alert("직책 등록 중 오류가 발생했습니다.")
+    }
   }
 
 }
