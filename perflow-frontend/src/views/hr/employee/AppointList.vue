@@ -6,9 +6,9 @@ import TableBasic from "@/components/common/TableBasic.vue"
 import PagingBar from "@/components/common/PagingBar.vue";
 import router from "@/router/router.js";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
-import PositionRegisterSideBar from "@/components/hr/JobRegisterSideBar.vue";
+import AppointRegisterSideBar from "@/components/hr/AppointRegisterSideBar.vue";
 
-const jobs = ref([]);
+const appoints = ref([]);
 
 // 페이지에 들어갈 변수 목록
 const pages = ref({
@@ -19,14 +19,14 @@ const pages = ref({
 });
 
 // 사원 목록 조회
-const fetchJobList = async (page) => {
+const fetchAppointList = async (page) => {
 
-  const response = (await api.get("/job", {
+  const response = (await api.get("/hr/appoint", {
     params: {
       page: page
     }
   })).data;
-  jobs.value = response.jobResponseDTOList;
+  appoints.value = response.appointResponseList;
 
   pages.value = {
     currentPage: response.currentPage,
@@ -43,10 +43,11 @@ const goTo = (url) => {
 
 // 테이블 맨 위 컬럼 값. dto의 필드명과 맞춰야함.
 const columns = [
-  { field: 'jobId',    label: '직책번호'  },
-  { field: 'name', label: '직책명'  },
-  { field: 'deptName',      label: '담당부서명'  },
-  { field: 'responsibility',     label: '직책 담당 업무'  },
+  { field: 'empName',    label: '사원명'  },
+  { field: 'type', label: '발령구분'  },
+  { field: 'before',      label: '발령전'  },
+  { field: 'after',     label: '발령후'  },
+  { field: 'appointDate',     label: '발령일'  },
 ];
 
 const isSidebarOpen = ref(false)
@@ -59,16 +60,16 @@ function hideSidebar() {
 }
 
 onMounted(() => {
-  fetchJobList(1)
+  fetchAppointList(1);
 });
 
 </script>
 
 <template>
-  <PositionRegisterSideBar :isSidebarOpen="isSidebarOpen" @close-sidebar="hideSidebar" title="직위 등록"/>
+  <AppointRegisterSideBar :isSidebarOpen="isSidebarOpen" @close-sidebar="hideSidebar" title="발령 등록"/>
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">직책 관리</p>
+      <p id="title">발령 관리</p>
       <ButtonBasic
           label="등록 하기"
           size="medium"
@@ -80,12 +81,12 @@ onMounted(() => {
   <!-- 표 사용 -->
   <div id="jobList-div">
     <p id="total">{{pages.totalItems}}개</p>
-    <TableBasic :row-key="'id'" :rows="jobs" :columns="columns"/>
+    <TableBasic :row-key="'id'" :rows="appoints" :columns="columns"/>
     <paging-bar :page-size="pages.pageSize"
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"
                 :current-page="pages.currentPage"
-                @page-changed="fetchJobList"
+                @page-changed="fetchAppointList"
     />
   </div>
 </template>

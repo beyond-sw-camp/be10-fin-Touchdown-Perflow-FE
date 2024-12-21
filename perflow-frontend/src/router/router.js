@@ -21,6 +21,7 @@ import EmpRegister from "@/views/hr/employee/EmpRegister.vue";
 import MainPage from "@/views/MainPage.vue";
 import PositionList from "@/views/hr/employee/PositionList.vue";
 import JobList from "@/views/hr/employee/JobList.vue";
+import AppointList from "@/views/hr/employee/AppointList.vue";
 
 
 const routes = [
@@ -34,7 +35,7 @@ const routes = [
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
-    {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
+    {path: '/hr/appoint', name: 'appointList', component: AppointList},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},

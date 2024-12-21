@@ -124,7 +124,7 @@ const selectOption = (option, id) => {
   left: 0;   /* 왼쪽 정렬 */
   z-index: 10; /* 다른 요소 위에 표시 */
   margin-top: 4px;
-  height: 200px;
+  max-height: 200px;
   overflow-y: auto; /* 스크롤이 필요할 때 스크롤바 표시 */
 }
 

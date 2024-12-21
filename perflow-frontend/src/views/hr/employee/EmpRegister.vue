@@ -105,6 +105,11 @@ const registerEmp = async () => {
     await router.push("/hr/employees");
   } catch (error) {
     store.hideLoading();
+    if (error.response.data.message){
+      alert(error.response.data.message);
+    } else {
+      alert("사원 등록 중 오류가 발생했습니다.");
+    }
   }
 }
 
