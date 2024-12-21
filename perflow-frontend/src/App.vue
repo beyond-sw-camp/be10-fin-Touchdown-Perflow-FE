@@ -82,7 +82,7 @@ const hideSidebar = () => {
   overflow-x: hidden;
   overflow-y: auto; /* 스크롤이 필요할 때 스크롤바 표시 */
   z-index: 20; /* 핫존 위에 표시 */
-  /* Firefox 전용: 얇은 스크롤바 및 색상 지정 */
+  background-color: white;
 }
 /* 스크롤바 전체 영역 */
 .sidebar::-webkit-scrollbar {
