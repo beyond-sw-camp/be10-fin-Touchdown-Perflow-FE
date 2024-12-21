@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import {ref, watch} from 'vue';
 import Datepicker from 'vue3-datepicker'; // vue3-datepicker 라이브러리 가져오기
 
 // Props 정의
@@ -28,7 +28,7 @@ const props = defineProps({
 
 // 검색어를 관리할 변수
 const searchDate = ref('');
-const emit = defineEmits(['date']); // 부모에게 전달할 이벤트 선언
+const emit = defineEmits(['date','dateSelected']); // 부모에게 전달할 이벤트 선언
 
 // Datepicker 열기 위한 ref
 const datepickerRef = ref(null);
@@ -37,6 +37,12 @@ const datepickerRef = ref(null);
 const emitSearch = () => {
   emit('date', searchDate.value); // search 이벤트 발생, 검색어 전달
 };
+// watch를 사용하여 searchDate가 변경될 때 이벤트 emit
+watch(searchDate, (newDate) => {
+  if (newDate) {
+    emit('dateSelected', newDate)
+  }
+})
 
 </script>
 

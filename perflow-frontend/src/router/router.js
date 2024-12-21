@@ -19,9 +19,9 @@ import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 import EmpRegister from "@/views/hr/employee/EmpRegister.vue";
 import MainPage from "@/views/MainPage.vue";
-import PositionList from "@/views/hr/employee/PositionList.vue";
-import JobList from "@/views/hr/employee/JobList.vue";
-import AppointList from "@/views/hr/employee/AppointList.vue";
+import PositionList from "@/views/hr/PositionList.vue";
+import JobList from "@/views/hr/JobList.vue";
+import AppointList from "@/views/hr/AppointList.vue";
 
 
 const routes = [

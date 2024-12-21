@@ -72,8 +72,9 @@ onMounted(()=>{
     <p id="title">{{props.title}}</p>
   </div>
   <div id="modify-contents">
-    <ModifyInputFeild title="이름" @update-value="updateName"/>
-    <ModifyInputFeild title="역할" @update-value="updateResponsibility"/>
+    <ModifyInputFeild title="직책명" @update-value="updateName"/>
+    <ModifyInputFeild title="직책담당업무" @update-value="updateResponsibility"/>
+    <p class="sub-title">부서</p>
     <ButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="deptList" @select-id="updateDept"/>
     <SubmitButton @submit="registerJob" text="등록하기"/>
   </div>
@@ -123,5 +124,9 @@ p{
 #title {
   font-weight: bold;
   font-size: 20px;
+}
+.sub-title {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 </style>

@@ -163,7 +163,7 @@ onMounted(async ()=>{
       <AddressInputField @update-value="updateAddress"/>
       <div class="dropdown-container2">
         <p class="item-title">입사일</p>
-        <DateSearchBar width="200px" height="40px" @date="updateJoinDate"/>
+        <DateSearchBar width="200px" height="40px" @date="updateJoinDate" @date-selected="updateJoinDate"/>
         <div>
           <span class="radio-text">남성</span><input class="radio-button" type="radio" name="gender" @click="updateGender('MALE')">
           <span class="radio-text">여성</span><input class="radio-button" type="radio" name="gender" @click="updateGender('FEMALE')">
