@@ -22,6 +22,7 @@ import MainPage from "@/views/MainPage.vue";
 import PositionList from "@/views/hr/PositionList.vue";
 import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
+import Company from "@/views/hr/company/Company.vue";
 
 
 const routes = [
@@ -29,13 +30,14 @@ const routes = [
 
     {path: '/', name: 'LoginPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
-    {path: '/hr/my-page', name: 'myPage', component: EmpMyPage},
+    {path: '/hr/my-page', name: 'MyPage', component: EmpMyPage},
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
-    {path: '/hr/appoint', name: 'appointList', component: AppointList},
+    {path: '/hr/appoint', name: 'AppointList', component: AppointList},
+    {path: '/hr/company', name: 'Company', component: Company},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
