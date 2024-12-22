@@ -99,6 +99,32 @@ onMounted(() => {
     <div id="header-top" class="flex-between">
       <p id="title">대기 문서</p>
     </div>
+    <div id="header-bottom" class="flex-between">
+      <div class="conditions">
+        <SearchBar
+            @search=""
+            width="300px"
+            height="40px"
+            font-size="15px"
+            placeholder="제목"
+        />
+        <SearchBar
+          @search=""
+          width="200px"
+          height="40px"
+          font-size="15px"
+          placeholder="작성자"
+        />
+        <!-- 날짜 -->
+      </div>
+
+      <ButtonBasic
+        color="orange"
+        size="medium"
+        label="검색하기"
+        @click="handleClick"
+      />
+    </div>
   </div>
 
   <div id="waiting-doc-container">
