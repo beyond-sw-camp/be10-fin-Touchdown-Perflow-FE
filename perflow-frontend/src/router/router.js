@@ -22,6 +22,7 @@ import MainPage from "@/views/MainPage.vue";
 import PositionList from "@/views/hr/PositionList.vue";
 import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
+import PayrollDetail from "@/views/payment/PayrollDetail.vue";
 
 
 const routes = [
@@ -45,6 +46,7 @@ const routes = [
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
     {path: '/main-page', name: 'MainPage', component: MainPage},
+    {path: '/payment/payroll-detail/:payrollId', name:'PayrollDetail', component: PayrollDetail},
     //근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
