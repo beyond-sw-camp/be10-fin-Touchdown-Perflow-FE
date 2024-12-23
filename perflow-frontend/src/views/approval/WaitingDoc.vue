@@ -5,11 +5,9 @@ import PagingBar from "@/components/common/PagingBar.vue";
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
 import TableBasic from "@/components/common/TableCheck.vue";
-import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
-import SearchBar from "@/components/common/SearchBar.vue";
+import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 
 const columns = [
-  // { label: "문서번호", field: "docId" },
   { label: "제목", field: "title" },
   { label: "작성자", field: "createUserName" },
   { label: "작성일", field: "createDatetime" }
@@ -22,6 +20,12 @@ const currentPage = ref(1);     // 현재 페이지 번호
 const pageSize = 10;            // 페이지당 문서 수
 
 const selectedRows = ref([]);
+const searchCriteria = ref({
+  title: "",
+  createUser: "",
+  fromDate: null,
+  toDate: null,
+});
 
 // 대기 문서 목록 조회
 const fetchWaitingDocs = async (page = 1) => {
@@ -87,6 +91,36 @@ const handleRowSelected = (selected) => {
   selectedRows.value = selected;
 }
 
+// 검색 조건 변경 처리
+const handleSearch = () => {
+  console.log("검색 조건: ", searchCriteria.value);
+  currentPage.value = 1;  // 검색 시 페이지를 처음으로 초기화
+  fetchWaitingDocsWithCriteria();
+};
+
+// 검색하기
+const fetchWaitingDocsWithCriteria = async (page = 1) => {
+  console.log("검색 조건으로 api 호출: ", searchCriteria.value);
+  try {
+    const response = await api.get("/approval/waiting-docs/search", {
+      params: {
+        ...searchCriteria.value,
+        page: page - 1,
+        size: pageSize
+      },
+    });
+    waitingDocs.value = response.data.content;
+    totalPages.value = response.data.totalPages;
+    totalItems.value = response.data.totalElements;
+    currentPage.value = response.data.number + 1;
+
+    console.log("검색 결과: ", response.data.content);
+  } catch (error) {
+    console.error("검색 실패", error);
+    waitingDocs.value = [];
+  }
+}
+
 onMounted(() => {
   fetchWaitingDocs();
 });
@@ -99,10 +133,36 @@ onMounted(() => {
     <div id="header-top" class="flex-between">
       <p id="title">대기 문서</p>
     </div>
-  </div>
-
-  <div id="waiting-doc-container">
-
+    <div id="header-bottom" class="flex-between">
+      <div class="conditions">
+        <SearchGroupBar
+          v-model ="searchCriteria.title"
+          placeholder="제목"
+          type="text"
+        />
+        <SearchGroupBar
+            v-model ="searchCriteria.createUser"
+            placeholder="작성자"
+            type="text"
+        />
+        <SearchGroupBar
+            v-model ="searchCriteria.fromDate"
+            placeholder="작성일(시작)"
+            type="text"
+        />
+        <SearchGroupBar
+            v-model ="searchCriteria.toDate"
+            placeholder="작성일(끝)"
+            type="text"
+        />
+      </div>
+      <ButtonBasic
+          color="orange"
+          size="medium"
+          label="검색하기"
+          @click="handleSearch"
+      />
+    </div>
   </div>
 
   <!-- 테이블과 버튼 컨테이너 -->
