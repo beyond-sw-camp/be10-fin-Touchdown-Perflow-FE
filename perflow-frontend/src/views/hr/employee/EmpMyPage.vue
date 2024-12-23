@@ -3,7 +3,7 @@ import ButtonBack from "@/components/common/ButtonBack.vue";
 import api from "@/config/axios.js";
 import {onMounted, ref} from "vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
-import ModifySideBar from "@/components/hr/modifySideBar.vue";
+import ModifySideBar from "@/components/hr/EmployeeModifySideBar.vue";
 
 const employee = ref({});
 let statusText = ref();
@@ -12,10 +12,10 @@ const isSidebarOpen = ref(false)
 
 function showSidebar() {
   isSidebarOpen.value = true;
-};
+}
 function hideSidebar() {
   isSidebarOpen.value = false;
-};
+}
 
 const fetchEmp = async () => {
   const response = await api.get("/employees");

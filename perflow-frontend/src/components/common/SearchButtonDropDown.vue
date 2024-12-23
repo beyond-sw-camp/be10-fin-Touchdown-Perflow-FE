@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
+import SearchBar from "@/components/common/SearchBar.vue";
 
 const props = defineProps({
   options: {
@@ -32,6 +33,21 @@ const props = defineProps({
   }
 });
 
+const search = ref("");
+
+const updateSearch = (value) => {
+  search.value = value;
+}
+
+// 검색어를 포함하는 옵션을 필터링하는 computed 프로퍼티
+const searchOptions = computed(() => {
+  if (!search.value) {
+    return props.options;
+  }
+  return props.options.filter(option =>
+      option.label.includes(search.value)
+  );
+});
 const emit = defineEmits(["select","select-id"]);
 
 const isMenuOpen = ref(false);
@@ -39,10 +55,11 @@ const selectedOption = ref(props.defaultOption);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
+  search.value = "";
 };
 
 const selectOption = (option, id) => {
-  selectedOption.value = option;
+  selectedOption.value = option + "(" + id + ")";
   isMenuOpen.value = false;
   emit("select", option);
   emit("select-id", id);
@@ -53,7 +70,6 @@ const selectOption = (option, id) => {
   <div
       class="dropdown-container btn-gray"
       :style="{ width: width, height: height, fontSize: fontSize }"
-      @click="toggleMenu"
   >
     <!-- 선택된 옵션 -->
     <div class="selected-option">
@@ -63,12 +79,14 @@ const selectOption = (option, id) => {
           src="../../assets/image/arrow_up_2.png"
           alt="up"
           :style="{ width: imgSize, height: imgSize, marginLeft: marginLeft }"
+          @click="toggleMenu"
       />
       <img
           v-else
           src="../../assets/image/arrow_down_2.png"
           alt="down"
           :style="{ width: imgSize, height: imgSize, marginLeft: marginLeft }"
+          @click="toggleMenu"
       />
     </div>
 
@@ -78,12 +96,13 @@ const selectOption = (option, id) => {
         class="options"
         :style="{ fontSize: fontSize, width: width }"
     >
+      <li><SearchBar width="180px" height="30px" font-size="12px" placeholder="사원명 입력" @search="updateSearch"/></li>
       <li
-          v-for="(option, index) in options"
+          v-for="(option, index) in searchOptions"
           :key="index"
           @click.stop="selectOption(option.label, option.id)"
       >
-        {{ option.label }}
+        {{ option.label }} ( {{option.id}} )
       </li>
     </ul>
   </div>

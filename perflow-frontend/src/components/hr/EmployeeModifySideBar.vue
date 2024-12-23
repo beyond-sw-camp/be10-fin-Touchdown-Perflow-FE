@@ -41,7 +41,11 @@ const updateEmployee = async () => {
     alert("정보 수정 성공!.")
     location.reload(true);
   } catch (error) {
-    alert("정보 수정중 오류가 발생했습니다.")
+    if (error.response.data.message){
+      alert(error.response.data.message);
+    } else {
+      alert("정보 수정 중 오류가 발생했습니다.")
+    }
   }
 
 }
@@ -61,7 +65,7 @@ function closeSidebar() {
     <ModifyInputFeild title="연락처" @update-value="updateContact"/>
     <ModifyInputFeild title="이메일" @update-value="updateEmail"/>
     <AddressInputFeild @update-value="updateAddress"/>
-    <SubmitButton @submit="updateEmployee"/>
+    <SubmitButton @submit="updateEmployee" text="수정하기"/>
   </div>
 </div>
 </template>

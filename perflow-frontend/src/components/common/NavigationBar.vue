@@ -21,8 +21,9 @@ const fetchTimer = () => {
     authStore.startTimer();
   }
 };
-const refresh = () => {
-  authStore.refreshAccessToken();
+const refresh =  async () => {
+  await authStore.refreshAccessToken();
+  alert("로그인 시간이 연장되었습니다.")
 }
 
 const initial = computed(() => {

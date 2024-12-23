@@ -13,13 +13,15 @@ import WaitingDoc from "@/views/approval/WaitingDoc.vue";
 import EmpList from "@/views/hr/employee/EmpList.vue";
 import PersonalKPIView from "@/views/performance/PersonalKPIView.vue";
 import TeamKPIView from "@/views/performance/TeamKPIView.vue";
-import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
 import PayrollList from "@/views/payment/PayrollList.vue";
 import EmpMyPage from "@/views/hr/employee/EmpMyPage.vue";
 import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 import EmpRegister from "@/views/hr/employee/EmpRegister.vue";
 import MainPage from "@/views/MainPage.vue";
+import PositionList from "@/views/hr/PositionList.vue";
+import JobList from "@/views/hr/JobList.vue";
+import AppointList from "@/views/hr/AppointList.vue";
 
 
 const routes = [
@@ -31,7 +33,9 @@ const routes = [
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
-    {path: '/hr/employees/register/lists', name: 'EmpListRegister', component: EmpListRegister},
+    {path: '/hr/job', name: 'JobList', component: JobList},
+    {path: '/hr/position', name: 'PositionList', component: PositionList},
+    {path: '/hr/appoint', name: 'appointList', component: AppointList},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
@@ -55,7 +59,17 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
+    // 라우팅 시 화면 최 상단으로 이동됨.
+    scrollBehavior(to, from, savedPosition) {
+        // savedPosition이 있는 경우(예: 뒤로 가기), 해당 위치로 이동
+        if (savedPosition) {
+            return savedPosition;
+        } else {
+            // 새로운 페이지 이동 시 맨 위로 스크롤
+            return { top: 0 };
+        }
+    }
 })
 
 export default router

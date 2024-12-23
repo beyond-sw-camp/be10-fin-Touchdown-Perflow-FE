@@ -105,6 +105,11 @@ const registerEmp = async () => {
     await router.push("/hr/employees");
   } catch (error) {
     store.hideLoading();
+    if (error.response.data.message){
+      alert(error.response.data.message);
+    } else {
+      alert("사원 등록 중 오류가 발생했습니다.");
+    }
   }
 }
 
@@ -158,7 +163,7 @@ onMounted(async ()=>{
       <AddressInputField @update-value="updateAddress"/>
       <div class="dropdown-container2">
         <p class="item-title">입사일</p>
-        <DateSearchBar width="200px" height="40px" @date="updateJoinDate"/>
+        <DateSearchBar width="200px" height="40px" @date="updateJoinDate" @date-selected="updateJoinDate"/>
         <div>
           <span class="radio-text">남성</span><input class="radio-button" type="radio" name="gender" @click="updateGender('MALE')">
           <span class="radio-text">여성</span><input class="radio-button" type="radio" name="gender" @click="updateGender('FEMALE')">
