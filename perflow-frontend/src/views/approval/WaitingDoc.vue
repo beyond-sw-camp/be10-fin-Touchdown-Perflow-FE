@@ -4,8 +4,9 @@ import ButtonBasic from '@/components/common/ButtonBasic.vue';
 import PagingBar from "@/components/common/PagingBar.vue";
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import TableBasic from "@/components/common/TableCheck.vue";
+import TableCheck from "@/components/common/TableCheck.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
+import router from "@/router/router.js";
 
 const columns = [
   { label: "제목", field: "title" },
@@ -98,6 +99,12 @@ const handleSearch = () => {
   fetchWaitingDocsWithCriteria();
 };
 
+// 특정 열(제목) 클릭 시
+const handleTitleClick = (row) => {
+
+    router.push({ name: "basicDetail", query: { docId: row.docId } });
+}
+
 // 검색하기
 const fetchWaitingDocsWithCriteria = async (page = 1) => {
   console.log("검색 조건으로 api 호출: ", searchCriteria.value);
@@ -169,18 +176,26 @@ onMounted(() => {
   <div id="waiting-doc-container">
     <!-- 테이블 -->
     <div id="waiting-doc-list">
-      <TableBasic
+      <TableCheck
           :columns="columns"
           :rows="waitingDocs"
           rowKey="docId"
           :showCheckbox="true"
           @row-selected="handleRowSelected"
       >
+        <template #title="{ row }">
+          <span
+            class="clickable-title"
+            @click.stop="handleTitleClick(row)"
+          >
+            {{ row.title }}
+          </span>
+        </template>
         <!-- 날짜 포맷팅 커스터마이징 -->
         <template #createDatetime="{ value }">
           {{ new Date(value).toLocaleString() }}
         </template>
-      </TableBasic>
+      </TableCheck>
       <!-- 페이지네이션 -->
       <PagingBar
           :currentPage="currentPage"
@@ -246,5 +261,13 @@ onMounted(() => {
 #bulk-approve-container {
   display: flex;
   justify-content: flex-end; /* 버튼을 오른쪽 끝으로 배치 */
+}
+.clickable-title {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.clickable-title:hover {
+  color: darkblue;
 }
 </style>

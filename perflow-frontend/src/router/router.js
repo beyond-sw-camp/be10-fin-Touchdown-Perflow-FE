@@ -22,6 +22,7 @@ import MainPage from "@/views/MainPage.vue";
 import PositionList from "@/views/hr/PositionList.vue";
 import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
+import TemplateBasicRead from "@/views/approval/TemplateBasicRead.vue";
 
 
 const routes = [
@@ -38,11 +39,15 @@ const routes = [
     {path: '/hr/appoint', name: 'appointList', component: AppointList},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
+    // 결재
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
+    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
+    {path: '/approval/basic/detail', name: 'basicDetail', component: TemplateBasicRead},
+
+
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
-    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
     {path: '/main-page', name: 'MainPage', component: MainPage},
     //근태

@@ -51,11 +51,6 @@ const toggleRowSelection = (row) => {
   emit("row-selected", Array.from(selectedRows.value));
 };
 
-// 특정 열(제목) 클릭 시
-const handleTitleClick = (row) => {
-  emit("title-clicked", row); // 제목 클릭 시 데이터 전달
-}
-
 // row 선택되었는지 확인
 const isRowSelected = (row) => selectedRows.value.has(row);
 

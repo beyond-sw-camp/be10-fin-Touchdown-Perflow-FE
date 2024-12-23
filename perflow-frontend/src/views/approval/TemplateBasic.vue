@@ -1,10 +1,10 @@
 <script setup>
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import InputField from "@/components/common/InputField.vue";
-import ApprovalShareBox from "@/components/common/ApprovalShareBox.vue";
+import ApprovalShareBox from "@/components/approval/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
 import {ref} from "vue";
-import OrganizationTree from "@/components/common/OrganizationTree.vue";
+import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createBasicDoc} from "@/config/approval.js";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
