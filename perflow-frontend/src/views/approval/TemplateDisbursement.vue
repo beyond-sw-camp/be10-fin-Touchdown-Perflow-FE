@@ -9,6 +9,7 @@ import draggable from "vuedraggable";
 import {createBasicDoc} from "@/config/approval.js";
 import router from "@/router/router.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -145,7 +146,10 @@ const addToShareList = () => {
 };
 
 const title = ref('');  // 문서 제목
-const content = ref('');  // 문서 내용
+const expendDate = ref(""); // 지출일
+const rows = ref([
+  { vendor: "", usage: "", amount: 0 }, // 초기 한 행
+]);
 
 // 결재 문서 데이터
 const docData = () => {
@@ -207,7 +211,7 @@ const goTo = (url) => {
     </div>
     <div id="header-bottom" class="flex-between">
       <div class="tabs">
-        <span class="tab active">기본 서식</span>
+        <span class="tab active">지출 결의서</span>
       </div>
     </div>
   </div>
@@ -226,16 +230,44 @@ const goTo = (url) => {
           width="600px"
       />
 
-      <!-- 내용 -->
-      <InputField
-          v-model="content"
-          label="내용"
-          placeholder="내용을 입력해 주세요."
-          type="textarea"
-          :isRequired="true"
-          height="400px"
-          width="600px"
-      />
+      <!-- 지출일 -->
+
+      <!-- 테이블 -->
+      <div class="table-container">
+        <table class="expense-table">
+          <thead>
+          <tr>
+            <th>거래처</th>
+            <th>사용내역</th>
+            <th>금액</th>
+            <th>삭제</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(row, index) in rows" :key="index">
+            <td>
+              <input v-model="row.vendor" type="text" placeholder="거래처 입력" />
+            </td>
+            <td>
+              <input v-model="row.usage" type="text" placeholder="사용내역 입력" />
+            </td>
+            <td>
+              <input v-model="row.amount" type="number" placeholder="금액 입력" />
+            </td>
+            <td>
+              <button @click="deleteRow(index)">삭제</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <button @click="addRow">+</button>
+      </div>
+
+      <!-- 합계 -->
+      <div class="total">
+        <span>합계 {{ totalAmount }} 원 </span>
+      </div>
+
 
       <div class="button-group">
         <ButtonBasic
@@ -259,12 +291,12 @@ const goTo = (url) => {
       <!-- 드롭 다운 -->
       <span class="dropdown-title">서식 선택</span>
       <ButtonDropDown
-        :options="dropdownOptions"
-        defaultOption="기본 서식"
-        width="155px"
-        height="35px"
-        fontSize="15px"
-        @selectId="handleDropdownSelect"
+          :options="dropdownOptions"
+          defaultOption="기본 서식"
+          width="155px"
+          height="35px"
+          fontSize="15px"
+          @selectId="handleDropdownSelect"
       />
 
       <ApprovalShareBox
@@ -368,8 +400,8 @@ const goTo = (url) => {
                     size="small"
                     @click="deleteApproveSelectedRows"
                 />
-                </div>
               </div>
+            </div>
 
           </div>
         </template>
@@ -450,8 +482,8 @@ const goTo = (url) => {
 <style scoped>
 .main-container {
   display: flex;
-  justify-content: center;  /* 중앙 정렬 */
-  align-items: center;  /* 세로 정렬 */
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center; /* 세로 정렬 */
   gap: 0px;
 }
 
@@ -620,6 +652,7 @@ const goTo = (url) => {
   font-weight: bold;
   color: #3C4651;
 }
+
 #header-div {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
@@ -627,10 +660,12 @@ const goTo = (url) => {
   align-items: center; /* 가로 중앙 정렬 */
   margin-top: 50px;
 }
+
 #header-top, #header-bottom {
   margin-bottom: 10px;
   width: 900px;
 }
+
 .tabs {
   display: flex;
   gap: 20px;

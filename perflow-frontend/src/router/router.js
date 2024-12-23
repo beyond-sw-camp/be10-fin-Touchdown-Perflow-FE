@@ -23,6 +23,8 @@ import PositionList from "@/views/hr/PositionList.vue";
 import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
 import TemplateBasicRead from "@/views/approval/TemplateBasicRead.vue";
+import TemplateWorkReport from "@/views/approval/TemplateWorkReport.vue";
+import TemplateDisbursement from "@/views/approval/TemplateDisbursement.vue";
 
 
 const routes = [
@@ -44,6 +46,8 @@ const routes = [
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/approval/basic/detail', name: 'basicDetail', component: TemplateBasicRead},
+    {path: '/approval/create/work-report', name: 'workReport', component: TemplateWorkReport},
+    {path: '/approval/create/disbursement', name: 'cashDisbursement', component: TemplateDisbursement},
 
 
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
