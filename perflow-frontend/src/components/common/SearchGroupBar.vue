@@ -1,7 +1,9 @@
 <script setup>
+import Datepicker from 'vue3-datepicker';
+
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: [String, Date],
     default: "",
   },
   placeholder: {
@@ -13,24 +15,37 @@ const props = defineProps({
     default: "text", // 'text' 또는 'date'
   },
 });
+
 const emit = defineEmits(["update:modelValue"]);
 
-const updateValue = (event) => {
-  emit("update:modelValue", event.target.value);
+const updateValue = (value) => {
+  emit("update:modelValue", value); // 부모 컴포넌트로 값 전달
 };
 </script>
 
 <template>
   <div class="search-group-bar">
+    <!-- 텍스트 입력 필드 -->
     <input
+        v-if="type === 'text'"
         :type="type"
         :value="modelValue"
-        @input="updateValue"
+        @input="updateValue($event.target.value)"
         :placeholder="placeholder"
         class="search-input"
     />
+    <!-- 날짜 선택 필드 -->
+    <Datepicker
+        v-else
+        :model-value="modelValue"
+        @update:model-value="updateValue"
+        :placeholder="placeholder"
+        :format="'YYYY-MM-DD'"
+        :clearable="true"
+        :masks="{ input: 'YYYY-MM-DD' }"
+        class="datepicker"
+    />
   </div>
-
 </template>
 
 <style scoped>
@@ -39,7 +54,8 @@ const updateValue = (event) => {
   margin-right: 10px;
 }
 
-.search-input {
+.search-input,
+.datepicker {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
