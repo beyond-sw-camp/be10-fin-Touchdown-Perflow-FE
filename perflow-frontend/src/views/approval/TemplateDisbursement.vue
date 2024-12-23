@@ -3,7 +3,7 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import InputField from "@/components/common/InputField.vue";
 import ApprovalShareBox from "@/components/approval/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createBasicDoc} from "@/config/approval.js";
@@ -151,14 +151,40 @@ const rows = ref([
   { vendor: "", usage: "", amount: 0 }, // 초기 한 행
 ]);
 
+// 합계 계산
+const totalAmount = computed(() => {
+  return rows.value.reduce((sum, row) => sum + Number(row.amount || 0), 0);
+});
+
+
+// 행 추가
+const addRow = () => {
+  rows.value.push({ vendor: "", uasge: "", amount: 0 })
+}
+
+// 행 삭제
+const deleteRow = (index) => {
+  rows.value.splice(index, 1);
+}
+
 // 결재 문서 데이터
 const docData = () => {
+
+  const fields = {
+    expendDate: expendDate.value  // 지출일
+  }
+
+  rows.value.forEach((row, index) => {
+    const number = index + 1; // 1부터 시작
+    fields[`VENDOR${number}`] = row.vendor;
+    fields[`USAGE${number}`] = row.usage;
+    fields[`AMOUNT${number}`] = row.amount;
+  });
+
   return {
-    templateId: 4, // 기본 서식 id
+    templateId: 5, // 지출 결의서 서식 id
     title: title.value, // 문서 제목
-    fields: {
-      CONTENT: content.value, // 기본 서식의 필드 데이터
-    },
+    fields: fields,
     approveLines: approvalList.value.map((line, index) => ({
       groupId: null,
       approveType: line.approveType,
@@ -181,7 +207,7 @@ const docData = () => {
 
 const createNewDoc = async () => {
 
-  if (!title.value || !content.value) {
+  if (!title.value) {
     alert('빈 칸을 모두 채워주세요.');
     return;
   }
@@ -231,8 +257,14 @@ const goTo = (url) => {
       />
 
       <!-- 지출일 -->
+      <label for="expendDate">지출일*</label>
+      <SearchGroupBar
+          v-model="expendDate"
+          placeholder="지출일 선택"
+          type="date"
+      />
 
-      <!-- 테이블 -->
+      <!-- 지출 내역 테이블 -->
       <div class="table-container">
         <table class="expense-table">
           <thead>
@@ -240,22 +272,22 @@ const goTo = (url) => {
             <th>거래처</th>
             <th>사용내역</th>
             <th>금액</th>
-            <th>삭제</th>
+            <th></th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="(row, index) in rows" :key="index">
             <td>
-              <input v-model="row.vendor" type="text" placeholder="거래처 입력" />
+              <input v-model="row.vendor" type="text" placeholder="거래처" />
             </td>
             <td>
-              <input v-model="row.usage" type="text" placeholder="사용내역 입력" />
+              <input v-model="row.usage" type="text" placeholder="사용내역 및 용도" />
             </td>
             <td>
-              <input v-model="row.amount" type="number" placeholder="금액 입력" />
+              <input v-model="row.amount" type="number" placeholder="금액" />
             </td>
             <td>
-              <button @click="deleteRow(index)">삭제</button>
+              <button @click="deleteRow(index)">x</button>
             </td>
           </tr>
           </tbody>
@@ -585,6 +617,7 @@ const goTo = (url) => {
   justify-content: center;
 }
 
+.expense-table,
 .approval-table {
   width: 100%;
   border: 1px solid #D9D9D9; /* 테이블 바깥 테두리 */
