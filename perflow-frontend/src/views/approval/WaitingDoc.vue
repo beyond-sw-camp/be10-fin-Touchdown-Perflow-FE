@@ -148,12 +148,12 @@ onMounted(() => {
         <SearchGroupBar
             v-model ="searchCriteria.fromDate"
             placeholder="작성일(시작)"
-            type="text"
+            type="date"
         />
         <SearchGroupBar
             v-model ="searchCriteria.toDate"
             placeholder="작성일(끝)"
-            type="text"
+            type="date"
         />
       </div>
       <ButtonBasic
