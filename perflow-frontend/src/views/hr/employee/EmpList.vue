@@ -14,6 +14,11 @@ const selectedMenu = ref('all');
 
 const updateSelectedMenu = (menu) => {
   selectedMenu.value = menu;
+  if(menu === "all") {
+    fetchEmpList();
+  } else {
+    fetchInvitedEmpList();
+  }
 }
 // 페이지에 들어갈 변수 목록
 const pages = ref({
@@ -43,11 +48,13 @@ const fetchEmpList = async (page) => {
 // 사원 목록 조회
 const fetchInvitedEmpList = async (page) => {
 
-  const response = (await api.get("/employees/lists", {
+  const response = (await api.get("/employees/lists/invited", {
     params: {
       page: page
     }
   })).data;
+
+  employees.value = response.employeeList;
 
   pages.value = {
     currentPage: response.currentPage,
