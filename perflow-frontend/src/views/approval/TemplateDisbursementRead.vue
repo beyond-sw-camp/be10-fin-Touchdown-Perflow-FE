@@ -118,28 +118,25 @@ onMounted(() => {
     <div class="form-container">
       <div class="field-container">
         <!-- 제목 -->
-        <InputField
-            v-model="title"
-            label="제목"
-            width="600px"
-        />
+        <div class="field">
+          <span class="label">제목</span>
+          <span class="value">{{ title }}</span>
+        </div>
         <!-- 작성자 -->
-        <InputField
-            v-model="createUser"
-            label="작성자"
-            width="600px"
-        />
-        <!-- 작성일 -->
-        <InputField
-            v-model="createDatetime"
-            label="작성일시"
-            width="600px"
-        />
+        <div class="field">
+          <span class="label">작성자</span>
+          <span class="value">{{ createUser }}</span>
+        </div>
+        <!-- 작성일시 -->
+        <div class="field">
+          <span class="label">작성일시</span>
+          <span class="value">{{ createDatetime }}</span>
+        </div>
         <!-- 지출일 -->
-        <InputField
-          v-model="expendDate"
-          label="지출일"
-        />
+        <div class="field">
+          <span class="label">지출일</span>
+          <span class="value">{{ expendDate }}</span>
+        </div>
       </div>
 
       <!-- 지출 내역 테이블 -->
@@ -174,37 +171,38 @@ onMounted(() => {
             @click=""
         />
       </div>
-    </div>
 
-  <div class="box-container">
-    <!-- 결재선 -->
-    <ApprovalShareBoxRead
-        title="결재선"
-        :placeholder="'결재선 정보가 없습니다.'"
-        :data="approveLines.map(line => ({
+    <div class="box-container">
+      <!-- 결재선 -->
+      <ApprovalShareBoxRead
+          title="결재선"
+          :placeholder="'결재선 정보가 없습니다.'"
+          :data="approveLines.map(line => ({
               type: TypeMapping[line.approveType],
               name: line.approveSbjs[0]?.sbjName || '정보 없음',
         }))"
-    />
+      />
 
-    <!-- 공유 -->
-    <ApprovalShareBoxRead
-        title="공유"
-        :placeholder="'공유 정보가 없습니다.'"
-        :data="shares.map(share => ({
+      <!-- 공유 -->
+      <ApprovalShareBoxRead
+          title="공유"
+          :placeholder="'공유 정보가 없습니다.'"
+          :data="shares.map(share => ({
               type: '공유',
               name: share.empNames[0] || '정보 없음',
         }))"
-    />
-  </div>
+      />
+    </div>
+    </div>
+
 </template>
 
 <style scoped>
 .main-container {
   display: flex;
   justify-content: center; /* 중앙 정렬 */
-  align-items: center; /* 세로 정렬 */
-  gap: 0px;
+  align-items: flex-start;  /* container 들이 같은 높이에서 시작 */
+  gap: 0px; /* container 간 간격 */
 }
 
 .empty-container {
@@ -220,7 +218,6 @@ onMounted(() => {
   gap: 0px;
   width: 400px;
   margin-top: 50px;
-  position: relative; /* 유동적인 위치 */
 }
 
 .box-container {
@@ -230,6 +227,32 @@ onMounted(() => {
   gap: 20px;
 }
 
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;  /* 필드 간 간격 */
+  width: 100%
+}
+
+.field {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 18px;
+  color: #3C4651;
+  flex: 0 0 100px;  /* 라벨의 고정 너비 설정! */
+  border-right: 2px solid #D9D9D9;
+  text-align: left;
+}
+.value {
+  font-size: 16px;
+  color: #3C4651;
+}
 
 .approval-table th,
 .approval-table td {
@@ -247,9 +270,6 @@ onMounted(() => {
   background-color: #f4f4f4;
   font-weight: bold;
 }
-
-
-
 
 #title {
   font-size: 35px;
@@ -287,6 +307,11 @@ onMounted(() => {
 }
 
 /* 지출 내역 테이블 */
+
+.table-container {
+  margin-top: 50px;
+  width: 90%;
+}
 .expense-table {
   width: 100%;
   border-collapse: separate; /* 셀 경계와 테두리 중첩 방지 */
@@ -298,6 +323,7 @@ onMounted(() => {
 
 .expense-table th,
 .expense-table td {
+  padding: 12px 15px;
   border-bottom: 1px solid #AFA9A9; /* 셀 내부에만 경계선 추가 */
   border-right: 1px solid #AFA9A9; /* 셀 오른쪽 경계선 추가 */
   text-align: center;
@@ -306,7 +332,7 @@ onMounted(() => {
 .expense-table th {
   background-color: #f4f4f4;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .expense-table input {
@@ -331,5 +357,6 @@ onMounted(() => {
   padding: 10px;
   border-bottom: 2px solid #ff6600;
   border-top: 2px solid #ff6600;
+  text-align: right;
 }
 </style>

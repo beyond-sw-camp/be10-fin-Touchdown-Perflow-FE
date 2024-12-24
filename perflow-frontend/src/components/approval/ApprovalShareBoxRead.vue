@@ -18,7 +18,7 @@ defineProps({
     <!-- 박스 컨테이너 -->
     <div class="box-container">
       <!-- 데이터 표시 -->
-      <div v-if="data.length > 0" class="box-content">
+      <div v-if="data && data.length > 0" class="box-content">
         <div class="approval-item" v-for="(item, index) in data" :key="index">
           <span class="approval-type" :class="item.type || 'default-type'">
             {{ item.type || '공유' }}
@@ -28,7 +28,7 @@ defineProps({
       </div>
 
       <!-- 비어있을 때 표시 -->
-      <div class="box-empty">
+      <div v-else class="box-empty">
         {{ placeholder }}
       </div>
 
