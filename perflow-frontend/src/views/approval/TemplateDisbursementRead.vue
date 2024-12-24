@@ -6,7 +6,7 @@ import ModalBasic from "@/components/common/ModalBasic.vue";
 import {computed, onMounted, ref} from "vue";
 import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
-import {createBasicDoc} from "@/config/approval.js";
+import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";

@@ -6,7 +6,7 @@ import ModalBasic from "@/components/common/ModalBasic.vue";
 import {computed, ref} from "vue";
 import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
-import {createBasicDoc} from "@/config/approval.js";
+import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
@@ -225,7 +225,7 @@ const createNewDoc = async () => {
 
   try {
     const data = docData();
-    const response = await createBasicDoc(data);
+    const response = await createNewDocument(data);
     alert('결재 문서 생성 완료');
     goTo("/approval/waiting");
   } catch (error) {
