@@ -6,7 +6,7 @@ import TableBasic from "@/components/common/TableBasic.vue"
 import PagingBar from "@/components/common/PagingBar.vue";
 import router from "@/router/router.js";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
-import PositionRegisterSideBar from "@/components/hr/PositionRegisterSideBar.vue";
+import PositionRegisterSideBar from "@/components/hr/sideBar/PositionRegisterSideBar.vue";
 
 const positions = ref([]);
 
