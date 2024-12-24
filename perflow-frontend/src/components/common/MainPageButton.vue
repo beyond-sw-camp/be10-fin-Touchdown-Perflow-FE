@@ -30,8 +30,8 @@ defineProps({
 
 <style scoped>
 .btn-orange {
-  width: 150px;
-  height: 41px;
+  width: 80px;
+  height: 40px;
   justify-content: center;
   align-items: center;
   border: none;
