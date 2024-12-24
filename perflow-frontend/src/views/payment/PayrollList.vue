@@ -40,6 +40,7 @@ const fetchPayrolls = async (page = 1) => {
       ...payroll,
       createDatetime: `${payroll.createDatetime.slice(0,4)}.${payroll.createDatetime.slice(5,7)}.${payroll.createDatetime.slice(8,10)}`,
       name: `${payroll.name.slice(13, 15)}월 대장`,  // 예: '202408' -> '2024.08'
+      totalEmp: `${payroll.totalEmp}명`,
       totalPay: new Intl.NumberFormat('ko-KR').format(payroll.totalPay) + '원'  // 'totalPay' 값을 천단위로 포맷팅하고 원 추가
     }));
     state.currentPage = response.data.currentPage;
