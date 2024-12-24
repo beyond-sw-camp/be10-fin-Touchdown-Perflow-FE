@@ -110,7 +110,7 @@ const handleTitleClick = (row) => {
   } else if (templateId === 5) {
     router.push({ name: "disbursementDetail", query: {docId: row.docId } })
   } else if (templateId === 6) {
-    router.push({ name: "workReport", query: {docId: row.docId } })
+    router.push({ name: "workReportDetail", query: {docId: row.docId } })
     // 업무 보고서
   } else {
     alert("올바르지 않은 서식입니다.");

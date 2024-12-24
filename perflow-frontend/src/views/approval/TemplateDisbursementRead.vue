@@ -1,15 +1,6 @@
 <script setup>
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
-import InputField from "@/components/common/InputField.vue";
-import ApprovalShareBox from "@/components/approval/ApprovalShareBox.vue";
-import ModalBasic from "@/components/common/ModalBasic.vue";
-import {computed, onMounted, ref} from "vue";
-import OrganizationTree from "@/components/approval/OrganizationTree.vue";
-import draggable from "vuedraggable";
-import {createNewDocument} from "@/config/approval.js";
-import router from "@/router/router.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
-import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
+import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import api from "@/config/axios.js";
 import ApprovalShareBoxRead from "@/components/approval/ApprovalShareBoxRead.vue";
@@ -164,13 +155,13 @@ onMounted(() => {
         </div>
       </div>
 
-        <ButtonBasic
-            color="orange"
-            size="medium"
-            label="목록으로"
-            @click=""
-        />
-      </div>
+      <ButtonBasic
+          color="orange"
+          size="medium"
+          label="목록으로"
+          @click=""
+      />
+    </div>
 
     <div class="box-container">
       <!-- 결재선 -->
@@ -252,23 +243,6 @@ onMounted(() => {
 .value {
   font-size: 16px;
   color: #3C4651;
-}
-
-.approval-table th,
-.approval-table td {
-  border: none; /* 내부 셀의 모든 테두리 제거 */
-  border-bottom: 1px solid #D9D9D9; /* 셀 아래 가로선만 표시 */
-  padding: 8px;
-  text-align: center;
-}
-
-.approval-table tr:last-child td {
-  border-bottom: none; /* 마지막 행의 아래쪽 가로선 제거 */
-}
-
-.approval-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
 }
 
 #title {

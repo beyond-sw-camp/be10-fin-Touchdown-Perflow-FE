@@ -26,6 +26,7 @@ import TemplateBasicRead from "@/views/approval/TemplateBasicRead.vue";
 import TemplateWorkReport from "@/views/approval/TemplateWorkReport.vue";
 import TemplateDisbursement from "@/views/approval/TemplateDisbursement.vue";
 import TemplateDisbursementRead from "@/views/approval/TemplateDisbursementRead.vue";
+import TemplateWorkReportRead from "@/views/approval/TemplateWorkReportRead.vue";
 
 
 const routes = [
@@ -48,6 +49,7 @@ const routes = [
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/approval/basic/detail', name: 'basicDetail', component: TemplateBasicRead},
     {path: '/approval/create/work-report', name: 'workReport', component: TemplateWorkReport},
+    {path: '/approval/work-report/detail', name: 'workReportDetail', component: TemplateWorkReportRead},
     {path: '/approval/create/disbursement', name: 'cashDisbursement', component: TemplateDisbursement},
     {path: '/approval/disbursement/detail', name: 'disbursementDetail', component: TemplateDisbursementRead},
 
