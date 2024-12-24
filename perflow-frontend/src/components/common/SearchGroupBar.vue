@@ -16,11 +16,11 @@ const props = defineProps({
   },
   width: {
     type: String,
-    default: "200px", // 기본 너비, 부모에서 조정 가능
+    default: "210px",
   },
   height: {
     type: String,
-    default: "40px", // 기본 높이, 부모에서 조정 가능
+    default: "40px",
   },
 });
 
@@ -61,15 +61,35 @@ const updateValue = (value) => {
 <style scoped>
 .search-group-bar {
   display: inline-block;
-  margin-right: 10px;
+  width: 100%;  /* 부모에게 전달 받은 width 적용 */
+  height: 100%;
 }
 
 .search-input,
 .datepicker {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 200px;
+  border: 1px solid #D9D9D9;
+  border-radius: 10px;
+  padding: 0 10px 0 10px;
+  background-color: white;
+  width: 100%;
+  height: 100%;
 }
 
+/* datepicker */
+::v-deep(.datepicker) {
+  border: 1px solid #D9D9D9;
+  border-radius: 10px;
+  padding: 0 20px 0 10px;
+  background-color: white;
+  height: 40px;
+  width: 210px;
+}
+
+.search-container {
+  height: 100%
+}
+.search-input {
+  height: 100%; /* 부모의 height */
+  box-sizing: border-box; /* padding 포함 */
+}
 </style>

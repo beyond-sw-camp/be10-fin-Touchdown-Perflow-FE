@@ -141,34 +141,43 @@ onMounted(() => {
       <p id="title">대기 문서</p>
     </div>
     <div id="header-bottom" class="flex-between">
-      <div class="conditions">
-        <SearchGroupBar
-          v-model ="searchCriteria.title"
-          placeholder="제목"
-          type="text"
-        />
-        <SearchGroupBar
-            v-model ="searchCriteria.createUser"
-            placeholder="작성자"
-            type="text"
-        />
-        <SearchGroupBar
-            v-model ="searchCriteria.fromDate"
-            placeholder="작성일(시작)"
-            type="date"
-        />
-        <SearchGroupBar
-            v-model ="searchCriteria.toDate"
-            placeholder="작성일(끝)"
-            type="date"
-        />
+      <div id="search-container">
+        <!-- 검색 필드 -->
+        <div class="conditions">
+          <SearchGroupBar
+              v-model ="searchCriteria.title"
+              placeholder="제목"
+              type="text"
+              width="500px"
+              height="40px"
+          />
+          <SearchGroupBar
+              v-model ="searchCriteria.createUser"
+              placeholder="작성자"
+              type="text"
+          />
+          <SearchGroupBar
+              v-model ="searchCriteria.fromDate"
+              placeholder="작성일(시작)"
+              type="date"
+          />
+          <SearchGroupBar
+              v-model ="searchCriteria.toDate"
+              placeholder="작성일(끝)"
+              type="date"
+          />
+        </div>
+        <!-- 검색 버튼 -->
+        <div class="button">
+          <ButtonBasic
+              color="orange"
+              size="medium"
+              label="검색하기"
+              @click="handleSearch"
+          />
+        </div>
       </div>
-      <ButtonBasic
-          color="orange"
-          size="medium"
-          label="검색하기"
-          @click="handleSearch"
-      />
+
     </div>
   </div>
 
@@ -262,12 +271,40 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end; /* 버튼을 오른쪽 끝으로 배치 */
 }
+
+/* 테이블 내 제목 컬럼 */
 .clickable-title {
-  color: blue;
-  text-decoration: underline;
+  color: #3C4651;
   cursor: pointer;
 }
 .clickable-title:hover {
-  color: darkblue;
+  color: #f37321;
+  text-decoration: underline;
 }
+
+/* 검색 컨테이너 */
+#search-container {
+  display: flex;
+  flex-wrap: wrap;  /* 줄바꿈 허용 */
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;  /* 내부 여백 */
+  border: 1px solid #AFA9A9;
+  border-radius: 10px;
+  gap: 0px;
+}
+
+.conditions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;  /* 필드 간 간격 */
+}
+
+.button {
+  display: flex;
+  justify-content: flex-end;
+  width: 100% /* 오른쪽 끝에 검색*/
+}
+
+
 </style>

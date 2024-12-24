@@ -171,14 +171,14 @@ const deleteRow = (index) => {
 const docData = () => {
 
   const fields = {
-    expendDate: expendDate.value  // 지출일
+    expendDate: expendDate.value || ""  // 지출일
   }
-
+  // 거래서, 사용 내역, 금액
   rows.value.forEach((row, index) => {
     const number = index + 1; // 1부터 시작
-    fields[`VENDOR${number}`] = row.vendor;
-    fields[`USAGE${number}`] = row.usage;
-    fields[`AMOUNT${number}`] = row.amount;
+    fields[`VENDOR${number}`] = row.vendor || "";
+    fields[`USAGE${number}`] = row.usage || "";
+    fields[`AMOUNT${number}`] = row.amount || "";
   });
 
   return {
@@ -208,7 +208,18 @@ const docData = () => {
 const createNewDoc = async () => {
 
   if (!title.value) {
-    alert('빈 칸을 모두 채워주세요.');
+    alert('제목을 입력해주세요.');
+    return;
+  }
+
+  if (!expendDate.value) {
+    alert('지출일을 선택해주세요.')
+    return;
+  }
+
+  const hasEmptyAmount = rows.value.some((row) => !row.amount || row.amount <= 0);
+  if (hasEmptyAmount) {
+    alert('금액을 입력해주세요. 0보다 큰 값을 입력해야 합니다.')
     return;
   }
 
