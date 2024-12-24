@@ -24,6 +24,8 @@ import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
 import PayrollDetail from "@/views/payment/PayrollDetail.vue";
 import PayStub from "@/views/payment/PayStub.vue";
+import KPIUpdateView from "@/views/performance/KPIUpdateView.vue";
+import KPIRecordView from "@/views/performance/KPIRecordView.vue";
 
 
 const routes = [
@@ -44,6 +46,8 @@ const routes = [
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
+    {path: '/performance/kpi-current', name: 'KPIUpdate', component: KPIUpdateView},
+    {path: '/performance/kpi-past', name: 'KPIRecord', component: KPIRecordView},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
     {path: '/main-page', name: 'MainPage', component: MainPage},
