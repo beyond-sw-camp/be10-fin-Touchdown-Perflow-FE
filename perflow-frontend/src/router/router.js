@@ -24,6 +24,8 @@ import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
 import Company from "@/views/hr/company/Company.vue";
 import DepartmentList from "@/views/hr/DepartmentList.vue";
+import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
+import Authority from "@/views/hr/Authority.vue";
 
 
 const routes = [
@@ -35,10 +37,12 @@ const routes = [
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
+    {path: '/hr/employees/register/lists', name: 'EmpRegister', component: EmpListRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
     {path: '/hr/appoint', name: 'AppointList', component: AppointList},
     {path: '/hr/department', name: 'DepartmentList', component: DepartmentList},
+    {path: '/hr/authority', name: 'Authority', component: Authority},
     {path: '/hr/company', name: 'Company', component: Company},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 

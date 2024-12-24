@@ -30,7 +30,7 @@ export const useStore = defineStore('store', {
     actions: {
         // 조직도 갱신
         async fetchOrg() {
-            this.allDepartment = (await api.get("/hr/departments/list")).data;
+            this.allDepartment = (await api.get("/departments/list")).data;
         },
         // 선택 부서와 하위 부서의 사원 정보 가져오기
         async selectDept(deptId) {

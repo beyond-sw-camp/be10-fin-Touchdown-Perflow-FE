@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('auth', {
         empId: ref(),
         empName: ref(),
         isLogin: ref(false),
+        authorities: ref(),
         timerInterval: null,
         remainingTime: 0
     }),
@@ -24,6 +25,7 @@ export const useAuthStore = defineStore('auth', {
             const decoded = jwtDecode(newAccessToken);
             this.empId = decoded.empId;
             this.empName = decoded.name;
+            this.authorities = decoded.authorities;
             this.startTimer();
         },
         // 남은 시간 계산 및 실시간 업데이트
