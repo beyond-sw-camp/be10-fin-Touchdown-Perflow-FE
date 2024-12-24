@@ -102,7 +102,18 @@ const handleSearch = () => {
 // 특정 열(제목) 클릭 시
 const handleTitleClick = (row) => {
 
+  const templateId = row.templateId;
+
+  if (templateId === 4) {
+    // 기본 서식
     router.push({ name: "basicDetail", query: { docId: row.docId } });
+  } else if (templateId === 5) {
+    router.push({ name: "disbursementDetail", query: {docId: row.docId } })
+  } else if (templateId === 6) {
+    // 업무 보고서
+  } else {
+    alert("올바르지 않은 서식입니다.");
+  }
 }
 
 // 검색하기

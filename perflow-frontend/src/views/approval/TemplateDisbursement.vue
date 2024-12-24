@@ -314,11 +314,11 @@ const goTo = (url) => {
           </tbody>
         </table>
         <button class="action-button add" @click="addRow">+</button>
-      </div>
 
-      <!-- 합계 -->
-      <div class="total">
-        <span>합계 {{ totalAmount }} 원 </span>
+        <!-- 합계 -->
+        <div class="total">
+          <span>합계 {{ totalAmount }} 원 </span>
+        </div>
       </div>
 
       <div class="button-group">
@@ -552,6 +552,7 @@ const goTo = (url) => {
   gap: 0px;
   width: 400px;
   margin-top: 50px;
+  position: relative; /* 유동적인 위치 */
 }
 
 .box-container {
@@ -566,6 +567,8 @@ const goTo = (url) => {
   flex-direction: row; /* 버튼 가로 정렬 */
   gap: 40px; /* 버튼 간 간격 */
   align-items: center; /* 중앙 정렬 */
+  margin-top: auto; /* 버튼을 항상 아래쪽으로 */
+  padding-top: 20px;  /* 버튼 위에 여유 공간 */
 }
 
 .approval-button-group {
@@ -622,7 +625,8 @@ const goTo = (url) => {
 .table-container {
   flex: 1;
   overflow-y: auto; /* 테이블에 스크롤 추가 */
-  margin-bottom: 10px; /* 버튼과 테이블 간의 간격 */
+  margin-top: 30px;
+  margin-bottom: 20px; /* 버튼과 테이블 간의 간격 */
 }
 
 .button-container {
@@ -819,5 +823,15 @@ const goTo = (url) => {
 .action-button:hover {
   background-color: #F4F4F4;
   color: #3C4651;
+}
+
+.total {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 2px solid #ff6600;
+  border-top: 2px solid #ff6600;
 }
 </style>
