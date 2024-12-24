@@ -79,6 +79,7 @@ const registerDepartment = async () => {
       picId:pic.value
     });
     alert("부서 등록에 성공했습니다!")
+    location.reload(true);
   } catch (error) {
     if (error.response.data.message){
       alert(error.response.data.message);
