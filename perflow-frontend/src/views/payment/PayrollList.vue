@@ -1,15 +1,18 @@
 <script setup>
 import {reactive, onMounted, ref } from "vue";
+import {useRouter} from "vue-router";
 import api from "@/config/axios.js";
 import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
-import TableBasic from "@/components/common/TableBasic.vue";
+import TableMove from "@/components/common/TableMove.vue";
 import ThreeMonthChart from "@/views/payment/ThreeMonthChart.vue";
 import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
 import ThreeYearChart from "@/views/payment/ThreeYearChart.vue";
 import FileUpload from "@/components/common/FileUpload.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import ToolTip from "@/components/common/ToolTip.vue";
+
+const router = useRouter();
 
 const state = reactive({
   payrolls: [],
@@ -141,6 +144,12 @@ const columns = [
   { field: 'totalPay',        label: '총 지급액' },
 ];
 
+// 행 선택 시 페이지 이동 처리
+const handleRowSelected = (rowId) => {
+  // 선택된 행의 ID로 페이지 이동
+  router.push({name: 'PayrollDetail', params: { payrollId: rowId } });
+};
+
 onMounted(() => {
   fetchPayrolls();
 });
@@ -179,10 +188,12 @@ onMounted(() => {
         </div>
       </div>
       <div class="table">
-        <TableBasic
-            :row-key="id"
+        <TableMove
+            v-if="state.payrolls && state.payrolls.length > 0"
+            :row-key="'payrollId'"
             :rows="state.payrolls"
             :columns="columns"
+            @rowSelected="handleRowSelected"
         />
       </div>
       <div class="paging-bar">
@@ -268,22 +279,6 @@ hr {
   padding: 0;
   margin: 0 0 15px 0;
   position: relative;
-}
-
-.excel-tooltip {
-  position: absolute;
-  background-color: white;
-  color: #3C4651;
-  border: 1px solid #ff6600;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 14px;
-  z-index: 10;
-  bottom: 45px; /* 툴팁을 ExcelDropDown 위쪽에 표시하도록 설정 */
-  left: 89.5%;
-  transform: translateX(-50%);
-  width: 190px; /* 툴팁 크기 제한 */
-  word-wrap: break-word; /* 긴 텍스트를 줄바꿈 처리 */
 }
 
 .table {
