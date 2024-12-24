@@ -1,11 +1,12 @@
 <script setup>
 
 import ModifyInputFeild from "@/components/hr/ModifyInputFeild.vue";
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import AddressInputFeild from "@/components/hr/AddressInputField.vue";
 import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
-import DateSearchBar from "@/components/common/DateSearchBar.vue";
+import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import {values} from "vuedraggable/dist/vuedraggable.common.js";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -16,69 +17,66 @@ const props = defineProps({
 });
 const emit = defineEmits(['close-sidebar'])
 
-const email = ref("");
-const contact = ref("");
-const establish = ref();
-const address = reactive({
-});
+const name = ref();
+const responsibility = ref();
+const departmentId = ref();
+const deptList = ref();
 
-const updateAddress = (value) => {
-  address.value = value;
+const updateName = (value) => {
+  name.value = value;
 }
-
-const updateEmail = (value) => {
-  email.value = value;
+const updateResponsibility = (value) => {
+  responsibility.value = value;
 }
-const updateContact = (value) => {
-  contact.value = value;
-}
-const updateEstablish = (value) => {
-  establish.value = value;
+const updateDept = (value) => {
+  departmentId.value = value;
 }
 
 
-const updateCompanyInfo = async () => {
-
-  const totalAddress = address.value.postcode + " " + address.value.roadAddress + " " + address.value.extraAddress
+const registerJob = async () => {
   try {
-    await api.put("/hr/company",{
-      address: totalAddress,
-      establish: establish.value ,
-      email: email.value,
-      contact: contact.value
+    await api.post("/hr/job",{
+      name: name.value,
+      responsibility: responsibility.value,
+      deptId: departmentId.value
     });
-    alert("정보 수정 성공!");
+    alert("직책 등록 성공!.")
     location.reload(true);
   } catch (error) {
     if (error.response.data.message){
       alert(error.response.data.message);
     } else {
-      alert("정보 수정 중 오류가 발생했습니다.")
+      alert("직책 등록 중 오류가 발생했습니다.")
     }
   }
 
 }
 
+const fetchDeptList = async () => {
+  const response = await api.get("/hr/departments/list");
+  deptList.value = response.data.map(dept => ({ label: dept.name, id: dept.deptId }));
+}
+
 function closeSidebar() {
   emit('close-sidebar')
 }
+onMounted(()=>{
+  fetchDeptList();
+})
 </script>
 
 <template>
 <div class="modify-sidebar" :class="{ open: props.isSidebarOpen }">
   <div id="side-header">
-    <img src="../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
+    <img src="../../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
     <p id="title">{{props.title}}</p>
   </div>
   <div id="modify-contents">
-    <div class="establish">
-      <p>설립일</p>
-      <DateSearchBar @date-selected="updateEstablish"/>
-    </div>
-    <ModifyInputFeild title="회사 연락처" @update-value="updateContact"/>
-    <ModifyInputFeild title="회사 이메일" @update-value="updateEmail"/>
-    <address-input-feild @update-value="updateAddress"/>
-    <SubmitButton @submit="updateCompanyInfo" text="수정하기"/>
+    <ModifyInputFeild title="직책명" @update-value="updateName"/>
+    <ModifyInputFeild title="직책담당업무" @update-value="updateResponsibility"/>
+    <p class="sub-title">부서</p>
+    <ButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="deptList" @select-id="updateDept"/>
+    <SubmitButton @submit="registerJob" text="등록하기"/>
   </div>
 </div>
 </template>
@@ -95,10 +93,10 @@ p{
   top: 0;
   bottom: 0;
   width: 400px;
-  height: auto;
+  height: 1000px;
   transition: right 0.3s ease;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
   background-color: white;
   z-index: 10000; /* 모든 콘텐츠 위에 표시 */
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
@@ -115,7 +113,7 @@ p{
   align-items: center;
 }
 #modify-contents {
-  padding: 20px 20px 20px 20px;
+  padding: 50px 20px 20px 20px;
 }
 #close {
   width: 30px;
@@ -127,11 +125,8 @@ p{
   font-weight: bold;
   font-size: 20px;
 }
-.establish {
+.sub-title {
   font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   margin-bottom: 10px;
 }
 </style>

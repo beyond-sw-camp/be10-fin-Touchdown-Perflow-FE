@@ -23,6 +23,7 @@ import PositionList from "@/views/hr/PositionList.vue";
 import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
 import Company from "@/views/hr/company/Company.vue";
+import DepartmentList from "@/views/hr/DepartmentList.vue";
 
 
 const routes = [
@@ -37,6 +38,7 @@ const routes = [
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
     {path: '/hr/appoint', name: 'AppointList', component: AppointList},
+    {path: '/hr/department', name: 'DepartmentList', component: DepartmentList},
     {path: '/hr/company', name: 'Company', component: Company},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 

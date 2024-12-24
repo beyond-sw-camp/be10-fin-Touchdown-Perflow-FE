@@ -3,10 +3,10 @@ import ButtonBack from "@/components/common/ButtonBack.vue";
 import api from "@/config/axios.js";
 import {computed, onMounted, ref} from "vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
-import CompanyModifySideBar from "@/components/hr/CompanyInfoModifySideBar.vue";
+import CompanyModifySideBar from "@/components/hr/sideBar/CompanyInfoModifySideBar.vue";
 import CompanyInfo from "@/views/hr/company/CompanyInfo.vue";
 import CompanyPolicy from "@/views/hr/company/CompanyPolicy.vue";
-import CompanyPolicyModifySideBar from "@/components/hr/CompanyPolicyModifySideBar.vue";
+import CompanyPolicyModifySideBar from "@/components/hr/sideBar/CompanyPolicyModifySideBar.vue";
 
 const company = ref({});
 
