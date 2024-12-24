@@ -258,22 +258,28 @@ const goTo = (url) => {
     <div class="empty-container"></div>
 
     <div class="form-container">
-      <!-- 제목 -->
-      <InputField
-          v-model="title"
-          label="제목"
-          placeholder="제목을 입력해 주세요."
-          :isRequired="true"
-          width="600px"
-      />
 
-      <!-- 지출일 -->
-      <label for="expendDate">지출일*</label>
-      <SearchGroupBar
-          v-model="expendDate"
-          placeholder="지출일 선택"
-          type="date"
-      />
+      <div class="field-container">
+        <!-- 제목 -->
+        <InputField
+            v-model="title"
+            label="제목"
+            placeholder="제목을 입력해 주세요."
+            :isRequired="true"
+            width="600px"
+        />
+
+        <!-- 지출일 -->
+        <label class="label">
+          <span class="label-name">지출일</span>
+          <span class="asterisk">*</span>
+        </label>
+        <SearchGroupBar
+            v-model="expendDate"
+            placeholder="지출일 선택"
+            type="date"
+        />
+      </div>
 
       <!-- 지출 내역 테이블 -->
       <div class="table-container">
@@ -298,19 +304,22 @@ const goTo = (url) => {
               <input v-model="row.amount" type="number" placeholder="금액" />
             </td>
             <td>
-              <button @click="deleteRow(index)">x</button>
+              <button
+                  v-if="rows.length > 1"
+                  class="action-button delete"
+                  @click="deleteRow(index)"
+              >x</button>
             </td>
           </tr>
           </tbody>
         </table>
-        <button @click="addRow">+</button>
+        <button class="action-button add" @click="addRow">+</button>
       </div>
 
       <!-- 합계 -->
       <div class="total">
         <span>합계 {{ totalAmount }} 원 </span>
       </div>
-
 
       <div class="button-group">
         <ButtonBasic
@@ -628,7 +637,7 @@ const goTo = (url) => {
   justify-content: center;
 }
 
-.expense-table,
+
 .approval-table {
   width: 100%;
   border: 1px solid #D9D9D9; /* 테이블 바깥 테두리 */
@@ -729,6 +738,86 @@ const goTo = (url) => {
 .dropdown-title {
   font-size: 14px;
   font-weight: bold;
+  color: #3C4651;
+}
+
+/* 지출일 */
+.label-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.asterisk {
+  color: red;
+  margin-right: 15px;
+}
+
+/* 지출 내역 테이블 */
+.expense-table {
+  width: 100%;
+  border-collapse: separate; /* 셀 경계와 테두리 중첩 방지 */
+  border-spacing: 0; /* 셀 간 간격 제거 */
+  border: 1px solid #AFA9A9; /* 테이블 전체 테두리 */
+  border-radius: 10px; /* 테이블 모서리 둥글게 */
+  overflow: hidden; /* 둥근 모서리 유지 */
+}
+
+.expense-table th,
+.expense-table td {
+  border-bottom: 1px solid #AFA9A9; /* 셀 내부에만 경계선 추가 */
+  border-right: 1px solid #AFA9A9; /* 셀 오른쪽 경계선 추가 */
+  text-align: center;
+}
+
+.expense-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.expense-table input {
+  border: none; /* 입력 필드 테두리 제거 */
+  outline: none;  /* 포커스 하면 나오는 테두리 제거 */
+  text-align: left;
+  padding: 4px;
+}
+
+/* 금액 칸 화살표 제거 */
+.expense-table input[type="number"]::-webkit-inner-spin-button,
+.expense-table input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 테이블 버튼 */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #AFA9A9;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* + 버튼 */
+.action-button.add {
+  color: #3C4651;
+}
+
+/* x 버튼 */
+.action-button.delete {
+  color: #3C4651;
+}
+
+/* 호버 효과 */
+.action-button:hover {
+  background-color: #F4F4F4;
   color: #3C4651;
 }
 </style>

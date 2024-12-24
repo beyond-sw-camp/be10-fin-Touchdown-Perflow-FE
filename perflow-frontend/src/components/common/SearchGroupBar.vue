@@ -67,22 +67,24 @@ const updateValue = (value) => {
 
 .search-input,
 .datepicker {
-  border: 1px solid #D9D9D9;
+  border: 1px solid #AFA9A9;
   border-radius: 10px;
-  padding: 0 10px 0 10px;
+  padding: 8px 10px 8px 10px;
   background-color: white;
   width: 100%;
   height: 100%;
+  font-size: 14px;
 }
 
 /* datepicker */
 ::v-deep(.datepicker) {
-  border: 1px solid #D9D9D9;
+  border: 1px solid #AFA9A9;
   border-radius: 10px;
-  padding: 0 20px 0 10px;
+  padding: 8px 10px 8px 10px;
   background-color: white;
   height: 40px;
   width: 210px;
+  font-size: 14px;
 }
 
 .search-container {
