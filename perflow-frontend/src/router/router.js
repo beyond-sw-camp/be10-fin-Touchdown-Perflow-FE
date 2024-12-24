@@ -27,6 +27,14 @@ import TemplateWorkReport from "@/views/approval/TemplateWorkReport.vue";
 import TemplateDisbursement from "@/views/approval/TemplateDisbursement.vue";
 import TemplateDisbursementRead from "@/views/approval/TemplateDisbursementRead.vue";
 import TemplateWorkReportRead from "@/views/approval/TemplateWorkReportRead.vue";
+import Company from "@/views/hr/company/Company.vue";
+import DepartmentList from "@/views/hr/DepartmentList.vue";
+import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
+import Authority from "@/views/hr/Authority.vue";
+import PayrollDetail from "@/views/payment/PayrollDetail.vue";
+import PayStub from "@/views/payment/PayStub.vue";
+import KPIUpdateView from "@/views/performance/KPIUpdateView.vue";
+import KPIRecordView from "@/views/performance/KPIRecordView.vue";
 
 
 const routes = [
@@ -34,13 +42,17 @@ const routes = [
 
     {path: '/', name: 'LoginPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
-    {path: '/hr/my-page', name: 'myPage', component: EmpMyPage},
+    {path: '/hr/my-page', name: 'MyPage', component: EmpMyPage},
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
+    {path: '/hr/employees/register/lists', name: 'EmpRegister', component: EmpListRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
-    {path: '/hr/appoint', name: 'appointList', component: AppointList},
+    {path: '/hr/appoint', name: 'AppointList', component: AppointList},
+    {path: '/hr/department', name: 'DepartmentList', component: DepartmentList},
+    {path: '/hr/authority', name: 'Authority', component: Authority},
+    {path: '/hr/company', name: 'Company', component: Company},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
     // 결재
@@ -56,8 +68,13 @@ const routes = [
 
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
+    {path: '/performance/kpi-current', name: 'KPIUpdate', component: KPIUpdateView},
+    {path: '/performance/kpi-past', name: 'KPIRecord', component: KPIRecordView},
+    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
     {path: '/main-page', name: 'MainPage', component: MainPage},
+    {path: '/payment/payroll-detail/:payrollId', name:'PayrollDetail', component: PayrollDetail},
+    {path: '/payment/pay-stub', name: 'PayStub', component: PayStub},
     //근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},

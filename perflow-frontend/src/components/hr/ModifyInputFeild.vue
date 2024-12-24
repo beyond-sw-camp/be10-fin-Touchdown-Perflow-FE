@@ -25,7 +25,7 @@ function onInputChange(event) {
 
 <style scoped>
 .input-container {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 .title {
   font-weight: bold;

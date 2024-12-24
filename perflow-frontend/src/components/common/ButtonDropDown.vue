@@ -29,6 +29,10 @@ const props = defineProps({
   marginLeft: {
     type: String,
     default: "40px",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   }
 });
 
@@ -38,10 +42,12 @@ const isMenuOpen = ref(false);
 const selectedOption = ref(props.defaultOption);
 
 const toggleMenu = () => {
+  if (props.disabled) return; // 비활성화 상태일 경우 메뉴 열리지 않음
   isMenuOpen.value = !isMenuOpen.value;
 };
 
 const selectOption = (option, id) => {
+  if (props.disabled) return; // 비활성화 상태일 경우 옵션 선택 불가
   selectedOption.value = option;
   isMenuOpen.value = false;
   emit("select", option);
@@ -53,6 +59,7 @@ const selectOption = (option, id) => {
   <div
       class="dropdown-container btn-gray"
       :style="{ width: width, height: height, fontSize: fontSize }"
+      :class="{ 'disabled': disabled }"
       @click="toggleMenu"
   >
     <!-- 선택된 옵션 -->
@@ -121,7 +128,7 @@ const selectOption = (option, id) => {
   color: #3c4651;
   border-radius: 5px;
   top: 100%; /* 버튼 바로 아래로 드롭다운 메뉴 표시 */
-  left: 0;   /* 왼쪽 정렬 */
+  left: 0; /* 왼쪽 정렬 */
   z-index: 10; /* 다른 요소 위에 표시 */
   margin-top: 4px;
   max-height: 200px;
@@ -136,6 +143,12 @@ const selectOption = (option, id) => {
 .options li:hover {
   background-color: #f5f5f5;
   border-radius: 5px;
+}
+
+.disabled {
+  pointer-events: none; /* 클릭 이벤트 차단 */
+  opacity: 0.5; /* 비활성화 상태를 시각적으로 표시 */
+  cursor: not-allowed; /* 마우스 커서를 "금지" 아이콘으로 표시 */
 }
 
 </style>

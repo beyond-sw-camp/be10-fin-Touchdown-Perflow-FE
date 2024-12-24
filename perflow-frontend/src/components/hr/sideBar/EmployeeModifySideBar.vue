@@ -1,12 +1,10 @@
 <script setup>
 
 import ModifyInputFeild from "@/components/hr/ModifyInputFeild.vue";
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, reactive, ref} from "vue";
 import AddressInputFeild from "@/components/hr/AddressInputField.vue";
 import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
-import {values} from "vuedraggable/dist/vuedraggable.common.js";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -17,29 +15,36 @@ const props = defineProps({
 });
 const emit = defineEmits(['close-sidebar'])
 
-const name = ref();
-const level = ref();
-
-const updateName = (value) => {
-  name.value = value;
+const email = ref("");
+const contact = ref("");
+// 반응형 객체로 totalAddress 정의
+const address = reactive({
+});
+const updateAddress = (value) => {
+  address.value = value;
 }
-const updateLevel = (value) => {
-  level.value = value;
-}
 
-const registerPosition = async () => {
+const updateEmail = (value) => {
+  email.value = value;
+}
+const updateContact = (value) => {
+  contact.value = value;
+}
+const updateEmployee = async () => {
+  const totalAddress = address.value.postcode + " " + address.value.roadAddress + " " + address.value.extraAddress
   try {
-    await api.post("/hr/position",{
-      name: name.value,
-      positionLevel: level.value
+    await api.put("/employees",{
+      address: totalAddress,
+      email: email.value,
+      contact: contact.value
     });
-    alert("직위 등록 성공!.")
+    alert("정보 수정 성공!.")
     location.reload(true);
   } catch (error) {
     if (error.response.data.message){
       alert(error.response.data.message);
     } else {
-      alert("직위 등록 중 오류가 발생했습니다.")
+      alert("정보 수정 중 오류가 발생했습니다.")
     }
   }
 
@@ -53,13 +58,14 @@ function closeSidebar() {
 <template>
 <div class="modify-sidebar" :class="{ open: props.isSidebarOpen }">
   <div id="side-header">
-    <img src="../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
+    <img src="../../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
     <p id="title">{{props.title}}</p>
   </div>
   <div id="modify-contents">
-    <ModifyInputFeild title="이름" @update-value="updateName"/>
-    <ModifyInputFeild title="직위등급" @update-value="updateLevel"/>
-    <SubmitButton @submit="registerPosition" text="등록하기"/>
+    <ModifyInputFeild title="연락처" @update-value="updateContact"/>
+    <ModifyInputFeild title="이메일" @update-value="updateEmail"/>
+    <AddressInputFeild @update-value="updateAddress"/>
+    <SubmitButton @submit="updateEmployee" text="수정하기"/>
   </div>
 </div>
 </template>
