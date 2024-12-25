@@ -35,6 +35,7 @@ import PayrollDetail from "@/views/payment/PayrollDetail.vue";
 import PayStub from "@/views/payment/PayStub.vue";
 import KPIUpdateView from "@/views/performance/KPIUpdateView.vue";
 import KPIRecordView from "@/views/performance/KPIRecordView.vue";
+import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 
 
 const routes = [
@@ -64,6 +65,7 @@ const routes = [
     {path: '/approval/work-report/detail', name: 'workReportDetail', component: TemplateWorkReportRead},
     {path: '/approval/create/disbursement', name: 'cashDisbursement', component: TemplateDisbursement},
     {path: '/approval/disbursement/detail', name: 'disbursementDetail', component: TemplateDisbursementRead},
+    {path: '/approval/processing', name: 'processedDoc', component: ProcessedDoc},
 
 
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
