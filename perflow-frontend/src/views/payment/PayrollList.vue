@@ -245,6 +245,7 @@ onMounted(() => {
 .title {
   width: 900px;
   justify-content: center;
+  font-weight: bold;
   margin: 10px 0 10px 0;
   color: #3c4651;
 }

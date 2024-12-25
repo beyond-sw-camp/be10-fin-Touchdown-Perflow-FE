@@ -205,6 +205,7 @@ onMounted(() => {
 <template>
   <div class="container">
     <div class="header">
+      <p>급여정산</p>
       <div class="search-bar">
         <SearchBar
           placeholder="사번을 입력해주세요."
@@ -355,6 +356,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.header p {
+  color: #3C4651;
+  font-size: 35px;
+  font-weight: bold;
+  margin: 0;
 }
 
 .search-bar {
