@@ -4,6 +4,14 @@ import api from "@/config/axios.js";
 
 let timerInterval = null;
 let isTimerActive = false;
+/*let isFirstLoad = true;*/
+let lastUpdateTime = null;
+const qrCodeImage = ref('');
+const inputCode = ref('');
+const generatedCode = ref('');
+const timer = ref(30);
+const timerDisplay = ref('0:30');
+
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
@@ -17,17 +25,20 @@ const emit = defineEmits(["close"]);
 
 // 모달이 열릴 때 QR 코드 생성
 watch(() => props.isOpen, async (newVal) => {
-  if (newVal) {
-
-    await generateQRCode(); // 모달 열릴 때 QR 코드 생성
+  if (newVal) { // 모달 열릴 때
+    await  generateQRCode();
     clearInterval(timerInterval);
-    timerInterval = setInterval(updateTimer, 1000);
+    timer.value = 30;
+    updateTimerDisplay();
+    lastUpdateTime = Date.now();
+
+    timerInterval = setInterval(updateTimer, 1000); // 타이머 시작
     isTimerActive = true;
-
-  }else{
-    clearInterval(timerInterval);
+  } else { // 모달 닫힐 때
+    clearInterval(timerInterval); // 타이머 정지
     timerInterval = null;
     isTimerActive = false;
+    inputCode.value='';
   }
 });
 
@@ -37,13 +48,12 @@ onUnmounted(()=>{
   isTimerActive = false;
 })
 
-const qrCodeImage = ref('');
-const inputCode = ref('');
-const generatedCode = ref('');
-const timer = ref(30);
-const timerDisplay = ref('0:30');
+
 
 const closeModal = () => {
+  clearInterval(timerInterval); // 타이머 정지
+  isTimerActive = false;
+  inputCode.value = '';
   emit("close");
 };
 
@@ -67,6 +77,7 @@ const generateQRCode = async () => {
     generatedCode.value = response.data.code;
     timer.value = 30;
     updateTimerDisplay();
+    inputCode.value = '';
   } catch (error) {
     console.error('QR 코드 생성 실패:', error);
     alert('QR 코드 생성 실패: ' + error.message);
@@ -76,12 +87,17 @@ const generateQRCode = async () => {
 
 
 const updateTimer = () => {
-  if (timer.value > 0) {
-    timer.value -= 1;
-    updateTimerDisplay();
-  } else {
-    generateQRCode();
-    isTimerActive = false;
+  const currentTime = Date.now();
+  if (lastUpdateTime) {
+    const elapsed = Math.floor((currentTime - lastUpdateTime) / 1000); // 실제 경과 시간(초)
+    timer.value = Math.max(0, timer.value - elapsed); // 남은 시간 계산
+  }
+  lastUpdateTime = currentTime; // 마지막 업데이트 시간 갱신
+  updateTimerDisplay(); // 타이머 표시 업데이트
+
+  if (timer.value === 0) {
+    clearInterval(timerInterval); // 타이머 정지
+    isTimerActive = false; // 타이머 상태 비활성화
   }
 };
 
@@ -151,7 +167,7 @@ onMounted(() => {
         </div>
 
         <!-- 새로고침 버튼 -->
-        <div class="refresh-btn" @click="refreshCode">&#x21bb;</div>
+        <div class="refresh-btn" @click="refreshCode">&#x21bb; 발급하기</div>
 
         <!-- 숫자 입력 필드 및 타이머 -->
         <div class="code-input">
