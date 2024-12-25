@@ -6,6 +6,52 @@ import On from "../assets/image/work_on.png";
 import Off from "../assets/image/work_off.png";
 import TableMini from "@/components/common/TableMini.vue";
 import {useAuthStore} from "@/store/authStore.js";
+import QRModal from "@/views/Attitude/QRModal.vue";
+
+// 상태 관리
+const isModalVisible = ref(false);
+/*const commuteEndTime = ref(null); // 퇴근 시간 기록*/
+
+// 모달 데이터
+const modalTitle = ref('');
+const modalContent = ref('');
+const modalButtonLabel = ref('');
+const actionType = ref(''); // 출근(on) 또는 퇴근(off)
+
+// 모달 열기
+const openModal = (type) => {
+  actionType.value = type; // 'on' 또는 'off'
+  modalTitle.value = type === 'on'? '출근 QR 인증 ' : '퇴근 QR 인증';
+  isModalVisible.value = true;
+};
+
+
+// 모달 닫기
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+// 모달 확인 버튼 동작
+const confirmAction = () => {
+  if (actionType === 'on') {
+    // 출근 처리
+    commuteStatus.value = 'ON';
+    commuteStartTime.value = new Date(); // 출근 시간 기록
+    console.log('출근 완료!');
+  } else if (actionType === 'off') {
+    // 퇴근 처리
+    commuteStatus.value = 'OFF';
+    commuteEndTime.value = new Date(); // 퇴근 시간 기록
+
+    // 근무 시간 계산 (분 단위)
+    const workMinutes = Math.floor(
+        (commuteEndTime.value - commuteStartTime.value) / (1000 * 60)
+    );
+    console.log(`퇴근 완료! 총 근무 시간: ${workMinutes}분`);
+  }
+
+  isModalVisible.value = false; // 모달 닫기
+};
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -353,25 +399,28 @@ onMounted(() => {
           <div class="button-container">
             <button
                 :class="commuteStatus === 'ON' ? 'btn-gray' : 'btn-orange'"
-                @click="handleOn"
+                @click="openModal('on')"
                 :disabled="commuteStatus === 'ON'"
             >
               ON
-              <p v-if="commuteStatus === 'ON'" class="commute-time">
-               /{{ commuteStartTime ? commuteStartTime.toLocaleTimeString() : '' }}
-              </p>
             </button>
           </div>
           <button
               :class="commuteStatus === 'OFF' ? 'btn-gray' : 'btn-orange'"
-              @click="handleOff"
-              :disabled="commuteStatus === 'OFF'"
+              @click="openModal('off')"
+          :disabled="commuteStatus === 'ON'"
           >
-            OFF
+          OFF
           </button>
         </div>
       </div>
     </div>
+    <QRModal
+      :isOpen="isModalVisible"
+      :title="modalTitle"
+      :type = "actionType"
+      @close="closeModal"
+  />
     <!-- 근무시간, 남은 연차, 남은 급여일 정보 -->
     <div class="period">
       <div class="attendance">
