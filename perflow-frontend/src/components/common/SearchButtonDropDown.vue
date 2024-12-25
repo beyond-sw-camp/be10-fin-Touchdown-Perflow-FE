@@ -96,7 +96,7 @@ const selectOption = (option, id) => {
         class="options"
         :style="{ fontSize: fontSize, width: width }"
     >
-      <li><SearchBar width="180px" height="30px" font-size="12px" placeholder="사원명 입력" @search="updateSearch"/></li>
+      <li><SearchBar width="180px" height="30px" font-size="12px" placeholder="검색어 입력" @search="updateSearch"/></li>
       <li
           v-for="(option, index) in searchOptions"
           :key="index"
