@@ -145,7 +145,7 @@ const columns = [
 // 행 선택 시 페이지 이동 처리
 const handleRowSelected = (rowId) => {
   // 선택된 행의 ID로 페이지 이동
-  router.push({name: 'SeveranceDetail', params: { severancePayId: rowId } });
+  router.push({name: 'SeverancePayDetail', params: { severancePayId: rowId } });
 };
 
 onMounted(() => {
@@ -230,6 +230,8 @@ onMounted(() => {
 .title {
   width: 900px;
   justify-content: center;
+  font-size: 35px;
+  font-weight: bold;
   margin: 20px 0 30px 0;
   color: #3c4651;
 }
