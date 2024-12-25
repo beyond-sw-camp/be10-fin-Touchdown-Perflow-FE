@@ -37,7 +37,7 @@ api.interceptors.response.use(
         const authStore = useAuthStore();
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 || error.response?.status === 403) {
+        if (error.response?.status === 401) {
             try {
                 const newToken = await authStore.refreshAccessToken();
                 originalRequest.headers['Authorization'] = `${newToken}`;
@@ -45,6 +45,8 @@ api.interceptors.response.use(
             } catch (refreshError) {
                 return Promise.reject(refreshError); // 갱신 실패 시 오류 반환
             }
+        } else if(error.response?.status === 403) {
+            alert("권한이 없습니다.");
         }
 
         return Promise.reject(error); // 다른 오류는 그대로 반환

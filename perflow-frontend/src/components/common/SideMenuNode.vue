@@ -3,12 +3,23 @@
 import {useStore} from "@/store/store.js";
 import { useRouter } from 'vue-router'
 import {computed, ref} from "vue";
-
+import {useAuthStore} from "@/store/authStore.js";
+const authStore = useAuthStore();
 const store = useStore();
 const router = useRouter();
 
-const goTo = (url) => {
-  router.push(url);
+const authorities = computed(()=> {
+  return authStore.authorities;
+})
+
+const goTo = (url, authorityId) => {
+
+  if(authorities.value.includes(authorityId)||authorities.value.includes(4)){
+    router.push(url);
+  } else {
+    alert("권한이 없습니다.")
+  }
+
 }
 // 하위 메뉴 표시 상태 관리
 const isExpanded = ref(false);
@@ -36,7 +47,7 @@ const props = defineProps({
     <!-- 현재 메뉴 이름 출력 -->
     <div class="menu-header">
       <img v-if="icon" :src="icon" class="menu-icon" alt="icon" />
-      <span class="menu-name" @click="goTo(props.parent.url)">{{ props.parent.name }}</span>
+      <span class="menu-name" @click="goTo(props.parent.url, props.parent.authorityId)">{{ props.parent.name }}</span>
       <span v-if="hasChildren" class="arrow" :class="{ expanded: isExpanded }" @click="toggle">▼</span>
     </div>
   </li>

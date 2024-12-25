@@ -10,6 +10,16 @@ import SearchBar from "@/components/common/SearchBar.vue";
 
 const employees = ref([]);
 
+const selectedMenu = ref('all');
+
+const updateSelectedMenu = (menu) => {
+  selectedMenu.value = menu;
+  if(menu === "all") {
+    fetchEmpList();
+  } else {
+    fetchInvitedEmpList();
+  }
+}
 // 페이지에 들어갈 변수 목록
 const pages = ref({
   pageSize: 0,       // 초기값: 0
@@ -26,6 +36,24 @@ const fetchEmpList = async (page) => {
       page: page
     }
   })).data;
+  employees.value = response.employeeList;
+
+  pages.value = {
+    currentPage: response.currentPage,
+    pageSize: response.pageSize,
+    totalItems: response.totalItems,
+    totalPages: response.totalPages
+  };
+}
+// 사원 목록 조회
+const fetchInvitedEmpList = async (page) => {
+
+  const response = (await api.get("/employees/lists/invited", {
+    params: {
+      page: page
+    }
+  })).data;
+
   employees.value = response.employeeList;
 
   pages.value = {
@@ -90,8 +118,8 @@ onMounted(() => {
     </div>
     <div id="header-bottom" class="flex-between">
       <div class="tabs">
-        <span class="tab active">전체</span>
-        <span class="tab">추가현황</span>
+        <span class="tab" :class="{active: selectedMenu==='all'}" @click="updateSelectedMenu('all')">전체</span>
+        <span class="tab" :class="{active: selectedMenu==='invited'}" @click="updateSelectedMenu('invited')">추가현황</span>
       </div>
       <SearchBar @search="fetchEmpListByName"
         height="40px" font-size="15px" placeholder="사원 이름을 입력해주세요."
@@ -163,7 +191,7 @@ onMounted(() => {
   padding: 5px 10px;
 }
 
-.tab.active {
+.active {
   font-weight: bold;
   border-bottom: 2px solid #ff6600;
 }

@@ -120,7 +120,7 @@ onMounted(()=>{
 <template>
 <div class="modify-sidebar" :class="{ open: props.isSidebarOpen }">
   <div id="side-header">
-    <img src="../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
+    <img src="../../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
     <p id="title">{{props.title}}</p>
   </div>
   <div id="modify-contents">
