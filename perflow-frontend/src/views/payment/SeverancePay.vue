@@ -5,9 +5,6 @@ import api from "@/config/axios.js";
 import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import TableMove from "@/components/common/TableMove.vue";
-import ThreeMonthChart from "@/views/payment/ThreeMonthChart.vue";
-import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
-import ThreeYearChart from "@/views/payment/ThreeYearChart.vue";
 import FileUpload from "@/components/common/FileUpload.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import ToolTip from "@/components/common/ToolTip.vue";
@@ -39,7 +36,7 @@ const fetchSeverancePays = async (page = 1) => {
     state.severancePays = response.data.severancePays.map(severancePay => ({
       ...severancePay,
       createDatetime: `${severancePay.createDatetime.slice(0,4)}.${severancePay.createDatetime.slice(5,7)}.${severancePay.createDatetime.slice(8,10)}`,
-      name: `${severancePay.name.slice(13, 15)}월 퇴직금`,  // 예: '202408' -> '2024.08'
+      name: `${severancePay.name.slice(18, 20)}월 퇴직금`,  // 예: '202408' -> '2024.08'
       totalEmp: `${severancePay.totalEmp}명`,
       totalPay: new Intl.NumberFormat('ko-KR').format(severancePay.totalPay) + '원'  // 'totalPay' 값을 천단위로 포맷팅하고 원 추가
     }));
@@ -69,7 +66,7 @@ const menuItem = [
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
-        const fileName = `payroll_${year}_${month}.xlsx`; // 예: payroll_2024_12.xlsx
+        const fileName = `severancePay_${year}_${month}.xlsx`; // 예: payroll_2024_12.xlsx
 
         // 다운로드를 위한 가상 링크를 생성합니다.
         const link = document.createElement('a');
@@ -178,9 +175,9 @@ onMounted(() => {
       </div>
       <div class="table">
         <TableMove
-            v-if="state.payrolls && state.payrolls.length > 0"
-            :row-key="'payrollId'"
-            :rows="state.payrolls"
+            v-if="state.severancePays && state.severancePays.length > 0"
+            :row-key="'severancePayId'"
+            :rows="state.severancePays"
             :columns="columns"
             @rowSelected="handleRowSelected"
         />
@@ -248,6 +245,7 @@ onMounted(() => {
 
 .table {
   width: 900px;
+  margin-top: 30px;
 }
 
 .paging-bar {
