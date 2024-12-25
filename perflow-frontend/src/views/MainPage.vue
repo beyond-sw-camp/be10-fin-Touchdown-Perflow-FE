@@ -27,8 +27,11 @@ const commuteStatus = ref('OFF');
 const commuteStartTime = ref(null);
 const commuteTime = ref(0); // 출퇴근 시간 차이 (분 단위로 계산됨)
 const latest = ref({});
+const year = ref(0);
 
 const empId = authStore.empId;
+const now = new Date() // 현재 날짜
+year.value = now.getFullYear() // 현재 년도
 
 // 사원 정보를 가져오는 함수
 const fetchEmp = async () => {
@@ -46,8 +49,6 @@ const fetchAttendance = async () => {
     const response = await api.get(`/emp/attendance/summaries/weekly`);
     attendance.value = response.data;
 
-    console.log("attendance: ", attendance.value);
-
     // 데이터가 배열인지 확인
     if (Array.isArray(attendance.value) && attendance.value.length > 0) {
       // 가장 최근 주차 데이터 선택
@@ -64,7 +65,7 @@ const fetchAttendance = async () => {
 // 연차 정보를 가져오는 함수
 const fetchAnnual = async () => {
   try {
-    const response = await api.get(``);
+    const response = await api.get(`/emp/annual/balance`);
     annual.value = response.data;
   } catch (error) {
     console.error('연차 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -98,7 +99,6 @@ const fetchPayDate = async () => {
     // 밀리초를 일 단위로 변환
     diffDays.value = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;  // 결과를 diffDays에 저장
 
-    console.log(`다음 급여 지급일은 ${paymentDate.toLocaleDateString()}이고, 현재 날짜와 급여 지급일 사이의 차이: ${diffDays}일`);
   } catch (error) {
     console.error('회사 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -117,8 +117,8 @@ const fetchVacation = async () => {
 // 팀 kpi 정보를 가져오는 함수
 const fetchTeamKPI = async () => {
   try {
-      const response = await api.get(`/leader/perfomances/kpi/team/${empId}`);
-      teamKPI.value = response.data.kpiLists;
+    const response = await api.get(`/perfomances/kpi/team/period/current/${empId}/${year.value}`);
+    teamKPI.value = response.data.kpiLists;
   } catch (error) {
     console.error('팀 kpi 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -127,7 +127,7 @@ const fetchTeamKPI = async () => {
 // 개인 kpi 정보를 가져오는 함수
 const fetchPersonalKPI = async () => {
   try {
-    const response = await api.get(`perfomances/kpi/personal/${empId}`);
+    const response = await api.get(`perfomances/kpi/personal/period/current/${empId}/${year.value}`);
     personalKPI.value = response.data.kpiLists;
   } catch (error) {
     console.error('개인 kpi 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -190,7 +190,7 @@ const fetchProcessedApproval = async () => {
 };
 
 const goToKPI = () => {
-  router.push(``)
+  router.push(`/performance/kpi-current`)
 };
 
 const goToAnnouncement = () => {
@@ -319,7 +319,7 @@ const handleOff = () => {
 onMounted(() => {
   fetchEmp();
   fetchAttendance();
-  // fetchAnnual();
+  fetchAnnual();
   fetchPayDate();
   // fetchVacation();
   fetchTeamKPI();
@@ -327,7 +327,7 @@ onMounted(() => {
   fetchAnnouncement();
   fetchWaitingApproval();
   fetchProcessedApproval();
-})
+});
 
 </script>
 
@@ -374,17 +374,17 @@ onMounted(() => {
     </div>
     <!-- 근무시간, 남은 연차, 남은 급여일 정보 -->
     <div class="period">
-      <div class="attendance">
+      <div>
         <img src="../assets/image/alarm.png" alt="clock" />
         <h4>근무시간</h4>
         <p>{{ latest.totalHours }}시간 {{ latest.totalMinutes }}분</p>
       </div>
-      <div class="annual">
+      <div>
         <img src="../assets/image/travel.png" alt="plane" />
         <h4>남은 연차</h4>
-        <p>11일</p>
+        <p>{{ annual }}일</p>
       </div>
-      <div class="pay">
+      <div>
         <img src="../assets/image/payments.png" alt="money" />
         <h4>남은 급여일</h4>
         <p>{{ diffDays }}일전</p>
