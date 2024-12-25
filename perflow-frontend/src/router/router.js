@@ -30,6 +30,7 @@ import PayrollDetail from "@/views/payment/PayrollDetail.vue";
 import PayStub from "@/views/payment/PayStub.vue";
 import KPIUpdateView from "@/views/performance/KPIUpdateView.vue";
 import KPIRecordView from "@/views/performance/KPIRecordView.vue";
+import SeverancePay from "@/views/payment/SeverancePay.vue";
 
 
 const routes = [
@@ -61,6 +62,7 @@ const routes = [
     {path: '/main-page', name: 'MainPage', component: MainPage},
     {path: '/payment/payroll-detail/:payrollId', name:'PayrollDetail', component: PayrollDetail},
     {path: '/payment/pay-stub', name: 'PayStub', component: PayStub},
+    {path: '/severance/severance-pay', name: 'SeverancePay', component: SeverancePay},
     //근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
