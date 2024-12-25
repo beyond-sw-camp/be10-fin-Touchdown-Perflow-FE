@@ -5,7 +5,7 @@ import api from "@/config/axios.js";
 let timerInterval = null;
 let isTimerActive = false;
 /*let isFirstLoad = true;*/
-let lastUpdateTime = null;
+let lastUpdateTime = Date.now();
 const qrCodeImage = ref('');
 const inputCode = ref('');
 const generatedCode = ref('');
@@ -78,6 +78,11 @@ const generateQRCode = async () => {
     timer.value = 30;
     updateTimerDisplay();
     inputCode.value = '';
+    if (!isTimerActive) { // 타이머 중복 방지
+      clearInterval(timerInterval); // 기존 타이머 종료
+      timerInterval = setInterval(updateTimer, 1000); // 새 타이머 시작
+      isTimerActive = true; // 타이머 활성화
+    }
   } catch (error) {
     console.error('QR 코드 생성 실패:', error);
     alert('QR 코드 생성 실패: ' + error.message);
@@ -88,12 +93,13 @@ const generateQRCode = async () => {
 
 const updateTimer = () => {
   const currentTime = Date.now();
-  if (lastUpdateTime) {
-    const elapsed = Math.floor((currentTime - lastUpdateTime) / 1000); // 실제 경과 시간(초)
+  const elapsed = Math.floor((currentTime - lastUpdateTime) / 1000); // 실제 경과 시간(초)
+
+  if (elapsed > 0) {
     timer.value = Math.max(0, timer.value - elapsed); // 남은 시간 계산
+    lastUpdateTime = currentTime; // 마지막 업데이트 시간 갱신
+    updateTimerDisplay(); // 타이머 표시 업데이트
   }
-  lastUpdateTime = currentTime; // 마지막 업데이트 시간 갱신
-  updateTimerDisplay(); // 타이머 표시 업데이트
 
   if (timer.value === 0) {
     clearInterval(timerInterval); // 타이머 정지
