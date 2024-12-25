@@ -3,7 +3,7 @@ import ButtonBack from "@/components/common/ButtonBack.vue";
 import api from "@/config/axios.js";
 import {onMounted, ref} from "vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
-import ModifySideBar from "@/components/hr/EmployeeModifySideBar.vue";
+import ModifySideBar from "@/components/hr/sideBar/EmployeeModifySideBar.vue";
 
 const employee = ref({});
 let statusText = ref();

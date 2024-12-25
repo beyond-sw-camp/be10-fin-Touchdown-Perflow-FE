@@ -117,8 +117,8 @@ const fetchVacation = async () => {
 // 팀 kpi 정보를 가져오는 함수
 const fetchTeamKPI = async () => {
   try {
-    const response = await api.get(`/leader/perfomances/kpi/team/${empId}`);
-    teamKPI.value = response.data.kpiLists;
+      const response = await api.get(`/leader/perfomances/kpi/team/${empId}`);
+      teamKPI.value = response.data.kpiLists;
   } catch (error) {
     console.error('팀 kpi 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }

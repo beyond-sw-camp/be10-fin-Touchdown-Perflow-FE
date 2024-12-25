@@ -22,6 +22,10 @@ import MainPage from "@/views/MainPage.vue";
 import PositionList from "@/views/hr/PositionList.vue";
 import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
+import Company from "@/views/hr/company/Company.vue";
+import DepartmentList from "@/views/hr/DepartmentList.vue";
+import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
+import Authority from "@/views/hr/Authority.vue";
 import PayrollDetail from "@/views/payment/PayrollDetail.vue";
 import PayStub from "@/views/payment/PayStub.vue";
 import KPIUpdateView from "@/views/performance/KPIUpdateView.vue";
@@ -33,13 +37,17 @@ const routes = [
 
     {path: '/', name: 'LoginPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
-    {path: '/hr/my-page', name: 'myPage', component: EmpMyPage},
+    {path: '/hr/my-page', name: 'MyPage', component: EmpMyPage},
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
+    {path: '/hr/employees/register/lists', name: 'EmpRegister', component: EmpListRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
-    {path: '/hr/appoint', name: 'appointList', component: AppointList},
+    {path: '/hr/appoint', name: 'AppointList', component: AppointList},
+    {path: '/hr/department', name: 'DepartmentList', component: DepartmentList},
+    {path: '/hr/authority', name: 'Authority', component: Authority},
+    {path: '/hr/company', name: 'Company', component: Company},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
