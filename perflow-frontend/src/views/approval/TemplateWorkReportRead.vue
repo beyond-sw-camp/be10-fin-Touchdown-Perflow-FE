@@ -162,7 +162,7 @@ onMounted(() => {
           color="orange"
           size="medium"
           label="목록으로"
-          @click=""
+          @click="router.go(-1)"
       />
       </div>
     </div>

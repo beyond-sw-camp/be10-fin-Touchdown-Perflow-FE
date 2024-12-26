@@ -4,6 +4,7 @@ import {computed, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import api from "@/config/axios.js";
 import ApprovalShareBoxRead from "@/components/approval/ApprovalShareBoxRead.vue";
+import router from "@/router/router.js";
 
 const route = useRoute();
 
@@ -180,7 +181,7 @@ onMounted(() => {
           color="orange"
           size="medium"
           label="목록으로"
-          @click=""
+          @click="router.go(-1)"
       />
     </div>
 
