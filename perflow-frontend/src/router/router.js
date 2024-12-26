@@ -40,6 +40,7 @@ import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
 import AnnCreate from "@/views/announcement/AnnCreate.vue";
 import SeverancePayStub from "@/views/payment/SeverancePayStub.vue";
+import Calculator from "@/views/payment/Calculator.vue";
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
@@ -47,6 +48,7 @@ const routes = [
     {path: '/', name: 'LoginPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
     {path: '/hr/my-page', name: 'MyPage', component: EmpMyPage},
+    {path: '/main-page', name: 'MainPage', component: MainPage},
 
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
@@ -76,13 +78,15 @@ const routes = [
     {path: '/performance/kpi-current', name: 'KPIUpdate', component: KPIUpdateView},
     {path: '/performance/kpi-past', name: 'KPIRecord', component: KPIRecordView},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
+
+    // 급여
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
-    {path: '/main-page', name: 'MainPage', component: MainPage},
     {path: '/payment/payroll-detail/:payrollId', name:'PayrollDetail', component: PayrollDetail},
     {path: '/payment/pay-stub', name: 'PayStub', component: PayStub},
     {path: '/severance/severance-pay', name: 'SeverancePay', component: SeverancePay},
     {path: '/severance/severance-pay-detail/:severancePayId', name: 'SeverancePayDetail', component: SeverancePayDetail},
     {path: '/severance/severance-stub', name: 'SeverancePayStub', component: SeverancePayStub},
+    {path: '/severance/calculator', name: Calculator, component: Calculator},
 
     // 근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
