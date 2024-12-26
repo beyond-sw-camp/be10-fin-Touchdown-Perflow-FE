@@ -1,8 +1,8 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import {useStore} from '@/store/store.js';
-import OrganizationNode from "@/components/common/OrganizationNode.vue";
-import OrganizationSelectedEmp from "@/components/common/OrganizationSelectedEmp.vue";
+import OrganizationNode from "@/components/approval/OrganizationNode.vue";
+import OrganizationSelectedEmp from "@/components/approval/OrganizationSelectedEmp.vue";
 
 const store = useStore();
 

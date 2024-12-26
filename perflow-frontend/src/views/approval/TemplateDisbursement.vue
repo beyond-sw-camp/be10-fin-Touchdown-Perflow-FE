@@ -3,12 +3,13 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import InputField from "@/components/common/InputField.vue";
 import ApprovalShareBox from "@/components/approval/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -145,16 +146,45 @@ const addToShareList = () => {
 };
 
 const title = ref('');  // 문서 제목
-const content = ref('');  // 문서 내용
+const expendDate = ref(""); // 지출일
+const rows = ref([
+  { vendor: "", usage: "", amount: 0 }, // 초기 한 행
+]);
+
+// 합계 계산
+const totalAmount = computed(() => {
+  return rows.value.reduce((sum, row) => sum + Number(row.amount || 0), 0);
+});
+
+
+// 행 추가
+const addRow = () => {
+  rows.value.push({ vendor: "", uasge: "", amount: 0 })
+}
+
+// 행 삭제
+const deleteRow = (index) => {
+  rows.value.splice(index, 1);
+}
 
 // 결재 문서 데이터
 const docData = () => {
+
+  const fields = {
+    expendDate: expendDate.value || ""  // 지출일
+  }
+  // 거래서, 사용 내역, 금액
+  rows.value.forEach((row, index) => {
+    const number = index + 1; // 1부터 시작
+    fields[`VENDOR${number}`] = row.vendor || "";
+    fields[`USAGE${number}`] = row.usage || "";
+    fields[`AMOUNT${number}`] = row.amount || "";
+  });
+
   return {
-    templateId: 4, // 기본 서식 id
+    templateId: 5, // 지출 결의서 서식 id
     title: title.value, // 문서 제목
-    fields: {
-      CONTENT: content.value, // 기본 서식의 필드 데이터
-    },
+    fields: fields,
     approveLines: approvalList.value.map((line, index) => ({
       groupId: null,
       approveType: line.approveType,
@@ -177,8 +207,19 @@ const docData = () => {
 
 const createNewDoc = async () => {
 
-  if (!title.value || !content.value) {
-    alert('빈 칸을 모두 채워주세요.');
+  if (!title.value) {
+    alert('제목을 입력해주세요.');
+    return;
+  }
+
+  if (!expendDate.value) {
+    alert('지출일을 선택해주세요.')
+    return;
+  }
+
+  const hasEmptyAmount = rows.value.some((row) => !row.amount || row.amount <= 0);
+  if (hasEmptyAmount) {
+    alert('금액을 입력해주세요. 0보다 큰 값을 입력해야 합니다.')
     return;
   }
 
@@ -207,7 +248,7 @@ const goTo = (url) => {
     </div>
     <div id="header-bottom" class="flex-between">
       <div class="tabs">
-        <span class="tab active">기본 서식</span>
+        <span class="tab active">지출 결의서</span>
       </div>
     </div>
   </div>
@@ -217,25 +258,68 @@ const goTo = (url) => {
     <div class="empty-container"></div>
 
     <div class="form-container">
-      <!-- 제목 -->
-      <InputField
-          v-model="title"
-          label="제목"
-          placeholder="제목을 입력해 주세요."
-          :isRequired="true"
-          width="600px"
-      />
 
-      <!-- 내용 -->
-      <InputField
-          v-model="content"
-          label="내용"
-          placeholder="내용을 입력해 주세요."
-          type="textarea"
-          :isRequired="true"
-          height="400px"
-          width="600px"
-      />
+      <div class="field-container">
+        <!-- 제목 -->
+        <InputField
+            v-model="title"
+            label="제목"
+            placeholder="제목을 입력해 주세요."
+            :isRequired="true"
+            width="600px"
+        />
+
+        <!-- 지출일 -->
+        <label class="label">
+          <span class="label-name">지출일</span>
+          <span class="asterisk">*</span>
+        </label>
+        <SearchGroupBar
+            v-model="expendDate"
+            placeholder="지출일 선택"
+            type="date"
+        />
+      </div>
+
+      <!-- 지출 내역 테이블 -->
+      <div class="table-container">
+        <table class="expense-table">
+          <thead>
+          <tr>
+            <th>거래처</th>
+            <th>사용내역</th>
+            <th>금액</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(row, index) in rows" :key="index">
+            <td>
+              <input v-model="row.vendor" type="text" placeholder="거래처" />
+            </td>
+            <td>
+              <input v-model="row.usage" type="text" placeholder="사용내역 및 용도" />
+            </td>
+            <td>
+              <input v-model="row.amount" type="number" placeholder="금액" />
+            </td>
+            <td>
+              <button
+                  v-if="rows.length > 1"
+                  class="action-button delete"
+                  @click="deleteRow(index)"
+              >x</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <button class="action-button add" @click="addRow">+</button>
+
+        <!-- 합계 -->
+        <div class="total">
+          <span>합계 {{ totalAmount }} 원 </span>
+        </div>
+      </div>
 
       <div class="button-group">
         <ButtonBasic
@@ -259,12 +343,12 @@ const goTo = (url) => {
       <!-- 드롭 다운 -->
       <span class="dropdown-title">서식 선택</span>
       <ButtonDropDown
-        :options="dropdownOptions"
-        defaultOption="기본 서식"
-        width="155px"
-        height="35px"
-        fontSize="15px"
-        @selectId="handleDropdownSelect"
+          :options="dropdownOptions"
+          defaultOption="기본 서식"
+          width="155px"
+          height="35px"
+          fontSize="15px"
+          @selectId="handleDropdownSelect"
       />
 
       <ApprovalShareBox
@@ -368,8 +452,8 @@ const goTo = (url) => {
                     size="small"
                     @click="deleteApproveSelectedRows"
                 />
-                </div>
               </div>
+            </div>
 
           </div>
         </template>
@@ -450,8 +534,8 @@ const goTo = (url) => {
 <style scoped>
 .main-container {
   display: flex;
-  justify-content: center;  /* 중앙 정렬 */
-  align-items: center;  /* 세로 정렬 */
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center; /* 세로 정렬 */
   gap: 0px;
 }
 
@@ -468,6 +552,7 @@ const goTo = (url) => {
   gap: 0px;
   width: 400px;
   margin-top: 50px;
+  position: relative; /* 유동적인 위치 */
 }
 
 .box-container {
@@ -482,6 +567,8 @@ const goTo = (url) => {
   flex-direction: row; /* 버튼 가로 정렬 */
   gap: 40px; /* 버튼 간 간격 */
   align-items: center; /* 중앙 정렬 */
+  margin-top: auto; /* 버튼을 항상 아래쪽으로 */
+  padding-top: 20px;  /* 버튼 위에 여유 공간 */
 }
 
 .approval-button-group {
@@ -538,7 +625,8 @@ const goTo = (url) => {
 .table-container {
   flex: 1;
   overflow-y: auto; /* 테이블에 스크롤 추가 */
-  margin-bottom: 10px; /* 버튼과 테이블 간의 간격 */
+  margin-top: 30px;
+  margin-bottom: 20px; /* 버튼과 테이블 간의 간격 */
 }
 
 .button-container {
@@ -552,6 +640,7 @@ const goTo = (url) => {
   align-items: center;
   justify-content: center;
 }
+
 
 .approval-table {
   width: 100%;
@@ -620,6 +709,7 @@ const goTo = (url) => {
   font-weight: bold;
   color: #3C4651;
 }
+
 #header-div {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
@@ -627,10 +717,12 @@ const goTo = (url) => {
   align-items: center; /* 가로 중앙 정렬 */
   margin-top: 50px;
 }
+
 #header-top, #header-bottom {
   margin-bottom: 10px;
   width: 900px;
 }
+
 .tabs {
   display: flex;
   gap: 20px;
@@ -651,5 +743,95 @@ const goTo = (url) => {
   font-size: 14px;
   font-weight: bold;
   color: #3C4651;
+}
+
+/* 지출일 */
+.label-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.asterisk {
+  color: red;
+  margin-right: 15px;
+}
+
+/* 지출 내역 테이블 */
+.expense-table {
+  width: 100%;
+  border-collapse: separate; /* 셀 경계와 테두리 중첩 방지 */
+  border-spacing: 0; /* 셀 간 간격 제거 */
+  border: 1px solid #AFA9A9; /* 테이블 전체 테두리 */
+  border-radius: 10px; /* 테이블 모서리 둥글게 */
+  overflow: hidden; /* 둥근 모서리 유지 */
+}
+
+.expense-table th,
+.expense-table td {
+  border-bottom: 1px solid #AFA9A9; /* 셀 내부에만 경계선 추가 */
+  border-right: 1px solid #AFA9A9; /* 셀 오른쪽 경계선 추가 */
+  text-align: center;
+}
+
+.expense-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.expense-table input {
+  border: none; /* 입력 필드 테두리 제거 */
+  outline: none;  /* 포커스 하면 나오는 테두리 제거 */
+  text-align: left;
+  padding: 4px;
+}
+
+/* 금액 칸 화살표 제거 */
+.expense-table input[type="number"]::-webkit-inner-spin-button,
+.expense-table input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 테이블 버튼 */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #AFA9A9;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* + 버튼 */
+.action-button.add {
+  color: #3C4651;
+}
+
+/* x 버튼 */
+.action-button.delete {
+  color: #3C4651;
+}
+
+/* 호버 효과 */
+.action-button:hover {
+  background-color: #F4F4F4;
+  color: #3C4651;
+}
+
+.total {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 2px solid #ff6600;
+  border-top: 2px solid #ff6600;
 }
 </style>

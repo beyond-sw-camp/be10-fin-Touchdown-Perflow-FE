@@ -3,12 +3,13 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import InputField from "@/components/common/InputField.vue";
 import ApprovalShareBox from "@/components/approval/ApprovalShareBox.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -145,15 +146,24 @@ const addToShareList = () => {
 };
 
 const title = ref('');  // 문서 제목
-const content = ref('');  // 문서 내용
+const fromDate = ref('');
+const toDate = ref('');
+const PROGRESSING = ref('');
+const SPECIAL = ref('');
+const PLANNED = ref('');
 
 // 결재 문서 데이터
 const docData = () => {
+
   return {
-    templateId: 4, // 기본 서식 id
+    templateId: 6, // 업무보고서 서식 ID
     title: title.value, // 문서 제목
     fields: {
-      CONTENT: content.value, // 기본 서식의 필드 데이터
+      fromDate: fromDate.value,
+      toDate: toDate.value,
+      PROGRESS: PROGRESSING.value,
+      SPECIAL: SPECIAL.value,
+      PLANNED: PLANNED.value,
     },
     approveLines: approvalList.value.map((line, index) => ({
       groupId: null,
@@ -177,8 +187,8 @@ const docData = () => {
 
 const createNewDoc = async () => {
 
-  if (!title.value || !content.value) {
-    alert('빈 칸을 모두 채워주세요.');
+  if (!title.value || !fromDate.value || !toDate.value) {
+    alert('필수 항목을 모두 입력해주세요.');
     return;
   }
 
@@ -207,7 +217,7 @@ const goTo = (url) => {
     </div>
     <div id="header-bottom" class="flex-between">
       <div class="tabs">
-        <span class="tab active">기본 서식</span>
+        <span class="tab active">업무 보고서</span>
       </div>
     </div>
   </div>
@@ -217,25 +227,63 @@ const goTo = (url) => {
     <div class="empty-container"></div>
 
     <div class="form-container">
-      <!-- 제목 -->
-      <InputField
-          v-model="title"
-          label="제목"
-          placeholder="제목을 입력해 주세요."
-          :isRequired="true"
-          width="600px"
-      />
 
-      <!-- 내용 -->
-      <InputField
-          v-model="content"
-          label="내용"
-          placeholder="내용을 입력해 주세요."
-          type="textarea"
-          :isRequired="true"
-          height="400px"
-          width="600px"
-      />
+      <div class="field-container">
+
+        <!-- 진행 기간 -->
+        <label class="label">
+          <span class="label-name">진행일시</span>
+          <span class="asterisk">*</span>
+        </label>
+        <SearchGroupBar
+            v-model="fromDate"
+            placeholder="시작일"
+            type="date"
+        />
+        <span class="tilde"> ~ </span>
+        <SearchGroupBar
+            v-model="toDate"
+            placeholder="완료일"
+            type="date"
+        />
+        <!-- 제목 -->
+        <InputField
+            v-model="title"
+            label="제목"
+            placeholder="제목을 입력해 주세요."
+            :isRequired="true"
+            width="600px"
+        />
+
+        <!-- 진행사항 -->
+        <InputField
+            v-model="PROGRESSING"
+            label="진행사항"
+            placeholder="내용을 입력해 주세요."
+            type="textarea"
+            height="180px"
+            width="600px"
+        />
+        <!-- 특이사항 -->
+        <InputField
+            v-model="SPECIAL"
+            label="특이사항"
+            placeholder="내용을 입력해 주세요."
+            type="textarea"
+            height="180px"
+            width="600px"
+        />
+        <!-- 예정사항 -->
+        <InputField
+            v-model="PLANNED"
+            label="예정사항"
+            placeholder="내용을 입력해 주세요."
+            type="textarea"
+            height="180px"
+            width="600px"
+        />
+
+      </div>
 
       <div class="button-group">
         <ButtonBasic
@@ -259,12 +307,12 @@ const goTo = (url) => {
       <!-- 드롭 다운 -->
       <span class="dropdown-title">서식 선택</span>
       <ButtonDropDown
-        :options="dropdownOptions"
-        defaultOption="기본 서식"
-        width="155px"
-        height="35px"
-        fontSize="15px"
-        @selectId="handleDropdownSelect"
+          :options="dropdownOptions"
+          defaultOption="기본 서식"
+          width="155px"
+          height="35px"
+          fontSize="15px"
+          @selectId="handleDropdownSelect"
       />
 
       <ApprovalShareBox
@@ -368,8 +416,8 @@ const goTo = (url) => {
                     size="small"
                     @click="deleteApproveSelectedRows"
                 />
-                </div>
               </div>
+            </div>
 
           </div>
         </template>
@@ -450,8 +498,8 @@ const goTo = (url) => {
 <style scoped>
 .main-container {
   display: flex;
-  justify-content: center;  /* 중앙 정렬 */
-  align-items: center;  /* 세로 정렬 */
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center; /* 세로 정렬 */
   gap: 0px;
 }
 
@@ -468,6 +516,7 @@ const goTo = (url) => {
   gap: 0px;
   width: 400px;
   margin-top: 50px;
+  position: relative; /* 유동적인 위치 */
 }
 
 .box-container {
@@ -482,6 +531,8 @@ const goTo = (url) => {
   flex-direction: row; /* 버튼 가로 정렬 */
   gap: 40px; /* 버튼 간 간격 */
   align-items: center; /* 중앙 정렬 */
+  margin-top: auto; /* 버튼을 항상 아래쪽으로 */
+  padding-top: 20px;  /* 버튼 위에 여유 공간 */
 }
 
 .approval-button-group {
@@ -538,7 +589,8 @@ const goTo = (url) => {
 .table-container {
   flex: 1;
   overflow-y: auto; /* 테이블에 스크롤 추가 */
-  margin-bottom: 10px; /* 버튼과 테이블 간의 간격 */
+  margin-top: 30px;
+  margin-bottom: 20px; /* 버튼과 테이블 간의 간격 */
 }
 
 .button-container {
@@ -552,6 +604,7 @@ const goTo = (url) => {
   align-items: center;
   justify-content: center;
 }
+
 
 .approval-table {
   width: 100%;
@@ -620,6 +673,7 @@ const goTo = (url) => {
   font-weight: bold;
   color: #3C4651;
 }
+
 #header-div {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
@@ -627,10 +681,12 @@ const goTo = (url) => {
   align-items: center; /* 가로 중앙 정렬 */
   margin-top: 50px;
 }
+
 #header-top, #header-bottom {
   margin-bottom: 10px;
   width: 900px;
 }
+
 .tabs {
   display: flex;
   gap: 20px;
@@ -652,4 +708,16 @@ const goTo = (url) => {
   font-weight: bold;
   color: #3C4651;
 }
+
+.label-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.asterisk {
+  color: red;
+  margin-right: 15px;
+}
+
 </style>
