@@ -163,8 +163,9 @@ onMounted(() => {
       >
         <template #status = "{ row }">
           <span
+              class="status-tag"
             :class="{
-              'approved': row.approveSbjStatus ==='APPROCED',
+              'approved': row.approveSbjStatus ==='APPROVED',
               'rejected': row.approveSbjStatus === 'REJECTED',
               'unknown': !['APPROVED', 'REJECTED'].includes(row.approveSbjStatus),
             }"
@@ -268,4 +269,29 @@ onMounted(() => {
   width: 100% /* 오른쪽 끝에 검색*/
 }
 
+.status-tag {
+  display: inline-block;
+  padding: 5px 5px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  min-width: 50px;
+}
+
+/* 승인 */
+.status-tag.approved {
+  background-color: #4CAF50;
+}
+
+/* 반려 */
+.status-tag.rejected {
+  background-color: #FF9800;
+}
+
+/* 알 수 없음 */
+.status-tag.unknown {
+  background-color: #007bff; /* 회색 */
+}
 </style>
