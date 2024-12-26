@@ -189,8 +189,8 @@ onMounted(() => {
 
       <!-- 처리 문서 정보 -->
       <div class="processed-info-container">
-        <span class="processed-info-title">나의 처리 이력</span>
         <div v-if="docType === 'processed'" class="processed-info">
+          <span class="processed-info-title">나의 처리 이력</span>
           <div class="doc-type">
             <span class="doc-type-label">결재 여부 </span>
             <span class="doc-type-tag">{{ formatStatus }}</span>
@@ -209,6 +209,15 @@ onMounted(() => {
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <!-- 발신함 문서 정보 -->
+      <div v-if="docType === 'outbox'" class="outbox-info-container">
+        <span class="outbox-info-title">나의 발신 이력</span>
+        <div class="outbox-datetime">
+          <span class="outbox-datetime-label">발신일시</span>
+          <span class="outbox-datetime-value"> {{ createDatetime }}</span>
         </div>
       </div>
 
@@ -453,5 +462,34 @@ onMounted(() => {
   font-size: 15px;
   font-weight: bold;
   color: #3C4651;
+}
+
+/* 발신함 정보 */
+.outbox-info-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.outbox-datetime {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  align-items: center;
+  justify-content: center;
+}
+
+.outbox-datetime-label {
+  color: #3C4651;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.outbox-datetime-value {
+  margin-left: 10px;
+  font-size: 15px;
 }
 </style>

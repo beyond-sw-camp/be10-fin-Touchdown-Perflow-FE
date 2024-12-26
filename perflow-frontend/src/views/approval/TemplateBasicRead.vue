@@ -28,6 +28,8 @@ const title = ref("");
 const content = ref("");
 const approveLines = ref([]);
 const shares = ref([]);
+const createDatetime = ref("");
+const createUser = ref("");
 
 // 한글로 변환
 const TypeMapping = {
@@ -45,12 +47,25 @@ const fetchDocumentDetail = async () => {
     const docData = response.data;
     title.value = docData.title; // 제목
     content.value = docData.fields?.CONTENT || ""; // 필드
+    createUser.value = docData.createuserName;
+    createDatetime.value = formatCreateDatetime(docData.createDatetime);
     approveLines.value = docData.approveLines || []; // 결재선 데이터
     shares.value = docData.shares || [];  // 공유 데이터
   } catch (error) {
     console.error("문서 상세 조회 실패:", error);
     alert("문서 데이터를 불러오지 못했습니다.");
   }
+};
+
+// 작성일시 형식 변환
+const formatCreateDatetime = (rawString) => {
+
+  if (!rawString) {
+    return "날짜 정보 없음";
+  }
+  const date = new Date(rawString);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 `
+      + `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
 };
 
 const formatStatus = computed(() => {
@@ -126,8 +141,8 @@ onMounted(() => {
 
         <!-- 처리 문서 정보 -->
         <div class="processed-info-container">
-          <span class="processed-info-title">나의 처리 이력</span>
           <div v-if="docType === 'processed'" class="processed-info">
+            <span class="processed-info-title">나의 처리 이력</span>
             <div class="doc-type">
               <span class="doc-type-label">결재 여부 </span>
               <span class="doc-type-tag">{{ formatStatus }}</span>
@@ -146,6 +161,15 @@ onMounted(() => {
               </div>
             </div>
 
+          </div>
+        </div>
+
+        <!-- 발신함 문서 정보 -->
+        <div v-if="docType === 'outbox'" class="outbox-info-container">
+          <span class="outbox-info-title">나의 발신 이력</span>
+          <div class="outbox-datetime">
+            <span class="outbox-datetime-label">발신일시</span>
+            <span class="outbox-datetime-value"> {{ createDatetime }}</span>
           </div>
         </div>
 
@@ -316,4 +340,32 @@ onMounted(() => {
   color: #3C4651;
 }
 
+/* 발신함 정보 */
+.outbox-info-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.outbox-datetime {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  align-items: center;
+  justify-content: center;
+}
+
+.outbox-datetime-label {
+  color: #3C4651;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.outbox-datetime-value {
+  margin-left: 10px;
+  font-size: 15px;
+}
 </style>

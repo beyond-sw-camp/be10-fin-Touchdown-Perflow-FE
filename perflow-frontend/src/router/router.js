@@ -38,6 +38,7 @@ import KPIRecordView from "@/views/performance/KPIRecordView.vue";
 import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
+import Outbox from "@/views/approval/Outbox.vue";
 
 
 const routes = [
@@ -68,6 +69,7 @@ const routes = [
     {path: '/approval/create/disbursement', name: 'cashDisbursement', component: TemplateDisbursement},
     {path: '/approval/disbursement/detail', name: 'disbursementDetail', component: TemplateDisbursementRead},
     {path: '/approval/processing', name: 'processedDoc', component: ProcessedDoc},
+    {path: '/approval/outbox', name: 'outbox', component: Outbox},
 
 
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
