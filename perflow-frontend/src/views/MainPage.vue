@@ -6,7 +6,7 @@ import On from "../assets/image/work_on.png";
 import Off from "../assets/image/work_off.png";
 import TableMini from "@/components/common/TableMini.vue";
 import {useAuthStore} from "@/store/authStore.js";
-import QRModal from "@/views/Attitude/QRModal.vue";
+import QRModal from "@/views/Attitude/Attendance/QRModal.vue";
 
 // 상태 관리
 const isModalVisible = ref(false);
