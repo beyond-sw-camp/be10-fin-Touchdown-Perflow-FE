@@ -20,6 +20,7 @@ import AnnList from "@/views/announcement/AnnList.vue";
 import EmpPwdRegister from "@/views/hr/employee/EmpPwdRegister.vue";
 import EmpRegister from "@/views/hr/employee/EmpRegister.vue";
 import MainPage from "@/views/MainPage.vue";
+import AnnCreate from "@/views/announcement/AnnCreate.vue";
 
 
 const routes = [
@@ -41,7 +42,7 @@ const routes = [
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
     {path: '/main-page', name: 'MainPage', component: MainPage},
-    //근태
+    // 근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
     {path:'/attitude/vacation',name:'vacation',component:Vacation},
@@ -49,7 +50,10 @@ const routes = [
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
     {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
-    {path:'/announcements', name: 'announcements-list', component: AnnList}
+
+    // 공지
+    {path:'/announcements', name: 'announcements-list', component: AnnList},
+    {path: '/announcements/create', name: 'announcements-create', component: AnnCreate}
 
 ]
 
