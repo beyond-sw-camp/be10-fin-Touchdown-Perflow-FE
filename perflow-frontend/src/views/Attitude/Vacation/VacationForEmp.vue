@@ -171,9 +171,15 @@ const handlePageChange = (page) => {
   applyFilter(false);
 };
 
-const handleStatusSelect = (selectedStatus) => {
-  searchCriteria.value.status = selectedStatus; // 선택된 상태를 조건에 추가
+const handleStatusSelect = (selectedLabel) => {
+  // 선택된 상태 라벨을 영문(enum) 값으로 변환
+  const selectedStatus = statusOptions.find(option => option.label === selectedLabel)?.id || "";
+  searchCriteria.value.status = selectedStatus; // 영문(enum) 값 저장
+
   console.log("선택된 상태:", selectedStatus);
+
+  // 상태 변경 즉시 필터 적용 (첫 페이지로 리셋)
+  applyFilter(true); // 첫 페이지로 리셋
 };
 
 
