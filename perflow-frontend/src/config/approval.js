@@ -3,7 +3,7 @@ import api from '@/config/axios.js';
 /* 결재 문서 생성 api */
 /* 1. 기본 서식 */
 
-export const createBasicDoc = async (docData) => {
+export const createNewDocument = async (docData) => {
     try {
         const response = await api.post('/approval/docs', docData);
         return response.data;

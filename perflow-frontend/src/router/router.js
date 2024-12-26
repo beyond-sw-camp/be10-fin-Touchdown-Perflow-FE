@@ -22,6 +22,11 @@ import MainPage from "@/views/MainPage.vue";
 import PositionList from "@/views/hr/PositionList.vue";
 import JobList from "@/views/hr/JobList.vue";
 import AppointList from "@/views/hr/AppointList.vue";
+import TemplateBasicRead from "@/views/approval/TemplateBasicRead.vue";
+import TemplateWorkReport from "@/views/approval/TemplateWorkReport.vue";
+import TemplateDisbursement from "@/views/approval/TemplateDisbursement.vue";
+import TemplateDisbursementRead from "@/views/approval/TemplateDisbursementRead.vue";
+import TemplateWorkReportRead from "@/views/approval/TemplateWorkReportRead.vue";
 import Company from "@/views/hr/company/Company.vue";
 import DepartmentList from "@/views/hr/DepartmentList.vue";
 import EmpListRegister from "@/views/hr/employee/EmpListRegister.vue";
@@ -30,6 +35,7 @@ import PayrollDetail from "@/views/payment/PayrollDetail.vue";
 import PayStub from "@/views/payment/PayStub.vue";
 import KPIUpdateView from "@/views/performance/KPIUpdateView.vue";
 import KPIRecordView from "@/views/performance/KPIRecordView.vue";
+import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
 
@@ -52,8 +58,18 @@ const routes = [
     {path: '/hr/company', name: 'Company', component: Company},
     {path: '/employees/pwd', name: 'EmpPwdRegister', component: EmpPwdRegister},
 
+    // 결재
     {path: '/approval/home', name: 'approvalHome', component: ApprovalHome},
     {path: '/approval/create', name: 'newDoc', component: TemplateBasic},
+    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
+    {path: '/approval/basic/detail', name: 'basicDetail', component: TemplateBasicRead},
+    {path: '/approval/create/work-report', name: 'workReport', component: TemplateWorkReport},
+    {path: '/approval/work-report/detail', name: 'workReportDetail', component: TemplateWorkReportRead},
+    {path: '/approval/create/disbursement', name: 'cashDisbursement', component: TemplateDisbursement},
+    {path: '/approval/disbursement/detail', name: 'disbursementDetail', component: TemplateDisbursementRead},
+    {path: '/approval/processing', name: 'processedDoc', component: ProcessedDoc},
+
+
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
     {path: '/performance/kpi-current', name: 'KPIUpdate', component: KPIUpdateView},
