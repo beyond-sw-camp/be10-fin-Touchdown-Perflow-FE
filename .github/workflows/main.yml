@@ -29,4 +29,4 @@ jobs:
           aws s3 cp \            
             --recursive \            
             --region ap-northeast-2 \            
-            dist s3://perflow-frontend # 이부분을 s3 버킷 이름으로 변경합니다.
+            dist s3://perflow-frontend-bucket # 이부분을 s3 버킷 이름으로 변경합니다.
