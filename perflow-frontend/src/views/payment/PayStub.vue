@@ -1,7 +1,6 @@
 <script setup xmlns="http://www.w3.org/1999/html">
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import ButtonBasic from "@/components/common/ButtonBasic.vue"
 import MainPageButton from "@/components/common/MainPageButton.vue";
 
 const payStub = ref(null);
@@ -9,10 +8,21 @@ const employee = ref(null);
 const company = ref(null);
 const overtime = ref([]);
 
+const month = ref(0); // 초기 값 0
+const formattedPayStubYear = ref(null);
+const formattedPayStubMonth = ref(null);
+const formattedCountingDateStart = ref(null);
+const formattedCountingDateEnd = ref(null);
+const payStubDate = ref(null);
+
 // 급여 명세서를 가져오는 함수
-const fetchPayStub = async () => {
+const fetchPayStub = async (preMonth = month.value) => {
   try {
-    const response = await api.get(`/pay-stub`);
+    const response = await api.get(`/pay-stub`, {
+      params: {
+        preMonth
+      }
+    });
     const payStubData = response.data.payStub;
 
     // 급여 명세서에서 필요한 값들 더하기
@@ -32,6 +42,18 @@ const fetchPayStub = async () => {
   } catch (error) {
     console.log('급여 명세서 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
+};
+
+// 달 업데이트 함수
+const updateMonth = (change) => {
+  // 값 업데이트
+  month.value = month.value + change;
+
+  console.log("현재 월: ", month.value); // 디버깅용, 값 업데이트 확인
+
+  // 업데이트된 값을 기반으로 데이터 요청
+  fetchPayStub();
+  calculatePayStubDate();
 };
 
 // 사원 정보를 가져오는 함수
@@ -54,26 +76,7 @@ const fetchPayDate = async () => {
     const response = await api.get(`/company`);
     company.value = response.data;  // 급여 지급일 (Unix timestamp)
 
-    const paymentDay = company.value.paymentDatetime;  // 급여 지급일 (매월 10일, Integer 타입)
-
-    // 현재 날짜 가져오기
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();  // 현재 연도
-    const currentMonth = currentDate.getMonth();  // 현재 월 (0부터 시작, 0 = 1월)
-
-    // 이번 달의 10일
-    const paymentDate = new Date(currentYear, currentMonth, paymentDay);  // Date 객체 생성
-
-    // 포맷팅: YYYY.MM.DD 형태로 변환
-    company.value.paymentDate = `${paymentDate.getFullYear()}.${(paymentDate.getMonth() + 1).toString().padStart(2, '0')}.${paymentDate.getDate().toString().padStart(2, '0')}`;  // company 객체에 포맷팅된 날짜 추가
-
-    // 집계 날짜
-    const countingDateStart = new Date(currentYear, currentMonth - 1, 1);
-    company.value.countingDateStart = `${countingDateStart.getFullYear()}.${(countingDateStart.getMonth() + 1).toString().padStart(2, '0')}.${countingDateStart.getDate().toString().padStart(2, '0')}`;  // company 객체에 포맷팅된 날짜 추가
-
-    const countingDateEnd = new Date(currentYear, currentMonth, 0);
-    company.value.countingDateEnd = `${countingDateEnd.getFullYear()}.${(countingDateEnd.getMonth() + 1).toString().padStart(2, '0')}.${countingDateEnd.getDate().toString().padStart(2, '0')}`;  // company 객체에 포맷팅된 날짜 추가
-
+    calculatePayStubDate();
   } catch (error) {
     console.error('회사 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -119,12 +122,55 @@ const printSection = () => {
   }, 1);  // 1초 대기 후 인쇄
 };
 
+// 급여 관련 날짜 계산 함수
+const calculatePayStubDate = () => {
+  if (company.value && company.value.paymentDatetime !== undefined) {
+    const payStubDay = company.value.paymentDatetime;
+    const currentDate = new Date();
+    const payStubYear = currentDate.getFullYear();
+    const payStubMonth = currentDate.getMonth();
+
+    // 월 이동 처리
+    const updatedMonth = payStubMonth - month.value;
+    const updatedYear = payStubYear + Math.floor(updatedMonth / 12);  // 월이 12 이상이면 연도 변경
+    const finalMonth = ((updatedMonth % 12) + 12) % 12; // 음수 월을 0~11 사이로 보정
+
+    const payStubDateInstance = new Date(updatedYear, finalMonth, payStubDay);
+
+    // 포맷팅 함수
+    const formatDate = (date) => {
+      return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
+    };
+
+    // 포맷팅된 급여 지급일
+    formattedPayStubYear.value = payStubDateInstance.getFullYear();
+    formattedPayStubMonth.value = (payStubDateInstance.getMonth() + 1).toString().padStart(2, '0');
+    payStubDate.value = formatDate(payStubDateInstance);
+
+    // 집계 날짜 시작 (전달 첫 번째 날)
+    const countingDateStart = new Date(updatedYear, finalMonth - 1, 1);
+    formattedCountingDateStart.value = formatDate(countingDateStart);
+
+    // 집계 날짜 종료 (이번 달 마지막 날)
+    const countingDateEnd = new Date(updatedYear, finalMonth, 0);
+    formattedCountingDateEnd.value = formatDate(countingDateEnd);
+
+    // 결과 출력
+    console.log('급여 지급일:', payStubDate.value);
+    console.log('집계 시작일:', formattedCountingDateStart.value);
+    console.log('집계 종료일:', formattedCountingDateEnd.value);
+
+  } else {
+    console.error('company.value.paymentDatetime을 가져올 수 없습니다.');
+  }
+};
+
 onMounted(() => {
   fetchPayStub();
   fetchEmp();
   fetchPayDate();
   fetchOverTime();
-})
+});
 </script>
 
 <template>
@@ -138,7 +184,15 @@ onMounted(() => {
       />
     </div>
     <div id="contentToPrint">
-      <h1>급여명세서</h1>
+      <div class="pay-name">
+        <button @click="updateMonth(1)" >
+          <img src="../../assets/image/previous.png" alt="previous" />
+        </button>
+        <div>{{ formattedPayStubYear }}년 {{ formattedPayStubMonth }}월 급여명세서</div>
+        <button @click="updateMonth(-1)" :disabled="month === 0">
+          <img src="../../assets/image/next.png" alt="next" />
+        </button>
+      </div>
       <div class="employee">
         <div v-for="emp in employee" :key="emp.empId">
           <div>{{ emp.name }} </div>
@@ -153,7 +207,7 @@ onMounted(() => {
       <div class="pay-date">
         <div class="date">
           <h2>실수령액</h2>
-          <div>{{ company?.paymentDate }} 지급</div>
+          <div>{{ payStubDate }} 지급</div>
         </div>
         <p>{{ formatCurrency(payStub?.totalAmount) }}원</p>
       </div>
@@ -168,7 +222,7 @@ onMounted(() => {
       <div class="over">
         <div class="date">
           <h4>초과수당</h4>
-          <div>{{ company?.countingDateStart }} ~ {{ company?.countingDateEnd }} 내 집계</div>
+          <div>{{ formattedCountingDateStart }} ~ {{ formattedCountingDateEnd }} 내 집계</div>
         </div>
         <p>{{ formatCurrency(payStub?.totalOver ) }}원</p>
       </div>
@@ -252,12 +306,33 @@ onMounted(() => {
   margin-top: 20px;
 }
 
-h1 {
+.pay-name {
+  display: flex;
+  align-items: center;
+  width: 900px;
+  margin-top: 20px;
+}
+
+.pay-name div {
   color: #3C4651;
   font-weight: bold;
   font-size: 40px;
-  width: 900px;
-  margin-top: 20px;
+}
+
+.pay-name img {
+  width: 30px;
+  height: 30px;
+}
+
+.pay-name button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.pay-name button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .employee {
