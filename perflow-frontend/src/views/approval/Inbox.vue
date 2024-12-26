@@ -11,12 +11,10 @@ import PagingBar from "@/components/common/PagingBar.vue";
 const columns = [
   {label: "상태", field: "status"},
   {label: "제목", field: "title"},
-  {label: "작성자", field: "createUserName"},
   {label: "작성일", field: "createDatetime"},
-  {label: "처리일", field: "processDatetime"},
 ];
 
-const columnWidths = ["80px", "200px", "80px", "150px", "150px"]; // 열 값
+const columnWidths = ["80px", "300px", "200px"]; // 열 값
 
 const processedDocs = ref([]);  // 문서 목록
 const totalPages = ref(0);  // 전체 페이지 수
@@ -31,23 +29,23 @@ const searchCriteria = ref({
   toDate: null,
 });
 
-// 처리 문서 목록 조회
+// 수신함 목록 조회
 const fetchProcessedDocs = async (page = 1) => {
   try {
-    const response = (await api.get("approval/processed-docs", {
+    const response = (await api.get("approval/inbox", {
       params: {
         page: page - 1,
         size: pageSize,
       }
     }));
-    console.log("처리 문서 조회 결과: ", response.data.content);
+    console.log("문서 조회 결과: ", response.data.content);
 
     processedDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
     currentPage.value = response.data.number + 1;
   } catch (error) {
-    console.error("처리 문서 목록 조회 실패: ", error);
+    console.error("문서 목록 조회 실패: ", error);
     processedDocs.value = [];
   }
 };
@@ -59,11 +57,11 @@ const handleTitleClick = (row) => {
 
   if (templateId === 4) {
     // 기본 서식
-    router.push({ name: "basicDetail", query: { docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } });
+    router.push({ name: "basicDetail", query: { docId: row.docId, type: "inbox", status: row.status } });
   } else if (templateId === 5) {
-    router.push({ name: "disbursementDetail", query: {docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } })
+    router.push({ name: "disbursementDetail", query: {docId: row.docId, type: "inbox", status: row.status  } })
   } else if (templateId === 6) {
-    router.push({ name: "workReportDetail", query: {docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } })
+    router.push({ name: "workReportDetail", query: {docId: row.docId, type: "inbox",  status: row.status } })
     // 업무 보고서
   } else {
     alert("올바르지 않은 서식입니다.");
@@ -80,7 +78,7 @@ const handleSearch = () => {
 // 검색하기
 const fetchProcessedDocsWithCriteria = async(page = 1) => {
   try {
-    const response = await api.get("approval/processed-docs/search", {
+    const response = await api.get("approval/inbox/search", {
       params: {
         ...searchCriteria.value,
         page: page - 1,
@@ -109,7 +107,7 @@ onMounted(() => {
   <!-- 헤더 -->
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">처리 문서</p>
+      <p id="title">수신함</p>
     </div>
     <div id="header-bottom" class="flex-between">
       <div id="search-container">
@@ -121,11 +119,6 @@ onMounted(() => {
               type="text"
               width="500px"
               height="40px"
-          />
-          <SearchGroupBar
-              v-model ="searchCriteria.createUser"
-              placeholder="작성자"
-              type="text"
           />
           <SearchGroupBar
               v-model ="searchCriteria.fromDate"
@@ -162,14 +155,15 @@ onMounted(() => {
       >
         <template #status = "{ row }">
           <span
-              class="status-tag"
-            :class="{
-              'approved': row.approveSbjStatus ==='APPROVED',
-              'rejected': row.approveSbjStatus === 'REJECTED',
-              'unknown': !['APPROVED', 'REJECTED'].includes(row.approveSbjStatus),
-            }"
+              class ="status-tag"
+              :class="{
+                '진행': row.status === 'ACTIVATED',
+                '반려': row.status === 'REJECTED',
+                '승인': row.status === 'APPROVED',
+                '기타': !['ACTIVATED', 'REJECTED', 'APPROVED'].includes(row.status),
+              }"
           >
-            {{ row.approveSbjStatus === "APPROVED" ? "승인" : row.approveSbjStatus === "REJECTED" ? "반려" : "알 수 없음" }}
+            {{ row.status === 'ACTIVATED' ? '진행' : row.status === 'REJECTED' ? '반려' : row.status === 'APPROVED' ? '승인' : '기타' }}
           </span>
         </template>
         <template #title="{ row }">
@@ -280,17 +274,22 @@ onMounted(() => {
 }
 
 /* 승인 */
-.status-tag.approved {
+.status-tag.승인 {
   background-color: #4CAF50;
 }
 
 /* 반려 */
-.status-tag.rejected {
+.status-tag.반려 {
   background-color: #FF9800;
 }
 
+/* 진행 */
+.status-tag.진행 {
+  background-color: #bd76f8;
+}
+
 /* 알 수 없음 */
-.status-tag.unknown {
+.status-tag.기타 {
   background-color: #007bff; /* 회색 */
 }
 </style>

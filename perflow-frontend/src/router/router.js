@@ -39,6 +39,7 @@ import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
 import Outbox from "@/views/approval/Outbox.vue";
+import Inbox from "@/views/approval/Inbox.vue";
 
 
 const routes = [
@@ -70,6 +71,7 @@ const routes = [
     {path: '/approval/disbursement/detail', name: 'disbursementDetail', component: TemplateDisbursementRead},
     {path: '/approval/processing', name: 'processedDoc', component: ProcessedDoc},
     {path: '/approval/outbox', name: 'outbox', component: Outbox},
+    {path: '/approval/inbox', name: 'inbox', component: Inbox},
 
 
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},

@@ -16,7 +16,7 @@ const columns = [
 
 const columnWidths = ["80px", "300px", "200px"]; // 열 값
 
-const processedDocs = ref([]);  // 문서 목록
+const OutboxDocs = ref([]);  // 문서 목록
 const totalPages = ref(0);  // 전체 페이지 수
 const totalItems = ref(0); // 전체 아이템 수
 const currentPage = ref(1); // 현재 페이지
@@ -30,7 +30,7 @@ const searchCriteria = ref({
 });
 
 // 발신함 목록 조회
-const fetchProcessedDocs = async (page = 1) => {
+const fetchOutboxDocs = async (page = 1) => {
   try {
     const response = (await api.get("approval/outbox", {
       params: {
@@ -38,15 +38,15 @@ const fetchProcessedDocs = async (page = 1) => {
         size: pageSize,
       }
     }));
-    console.log("처리 문서 조회 결과: ", response.data.content);
+    console.log("문서 조회 결과: ", response.data.content);
 
-    processedDocs.value = response.data.content;
+    OutboxDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
     currentPage.value = response.data.number + 1;
   } catch (error) {
-    console.error("처리 문서 목록 조회 실패: ", error);
-    processedDocs.value = [];
+    console.error("문서 목록 조회 실패: ", error);
+    OutboxDocs.value = [];
   }
 };
 
@@ -72,13 +72,13 @@ const handleTitleClick = (row) => {
 const handleSearch = () => {
   console.log("검색 조건: ", searchCriteria.value);
   currentPage.value = 1;  // 검색 시 페이지를 처음으로 초기화
-  fetchProcessedDocsWithCriteria();
+  fetchOutboxDocsWithCriteria();
 };
 
 // 검색하기
-const fetchProcessedDocsWithCriteria = async(page = 1) => {
+const fetchOutboxDocsWithCriteria = async(page = 1) => {
   try {
-    const response = await api.get("approval/processed-docs/search", {
+    const response = await api.get("approval/outbox/search", {
       params: {
         ...searchCriteria.value,
         page: page - 1,
@@ -86,7 +86,7 @@ const fetchProcessedDocsWithCriteria = async(page = 1) => {
       },
     });
 
-    processedDocs.value = response.data.content;
+    OutboxDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
     currentPage.value = response.data.number + 1;
@@ -94,12 +94,12 @@ const fetchProcessedDocsWithCriteria = async(page = 1) => {
     console.log("검색 결과: ", response.data.content);
   } catch (error) {
     console.error("검색 실패: ", error);
-    processedDocs.value = [];
+    OutboxDocs.value = [];
   }
 };
 
 onMounted(() => {
-  fetchProcessedDocs();
+  fetchOutboxDocs();
 })
 </script>
 
@@ -144,12 +144,12 @@ onMounted(() => {
     </div>
   </div>
 
-  <div id="processed-doc-container">
+  <div id="outbox-doc-container">
     <!-- 테이블 -->
-    <div id="processed-doc-list">
+    <div id="outbox-doc-list">
       <TableCheck
           row-key="docId"
-          :rows="processedDocs"
+          :rows="OutboxDocs"
           :columns="columns"
           :columnWidths="columnWidths"
       >
@@ -187,7 +187,7 @@ onMounted(() => {
           :totalPages="totalPages"
           :totalItems="totalItems"
           :pageSize="pageSize"
-          @page-changed="fetchProcessedDocs"
+          @page-changed="fetchOutboxDocs"
       />
     </div>
   </div>
@@ -211,14 +211,14 @@ onMounted(() => {
   margin-bottom: 10px;
   width: 900px;
 }
-#processed-doc-container {
+#outbox-doc-container {
   display: flex;
   flex-direction: column; /* 테이블과 버튼을 세로로 배치 */
   gap: 10px; /* 테이블과 버튼 간 간격 */
   width: 900px; /* 테이블과 버튼이 같은 폭 */
   margin: 0 auto; /* 중앙 정렬 */
 }
-#processed-doc-list {
+#outbox-doc-list {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */

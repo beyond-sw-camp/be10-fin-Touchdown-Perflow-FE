@@ -16,13 +16,6 @@ const approveSbjStatus = route.query.approveSbjStatus;
 const processDatetime = route.query.processDatetime;
 const comment = route.query.comment;
 
-const props = defineProps({
-  title: { type: String, required: true },  // 문서 제목
-  content: { type: String, required: true }, // 문서 내용
-  approveLines: { type: Array, default: () => []},  // 결재선 데이터
-  shares: { type: Array, default: () => [] }, // 공유 데이터
-})
-
 // 초기화
 const title = ref("");
 const content = ref("");
