@@ -39,6 +39,7 @@ import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
 import AnnCreate from "@/views/announcement/AnnCreate.vue";
+import SeverancePayStub from "@/views/payment/SeverancePayStub.vue";
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
@@ -81,6 +82,7 @@ const routes = [
     {path: '/payment/pay-stub', name: 'PayStub', component: PayStub},
     {path: '/severance/severance-pay', name: 'SeverancePay', component: SeverancePay},
     {path: '/severance/severance-pay-detail/:severancePayId', name: 'SeverancePayDetail', component: SeverancePayDetail},
+    {path: '/severance/severance-stub', name: 'SeverancePayStub', component: SeverancePayStub},
 
     // 근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
