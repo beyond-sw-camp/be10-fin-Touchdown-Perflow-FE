@@ -17,6 +17,8 @@ const columns = [
   {label: "처리일", field: "processDatetime"},
 ];
 
+const columnWidths = ["80px", "200px", "80px", "150px", "150px"]; // 열 값
+
 const processedDocs = ref([]);  // 문서 목록
 const totalPages = ref(0);  // 전체 페이지 수
 const totalItems = ref(0); // 전체 아이템 수
@@ -157,9 +159,16 @@ onMounted(() => {
           row-key="docId"
           :rows="processedDocs"
           :columns="columns"
+          :columnWidths="columnWidths"
       >
         <template #status = "{ row }">
-          <span>
+          <span
+            :class="{
+              'approved': row.approveSbjStatus ==='APPROCED',
+              'rejected': row.approveSbjStatus === 'REJECTED',
+              'unknown': !['APPROVED', 'REJECTED'].includes(row.approveSbjStatus),
+            }"
+          >
             {{ row.approveSbjStatus === "APPROVED" ? "승인" : row.approveSbjStatus === "REJECTED" ? "반려" : "알 수 없음" }}
           </span>
         </template>

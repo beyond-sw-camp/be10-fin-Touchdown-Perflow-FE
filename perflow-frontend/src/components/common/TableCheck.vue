@@ -35,6 +35,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  columnWidths: {
+    type: Array,
+    default: () => [],  // 열의 폭을 배열로 입력 받기
+  },
 });
 
 const selectedRows = ref(new Set());
@@ -82,6 +86,7 @@ const toggleAllSelection = (e) => {
           <!-- 헤더 -->
           <th v-for="(column, index) in columns"
               :key="index"
+              :style="{ width: columnWidths[index] || 'auto' }"
           >
             {{ column.label }}
           </th>
@@ -107,6 +112,7 @@ const toggleAllSelection = (e) => {
           <td
               v-for="(column, index) in columns"
               :key="index"
+              :style="{ width: columnWidths[index] || 'auto' }"
           >
             <!-- 슬롯을 사용하여 특정 열의 렌더링 커스터마이징 -->
             <slot
