@@ -11,6 +11,9 @@ const inputCode = ref('');
 const generatedCode = ref('');
 const timer = ref(30);
 const timerDisplay = ref('0:30');
+const isAllowed = ref(true); // 버튼 클릭 허용 여부
+const isCheckIn = ref(false);
+const isExpired = ref(false);
 
 
 const props = defineProps({
@@ -25,7 +28,7 @@ const emit = defineEmits(["close"]);
 
 // 모달이 열릴 때 QR 코드 생성
 watch(() => props.isOpen, async (newVal) => {
-  if (newVal) { // 모달 열릴 때
+  if (newVal && isAllowed.value) { // 모달 열릴 때
     await  generateQRCode();
     clearInterval(timerInterval);
     timer.value = 30;
@@ -59,6 +62,11 @@ const closeModal = () => {
 
 const generateQRCode = async () => {
   try {
+    /*if (props.type === 'off' && !localStorage.getItem('isCheckedIn')) {
+      alert('출근 먼저 처리해주세요.');
+      return;
+    }*/
+
     if(!isTimerActive) return;
     const endpoint = props.type === 'on'
         ? 'emp/attendances/check-in/qr/generate'
@@ -104,6 +112,7 @@ const updateTimer = () => {
   if (timer.value === 0) {
     clearInterval(timerInterval); // 타이머 정지
     isTimerActive = false; // 타이머 상태 비활성화
+    isExpired.value = true;
   }
 };
 
@@ -122,10 +131,16 @@ const handleSubmit = async () => {
     const response = await api.post(endpoint, null, {
       params: { qrCode: inputCode.value },
     });
-
     console.log('서버 응답:', response.data); // 응답 데이터 로깅
-
-    // 상태 코드가 200번대일 때만 성공 처리
+/*    // 상태 코드가 200번대일 때만 성공 처리
+    // 상태 업데이트
+    if (props.type === 'on') {
+      localStorage.setItem('isCheckedIn', 'true'); // 출근 처리
+      commuteStatus.value = 'ON'; // 상태 변경
+    } else {
+      localStorage.removeItem('isCheckedIn'); // 퇴근 처리
+      commuteStatus.value = 'OFF'; // 상태 변경
+    }*/
     if (response.status >= 200 && response.status < 300) {
       alert(`${props.type === 'on' ? '출근' : '퇴근'} 처리 완료`);
       clearInterval(timerInterval);
@@ -141,17 +156,33 @@ const handleSubmit = async () => {
 
 
 const refreshCode = async () => {
+  if (!isAllowed.value) return;
   await generateQRCode();
   timer.value = 30;
   updateTimerDisplay();
   clearInterval(timerInterval);
   timerInterval = setInterval(updateTimer,1000);
+  isExpired.value = false;
 };
 
 onMounted(() => {
+/*  // 출근 여부 확인 및 상태 설정
+  const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
+  isAllowed.value = props.type === 'on' ? !isCheckedIn : isCheckedIn;
 
-  setInterval(updateTimer, 1000);
+  if (isCheckedIn) {
+    commuteStatus.value = 'ON'; // 출근 상태 설정
+  } else {
+    commuteStatus.value = 'OFF'; // 퇴근 상태 설정
+  }*/
+
+  // 타이머 초기화 및 시작
+  clearInterval(timerInterval); // 기존 타이머 정리
+  timer.value = 30; // 타이머 초기화
+  updateTimerDisplay(); // 타이머 표시 초기화
+  timerInterval = setInterval(updateTimer, 1000); // 1초마다 업데이트
 });
+
 </script>
 
 <template>
@@ -168,7 +199,7 @@ onMounted(() => {
       <!-- 모달 내용 -->
       <div class="modal-content">
         <!-- QR 코드 표시 -->
-        <div v-if="qrCodeImage" class="qr-code">
+        <div v-if="qrCodeImage" class="qr-code" :class="{ 'expired': timer === 0 || inputCode !== '' }">
           <img :src="qrCodeImage" alt="QR Code" />
         </div>
 
@@ -259,6 +290,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   gap: 20px;
+  margin-bottom: 20px;
 }
 
 .btn-orange {
@@ -289,6 +321,9 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;                 /* 마우스 커서 포인터 */
+}
+.qr-code.expired img {
+  filter: grayscale(100%) opacity(0.5); /* 흐리게 처리 */
 }
 
 </style>
