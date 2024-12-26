@@ -14,7 +14,7 @@ const columns = [
   {label: "제목", field: "title"},
   {label: "작성자", field: "createUserName"},
   {label: "작성일", field: "createDatetime"},
-  {label: "처리일", field: "processedDatetime"},
+  {label: "처리일", field: "processDatetime"},
 ];
 
 const processedDocs = ref([]);  // 문서 목록
@@ -33,7 +33,7 @@ const searchCriteria = ref({
 // 처리 문서 목록 조회
 const fetchProcessedDocs = async (page = 1) => {
   try {
-    const response = (await api.get("approval/waiting-docs", {
+    const response = (await api.get("approval/processed-docs", {
       params: {
         page: page - 1,
         size: pageSize,
@@ -108,7 +108,7 @@ onMounted(() => {
   <!-- 헤더 -->
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">대기 문서</p>
+      <p id="title">처리 문서</p>
     </div>
     <div id="header-bottom" class="flex-between">
       <div id="search-container">
@@ -158,6 +158,11 @@ onMounted(() => {
           :rows="processedDocs"
           :columns="columns"
       >
+        <template #status = "{ row }">
+          <span>
+            {{ row.approveSbjStatus === "APPROVED" ? "승인" : row.approveSbjStatus === "REJECTED" ? "반려" : "알 수 없음" }}
+          </span>
+        </template>
         <template #title="{ row }">
           <span
               class="clickable-title"
