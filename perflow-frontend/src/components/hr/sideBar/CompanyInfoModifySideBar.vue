@@ -5,6 +5,7 @@ import {computed, reactive, ref} from "vue";
 import AddressInputFeild from "@/components/hr/AddressInputField.vue";
 import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
+import DateSearchBar from "@/components/common/DateSearchBar.vue";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -17,9 +18,10 @@ const emit = defineEmits(['close-sidebar'])
 
 const email = ref("");
 const contact = ref("");
-// 반응형 객체로 totalAddress 정의
+const establish = ref();
 const address = reactive({
 });
+
 const updateAddress = (value) => {
   address.value = value;
 }
@@ -30,18 +32,29 @@ const updateEmail = (value) => {
 const updateContact = (value) => {
   contact.value = value;
 }
-const updateEmployee = async () => {
+const updateEstablish = (value) => {
+  establish.value = value;
+}
+
+
+const updateCompanyInfo = async () => {
+
   const totalAddress = address.value.postcode + " " + address.value.roadAddress + " " + address.value.extraAddress
   try {
-    await api.put("/employees",{
+    await api.put("/hr/company",{
       address: totalAddress,
+      establish: establish.value ,
       email: email.value,
       contact: contact.value
     });
-    alert("정보 수정 성공!.")
+    alert("정보 수정 성공!");
     location.reload(true);
   } catch (error) {
-    alert("정보 수정중 오류가 발생했습니다.")
+    if (error.response.data.message){
+      alert(error.response.data.message);
+    } else {
+      alert("정보 수정 중 오류가 발생했습니다.")
+    }
   }
 
 }
@@ -54,14 +67,18 @@ function closeSidebar() {
 <template>
 <div class="modify-sidebar" :class="{ open: props.isSidebarOpen }">
   <div id="side-header">
-    <img src="../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
+    <img src="../../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
     <p id="title">{{props.title}}</p>
   </div>
   <div id="modify-contents">
-    <ModifyInputFeild title="연락처" @update-value="updateContact"/>
-    <ModifyInputFeild title="이메일" @update-value="updateEmail"/>
-    <AddressInputFeild @update-value="updateAddress"/>
-    <SubmitButton @submit="updateEmployee"/>
+    <div class="establish">
+      <p>설립일</p>
+      <DateSearchBar @date-selected="updateEstablish"/>
+    </div>
+    <ModifyInputFeild title="회사 연락처" @update-value="updateContact"/>
+    <ModifyInputFeild title="회사 이메일" @update-value="updateEmail"/>
+    <address-input-feild @update-value="updateAddress"/>
+    <SubmitButton @submit="updateCompanyInfo" text="수정하기"/>
   </div>
 </div>
 </template>
@@ -78,10 +95,10 @@ p{
   top: 0;
   bottom: 0;
   width: 400px;
-  height: 1000px;
+  height: auto;
   transition: right 0.3s ease;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   background-color: white;
   z-index: 10000; /* 모든 콘텐츠 위에 표시 */
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
@@ -98,7 +115,7 @@ p{
   align-items: center;
 }
 #modify-contents {
-  padding: 50px 20px 20px 20px;
+  padding: 20px 20px 20px 20px;
 }
 #close {
   width: 30px;
@@ -109,5 +126,12 @@ p{
 #title {
   font-weight: bold;
   font-size: 20px;
+}
+.establish {
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 </style>

@@ -6,11 +6,60 @@ import On from "../assets/image/work_on.png";
 import Off from "../assets/image/work_off.png";
 import TableMini from "@/components/common/TableMini.vue";
 import {useAuthStore} from "@/store/authStore.js";
+import QRModal from "@/views/Attitude/QRModal.vue";
+
+// 상태 관리
+const isModalVisible = ref(false);
+/*const commuteEndTime = ref(null); // 퇴근 시간 기록*/
+const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
+
+// 모달 데이터
+const modalTitle = ref('');
+const modalContent = ref('');
+const modalButtonLabel = ref('');
+const actionType = ref(''); // 출근(on) 또는 퇴근(off)
+const isAllowed = ref(true); // 기본값 true 설정
+
+
+// 모달 열기
+const openModal = (type) => {
+  actionType.value = type; // 'on' 또는 'off'
+  modalTitle.value = type === 'on'? '출근 QR 인증 ' : '퇴근 QR 인증';
+  isModalVisible.value = true;
+};
+
+
+// 모달 닫기
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+// 모달 확인 버튼 동작
+const confirmAction = () => {
+  if (actionType === 'on') {
+    // 출근 처리
+    commuteStatus.value = 'ON';
+    commuteStartTime.value = new Date(); // 출근 시간 기록
+    console.log('출근 완료!');
+  } else if (actionType === 'off') {
+    // 퇴근 처리
+    commuteStatus.value = 'OFF';
+    commuteEndTime.value = new Date(); // 퇴근 시간 기록
+
+    // 근무 시간 계산 (분 단위)
+    const workMinutes = Math.floor(
+        (commuteEndTime.value - commuteStartTime.value) / (1000 * 60)
+    );
+    console.log(`퇴근 완료! 총 근무 시간: ${workMinutes}분`);
+  }
+
+  isModalVisible.value = false; // 모달 닫기
+};
 
 const router = useRouter();
 const authStore = useAuthStore();
 const employee = ref(null);
-const attendance = ref(null);
+const attendance = ref([]);
 const annual = ref(null);
 const company = ref(null);
 const vacation = ref([]);
@@ -26,8 +75,12 @@ const processedApprovalCount = ref(0);
 const commuteStatus = ref('OFF');
 const commuteStartTime = ref(null);
 const commuteTime = ref(0); // 출퇴근 시간 차이 (분 단위로 계산됨)
+const latest = ref({});
+const year = ref(0);
 
 const empId = authStore.empId;
+const now = new Date() // 현재 날짜
+year.value = now.getFullYear() // 현재 년도
 
 // 사원 정보를 가져오는 함수
 const fetchEmp = async () => {
@@ -44,6 +97,15 @@ const fetchAttendance = async () => {
   try {
     const response = await api.get(`/emp/attendance/summaries/weekly`);
     attendance.value = response.data;
+
+    // 데이터가 배열인지 확인
+    if (Array.isArray(attendance.value) && attendance.value.length > 0) {
+      // 가장 최근 주차 데이터 선택
+      latest.value = attendance.value.sort((a, b) => b.period.localeCompare(a.period))[0];
+      console.log('가장 최근 주차 데이터:', latest);
+    } else {
+      console.warn('서버에서 유효한 데이터가 반환되지 않았습니다.', attendance.value);
+    }
   } catch (error) {
     console.error('일주일 총 근무시간 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -52,7 +114,7 @@ const fetchAttendance = async () => {
 // 연차 정보를 가져오는 함수
 const fetchAnnual = async () => {
   try {
-    const response = await api.get(``);
+    const response = await api.get(`/emp/annual/balance`);
     annual.value = response.data;
   } catch (error) {
     console.error('연차 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -86,7 +148,6 @@ const fetchPayDate = async () => {
     // 밀리초를 일 단위로 변환
     diffDays.value = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;  // 결과를 diffDays에 저장
 
-    console.log(`다음 급여 지급일은 ${paymentDate.toLocaleDateString()}이고, 현재 날짜와 급여 지급일 사이의 차이: ${diffDays}일`);
   } catch (error) {
     console.error('회사 정보를 불러오는 중 에러가 발생했습니다. : ', error);
   }
@@ -105,7 +166,7 @@ const fetchVacation = async () => {
 // 팀 kpi 정보를 가져오는 함수
 const fetchTeamKPI = async () => {
   try {
-    const response = await api.get(`/leader/perfomances/kpi/team/${empId}`);
+    const response = await api.get(`/perfomances/kpi/team/period/current/${empId}/${year.value}`);
     teamKPI.value = response.data.kpiLists;
   } catch (error) {
     console.error('팀 kpi 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -115,7 +176,7 @@ const fetchTeamKPI = async () => {
 // 개인 kpi 정보를 가져오는 함수
 const fetchPersonalKPI = async () => {
   try {
-    const response = await api.get(`perfomances/kpi/personal/${empId}`);
+    const response = await api.get(`perfomances/kpi/personal/period/current/${empId}/${year.value}`);
     personalKPI.value = response.data.kpiLists;
   } catch (error) {
     console.error('개인 kpi 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -178,7 +239,7 @@ const fetchProcessedApproval = async () => {
 };
 
 const goToKPI = () => {
-  router.push(``)
+  router.push(`/performance/kpi-current`)
 };
 
 const goToAnnouncement = () => {
@@ -305,9 +366,12 @@ const handleOff = () => {
 };
 
 onMounted(() => {
+
+/*  const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
+  commuteStatus.value = isCheckedIn ? 'ON' : 'OFF';*/
   fetchEmp();
   fetchAttendance();
-  // fetchAnnual();
+  fetchAnnual();
   fetchPayDate();
   // fetchVacation();
   fetchTeamKPI();
@@ -315,7 +379,7 @@ onMounted(() => {
   fetchAnnouncement();
   fetchWaitingApproval();
   fetchProcessedApproval();
-})
+});
 
 </script>
 
@@ -332,47 +396,51 @@ onMounted(() => {
       </div>
       <div class="commute">
         <h4>출퇴근</h4>
-        <h5>{{ currentDate }}</h5>
+
         <div class="time">
-          <img :src="commuteStatus === 'ON' ? On : Off" alt="commute status"/>
-          <p>{{ formattedCommuteTime }}</p>
+          <h4>{{ currentDate }}</h4>
+<!--          <img :src="commuteStatus === 'ON' ? On : Off" alt="commute status"/>-->
+<!--          <p>{{ formattedCommuteTime }}</p>-->
         </div>
         <div class="btn">
           <div class="button-container">
             <button
-                :class="commuteStatus === 'ON' ? 'btn-gray' : 'btn-orange'"
-                @click="handleOn"
+                :class="commuteStatus === 'ON' /*|| localStorage.getItem('isCheckedIn') === 'true'*/  ? 'btn-gray' : 'btn-orange'"
+                @click="openModal('on')"
                 :disabled="commuteStatus === 'ON'"
             >
               ON
-              <p v-if="commuteStatus === 'ON'" class="commute-time">
-               /{{ commuteStartTime ? commuteStartTime.toLocaleTimeString() : '' }}
-              </p>
             </button>
           </div>
           <button
-              :class="commuteStatus === 'OFF' ? 'btn-gray' : 'btn-orange'"
-              @click="handleOff"
-              :disabled="commuteStatus === 'OFF'"
+              :class="commuteStatus === 'OFF' /*|| localStorage.getItem('isCheckedIn') === 'true'*/  ? 'btn-gray' : 'btn-orange'"
+              @click="openModal('off')"
+          :disabled="commuteStatus === 'ON'"
           >
-            OFF
+          OFF
           </button>
         </div>
       </div>
     </div>
+    <QRModal
+      :isOpen="isModalVisible"
+      :title="modalTitle"
+      :type = "actionType"
+      @close="closeModal"
+  />
     <!-- 근무시간, 남은 연차, 남은 급여일 정보 -->
     <div class="period">
-      <div class="attendance">
+      <div>
         <img src="../assets/image/alarm.png" alt="clock" />
         <h4>근무시간</h4>
-        <p>31시간 50분</p>
+        <p>{{ latest.totalHours }}시간 {{ latest.totalMinutes }}분</p>
       </div>
-      <div class="annual">
+      <div>
         <img src="../assets/image/travel.png" alt="plane" />
         <h4>남은 연차</h4>
-        <p>11일</p>
+        <p>{{ annual }}일</p>
       </div>
-      <div class="pay">
+      <div>
         <img src="../assets/image/payments.png" alt="money" />
         <h4>남은 급여일</h4>
         <p>{{ diffDays }}일전</p>

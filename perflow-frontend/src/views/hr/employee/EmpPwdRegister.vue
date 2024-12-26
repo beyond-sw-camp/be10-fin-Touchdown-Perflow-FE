@@ -39,7 +39,7 @@ const pwdRegister = async (token) => {
     <p class="title">Perflow 가입 비밀번호 등록</p>
     <div class="input-group">
       <span class="input-title">비밀번호</span><br>
-      <input type="text" class="password-input" v-model="password" placeholder="비밀번호를 입력해주세요.">
+      <input type="password" class="password-input" v-model="password" placeholder="비밀번호를 입력해주세요.">
     </div>
     <div class="input-group">
       <span class="input-title">비밀번호 확인</span><br>

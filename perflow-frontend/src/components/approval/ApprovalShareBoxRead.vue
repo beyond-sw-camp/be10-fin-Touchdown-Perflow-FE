@@ -1,6 +1,4 @@
 <script setup>
-import ButtonBasic from "@/components/common/ButtonBasic.vue";
-import {onMounted} from "vue";
 
 defineProps({
   title: { type: String, required: true }, // 결재선, 공유
@@ -8,15 +6,6 @@ defineProps({
   data: { type: Array, default: () => [] }  // 결재선 데이터
 });
 
-const emit = defineEmits(["onSettingsClick"]);
-
-// 툴팁 활성화
-onMounted(() => {
-  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-  tooltipTriggerList.forEach((tooltipTriggerEl) => {
-    new globalThis.bootstrap.Tooltip(tooltipTriggerEl); // globalThis를 사용해 bootstrap 접근
-  });
-});
 </script>
 
 <template>
@@ -24,41 +13,25 @@ onMounted(() => {
     <!-- 제목 -->
     <div class="box-title">
       <span>{{ title }}</span>
-      <i
-          class="bi bi-question-circle"
-          data-bs-toggle="tooltip"
-          title="설정 방법 안내"
-      ></i>
     </div>
 
     <!-- 박스 컨테이너 -->
     <div class="box-container">
-      <!-- 설정 버튼 -->
-      <div class="box-header">
-        <ButtonBasic
-            color="white"
-            size="small"
-            label="설정"
-            @click="emit('onSettingsClick')"
-        />
-      </div>
-
       <!-- 데이터 표시 -->
-      <div v-if="data.length > 0" class="box-content">
+      <div v-if="data && data.length > 0" class="box-content">
         <div class="approval-item" v-for="(item, index) in data" :key="index">
-          <span class="approval-type" :class="item.type || 'default-type'"
-          >
+          <span class="approval-type" :class="item.type || 'default-type'">
             {{ item.type || '공유' }}
           </span>
           <span class="approval-name">{{ item.name }}</span>
-          <span class="approval-position">{{ item.position }}</span>
         </div>
       </div>
 
       <!-- 비어있을 때 표시 -->
-      <div class="box-empty">
+      <div v-else class="box-empty">
         {{ placeholder }}
       </div>
+
     </div>
   </div>
 </template>
@@ -101,13 +74,6 @@ onMounted(() => {
   justify-content: center; /* 수직 중앙 정렬 */
   position: relative; /* 상대 위치 설정 */
   min-height: 150px; /* 최소 높이 설정 */
-}
-
-/* 설정 버튼 */
-.box-header {
-  position: absolute;
-  top: 10px;
-  right: 10px; /* 설정 버튼을 상단 우측에 배치 */
 }
 
 .box-content {
@@ -166,7 +132,7 @@ onMounted(() => {
   text-align: center;
 }
 
-.approval-type.default-type {
+.approval-type.공유 {
   background-color: #bd76f8; /* 회색 배경 */
   color: white;
 }

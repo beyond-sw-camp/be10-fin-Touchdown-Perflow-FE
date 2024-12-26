@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
+import SearchBar from "@/components/common/SearchBar.vue";
 
 const props = defineProps({
   options: {
@@ -29,26 +30,36 @@ const props = defineProps({
   marginLeft: {
     type: String,
     default: "40px",
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
   }
 });
 
+const search = ref("");
+
+const updateSearch = (value) => {
+  search.value = value;
+}
+
+// 검색어를 포함하는 옵션을 필터링하는 computed 프로퍼티
+const searchOptions = computed(() => {
+  if (!search.value) {
+    return props.options;
+  }
+  return props.options.filter(option =>
+      option.label.includes(search.value)
+  );
+});
 const emit = defineEmits(["select","select-id"]);
 
 const isMenuOpen = ref(false);
 const selectedOption = ref(props.defaultOption);
 
 const toggleMenu = () => {
-  if (props.disabled) return; // 비활성화 상태일 경우 메뉴 열리지 않음
   isMenuOpen.value = !isMenuOpen.value;
+  search.value = "";
 };
 
 const selectOption = (option, id) => {
-  if (props.disabled) return; // 비활성화 상태일 경우 옵션 선택 불가
-  selectedOption.value = option;
+  selectedOption.value = option + "(" + id + ")";
   isMenuOpen.value = false;
   emit("select", option);
   emit("select-id", id);
@@ -59,8 +70,6 @@ const selectOption = (option, id) => {
   <div
       class="dropdown-container btn-gray"
       :style="{ width: width, height: height, fontSize: fontSize }"
-      :class="{ 'disabled': disabled }"
-      @click="toggleMenu"
   >
     <!-- 선택된 옵션 -->
     <div class="selected-option">
@@ -70,12 +79,14 @@ const selectOption = (option, id) => {
           src="../../assets/image/arrow_up_2.png"
           alt="up"
           :style="{ width: imgSize, height: imgSize, marginLeft: marginLeft }"
+          @click="toggleMenu"
       />
       <img
           v-else
           src="../../assets/image/arrow_down_2.png"
           alt="down"
           :style="{ width: imgSize, height: imgSize, marginLeft: marginLeft }"
+          @click="toggleMenu"
       />
     </div>
 
@@ -85,12 +96,13 @@ const selectOption = (option, id) => {
         class="options"
         :style="{ fontSize: fontSize, width: width }"
     >
+      <li><SearchBar width="180px" height="30px" font-size="12px" placeholder="검색어 입력" @search="updateSearch"/></li>
       <li
-          v-for="(option, index) in options"
+          v-for="(option, index) in searchOptions"
           :key="index"
           @click.stop="selectOption(option.label, option.id)"
       >
-        {{ option.label }}
+        {{ option.label }} ( {{option.id}} )
       </li>
     </ul>
   </div>
@@ -128,7 +140,7 @@ const selectOption = (option, id) => {
   color: #3c4651;
   border-radius: 5px;
   top: 100%; /* 버튼 바로 아래로 드롭다운 메뉴 표시 */
-  left: 0; /* 왼쪽 정렬 */
+  left: 0;   /* 왼쪽 정렬 */
   z-index: 10; /* 다른 요소 위에 표시 */
   margin-top: 4px;
   max-height: 200px;
@@ -143,12 +155,6 @@ const selectOption = (option, id) => {
 .options li:hover {
   background-color: #f5f5f5;
   border-radius: 5px;
-}
-
-.disabled {
-  pointer-events: none; /* 클릭 이벤트 차단 */
-  opacity: 0.5; /* 비활성화 상태를 시각적으로 표시 */
-  cursor: not-allowed; /* 마우스 커서를 "금지" 아이콘으로 표시 */
 }
 
 </style>

@@ -5,9 +5,6 @@ import api from "@/config/axios.js";
 import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import TableMove from "@/components/common/TableMove.vue";
-import ThreeMonthChart from "@/views/payment/ThreeMonthChart.vue";
-import ThreeYearByMonthChart from "@/views/payment/ThreeYearByMonthChart.vue";
-import ThreeYearChart from "@/views/payment/ThreeYearChart.vue";
 import FileUpload from "@/components/common/FileUpload.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import ToolTip from "@/components/common/ToolTip.vue";
@@ -15,7 +12,7 @@ import ToolTip from "@/components/common/ToolTip.vue";
 const router = useRouter();
 
 const state = reactive({
-  payrolls: [],
+  severancePays: [],
   currentPage: 1,
   totalPages: 1,
   totalItems:0,
@@ -27,21 +24,21 @@ const isFileUploadVisible = ref(false); // 파일 업로드 창 표시 여부
 // 선택된 파일 목록을 저장할 변수
 const selectedFiles = ref([]);
 
-// 급여대장 목록을 가져오는 함수
-const fetchPayrolls = async (page = 1) => {
+// 퇴직금 목록을 가져오는 함수
+const fetchSeverancePays = async (page = 1) => {
   try {
-    const response = await api.get(`/hr/payrolls`, {
+    const response = await api.get(`/hr/severance-pays`, {
       params: {
         page
       }
     });
     // 'name' 필드에서 연도와 월을 분리하고, 형식 'YYYY.MM'으로 변환
-    state.payrolls = response.data.payrolls.map(payroll => ({
-      ...payroll,
-      createDatetime: `${payroll.createDatetime.slice(0,4)}.${payroll.createDatetime.slice(5,7)}.${payroll.createDatetime.slice(8,10)}`,
-      name: `${payroll.name.slice(13, 15)}월 대장`,  // 예: '202408' -> '2024.08'
-      totalEmp: `${payroll.totalEmp}명`,
-      totalPay: new Intl.NumberFormat('ko-KR').format(payroll.totalPay) + '원'  // 'totalPay' 값을 천단위로 포맷팅하고 원 추가
+    state.severancePays = response.data.severancePays.map(severancePay => ({
+      ...severancePay,
+      createDatetime: `${severancePay.createDatetime.slice(0,4)}.${severancePay.createDatetime.slice(5,7)}.${severancePay.createDatetime.slice(8,10)}`,
+      name: `${severancePay.name.slice(18, 20)}월 퇴직금`,  // 예: '202408' -> '2024.08'
+      totalEmp: `${severancePay.totalEmp}명`,
+      totalPay: new Intl.NumberFormat('ko-KR').format(severancePay.totalPay) + '원'  // 'totalPay' 값을 천단위로 포맷팅하고 원 추가
     }));
     state.currentPage = response.data.currentPage;
     state.totalPages = response.data.totalPages;
@@ -59,7 +56,7 @@ const menuItem = [
     action: async () => {
       try {
         // 서버에서 파일을 바이너리 형식으로 받아옵니다.
-        const response = await api.get(`/hr/payroll-template/download`, { responseType: 'blob' });
+        const response = await api.get(`/hr/severance-pay-template/download`, { responseType: 'blob' });
 
         // Blob 데이터를 URL로 변환합니다.
         const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -69,7 +66,7 @@ const menuItem = [
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
-        const fileName = `payroll_${year}_${month}.xlsx`; // 예: payroll_2024_12.xlsx
+        const fileName = `severancePay_${year}_${month}.xlsx`; // 예: payroll_2024_12.xlsx
 
         // 다운로드를 위한 가상 링크를 생성합니다.
         const link = document.createElement('a');
@@ -114,7 +111,7 @@ const handleFileUpload = async () => {
   });
 
   try {
-    const response = await api.post('/hr/payroll-template/upload', formData, {
+    const response = await api.post('/hr/severance-template/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -148,31 +145,19 @@ const columns = [
 // 행 선택 시 페이지 이동 처리
 const handleRowSelected = (rowId) => {
   // 선택된 행의 ID로 페이지 이동
-  router.push({name: 'PayrollDetail', params: { payrollId: rowId } });
+  router.push({name: 'SeverancePayDetail', params: { severancePayId: rowId } });
 };
 
 onMounted(() => {
-  fetchPayrolls();
+  fetchSeverancePays();
 });
 
 </script>
 
 <template>
   <div class="container">
-    <h1 class="title">급여대장</h1>
+    <h1 class="title">퇴직금정산</h1>
     <div>
-      <div class="three-month-chart">
-        <ThreeMonthChart />
-      </div>
-      <div class="chart">
-        <div class="three-year-by-month-chart">
-          <ThreeYearByMonthChart />
-        </div>
-        <div class="three-year-chart">
-          <ThreeYearChart />
-        </div>
-      </div>
-      <hr>
       <div class="excel">
         <div @mouseenter="tooltipVisible=true" @mouseleave="tooltipVisible=false">
           <ExcelDropDown
@@ -190,9 +175,9 @@ onMounted(() => {
       </div>
       <div class="table">
         <TableMove
-            v-if="state.payrolls && state.payrolls.length > 0"
-            :row-key="'payrollId'"
-            :rows="state.payrolls"
+            v-if="state.severancePays && state.severancePays.length > 0"
+            :row-key="'severancePayId'"
+            :rows="state.severancePays"
             :columns="columns"
             @rowSelected="handleRowSelected"
         />
@@ -203,7 +188,7 @@ onMounted(() => {
             :totalPages="state.totalPages"
             :totalItems="state.totalItems"
             :pageSize="state.totalPages"
-            @page-changed="fetchPayrolls"
+            @page-changed="fetchSeverancePays"
         />
       </div>
     </div>
@@ -245,33 +230,10 @@ onMounted(() => {
 .title {
   width: 900px;
   justify-content: center;
+  font-size: 35px;
   font-weight: bold;
-  margin: 10px 0 10px 0;
+  margin: 20px 0 30px 0;
   color: #3c4651;
-}
-
-.three-month-chart {
-  width: 900px;
-  margin-bottom: 10px;
-}
-
-.chart {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 900px;
-}
-
-.three-year-by-month-chart {
-  width: 400px;
-}
-
-.three-year-chart {
-  width: 400px;
-}
-
-hr {
-  width: 900px;
 }
 
 .excel {
@@ -279,12 +241,13 @@ hr {
   flex-direction: row-reverse;
   width: 900px;
   padding: 0;
-  margin: 0 0 15px 0;
+  margin: 0 0 40px 0;
   position: relative;
 }
 
 .table {
   width: 900px;
+  margin-top: 30px;
 }
 
 .paging-bar {
