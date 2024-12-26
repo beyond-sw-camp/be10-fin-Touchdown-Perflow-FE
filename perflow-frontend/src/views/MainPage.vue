@@ -11,12 +11,15 @@ import QRModal from "@/views/Attitude/QRModal.vue";
 // 상태 관리
 const isModalVisible = ref(false);
 /*const commuteEndTime = ref(null); // 퇴근 시간 기록*/
+const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
 
 // 모달 데이터
 const modalTitle = ref('');
 const modalContent = ref('');
 const modalButtonLabel = ref('');
 const actionType = ref(''); // 출근(on) 또는 퇴근(off)
+const isAllowed = ref(true); // 기본값 true 설정
+
 
 // 모달 열기
 const openModal = (type) => {
@@ -363,6 +366,9 @@ const handleOff = () => {
 };
 
 onMounted(() => {
+
+/*  const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
+  commuteStatus.value = isCheckedIn ? 'ON' : 'OFF';*/
   fetchEmp();
   fetchAttendance();
   fetchAnnual();
@@ -390,15 +396,16 @@ onMounted(() => {
       </div>
       <div class="commute">
         <h4>출퇴근</h4>
-        <h5>{{ currentDate }}</h5>
+
         <div class="time">
-          <img :src="commuteStatus === 'ON' ? On : Off" alt="commute status"/>
-          <p>{{ formattedCommuteTime }}</p>
+          <h4>{{ currentDate }}</h4>
+<!--          <img :src="commuteStatus === 'ON' ? On : Off" alt="commute status"/>-->
+<!--          <p>{{ formattedCommuteTime }}</p>-->
         </div>
         <div class="btn">
           <div class="button-container">
             <button
-                :class="commuteStatus === 'ON' ? 'btn-gray' : 'btn-orange'"
+                :class="commuteStatus === 'ON' /*|| localStorage.getItem('isCheckedIn') === 'true'*/  ? 'btn-gray' : 'btn-orange'"
                 @click="openModal('on')"
                 :disabled="commuteStatus === 'ON'"
             >
@@ -406,7 +413,7 @@ onMounted(() => {
             </button>
           </div>
           <button
-              :class="commuteStatus === 'OFF' ? 'btn-gray' : 'btn-orange'"
+              :class="commuteStatus === 'OFF' /*|| localStorage.getItem('isCheckedIn') === 'true'*/  ? 'btn-gray' : 'btn-orange'"
               @click="openModal('off')"
           :disabled="commuteStatus === 'ON'"
           >
