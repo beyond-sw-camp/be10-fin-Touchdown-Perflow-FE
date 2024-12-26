@@ -7,7 +7,15 @@ import api from "@/config/axios.js";
 import router from "@/router/router.js";
 import TableBasic from "@/components/common/TableBasic.vue";
 import PagingBar from "@/components/common/PagingBar.vue";
+import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'; // 플러그인 추가
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+const today = dayjs(); // 현재 날짜와 시간
+console.log(today.format('YYYY-MM-DD'));
 
 // 테이블 컬럼 설정
 const columns = [
@@ -20,6 +28,8 @@ const columns = [
 
 // 열 너비 설정
 const columnWidths = ["150px", "120px", "120px", "120px", "100px"];
+
+
 
 // 매핑 테이블 (영문 -> 한글 변환)
 const vacationTypeMap = {
@@ -45,11 +55,20 @@ const pageSize = 10;
 
 // 검색 조건
 const searchCriteria = ref({
-  vacationType: "",  // 휴가 종류
-  fromDate: null,    // 시작일 (시작)
-  toDate: null,      // 시작일 (끝)
-  status: ""         // 상태
+  vacationType: "",
+  fromDate: "",  // 시작일 기본값: 오늘 날짜
+  toDate: "",    // 종료일 기본값: 오늘 날짜
+  status: ""
 });
+
+
+const statusOptions = [
+  { label: "전체", id: "" },         // 기본값: 전체 (필터 해제)
+  { label: "대기", id: "PENDING" },  // 대기
+  { label: "승인", id: "CONFIRMED" }, // 승인
+  { label: "반려", id: "REJECTED" }  // 반려
+];
+
 
 // API 데이터 호출 (전체 조회)
 const fetchVacationData = async () => {
@@ -82,10 +101,11 @@ const fetchVacationData = async () => {
 
 // 필터 적용 및 데이터 갱신
 const applyFilter = (resetPage = true) => {
-  let filtered = allDocs.value;
+  console.log("현재 검색 조건:", searchCriteria.value);
 
+  // 초기 필터 대상 데이터
+  let filtered = [...allDocs.value]; // 배열 복사 (원본 데이터 보존)
   console.log("필터 적용 전 데이터:", filtered);
-
 
   // 필터 조건 확인 및 적용
   if (searchCriteria.value.vacationType) {
@@ -93,14 +113,21 @@ const applyFilter = (resetPage = true) => {
         (item) => item.vacationType === searchCriteria.value.vacationType
     );
   }
-  if (searchCriteria.value.fromDate) {
+  if (searchCriteria.value.fromDate && searchCriteria.value.toDate) {
     filtered = filtered.filter(
-        (item) => item.vacationStart >= searchCriteria.value.fromDate
+        (item) =>
+            dayjs(item.vacationStart).isSameOrAfter(dayjs(searchCriteria.value.fromDate)) &&
+            dayjs(item.vacationEnd).isSameOrBefore(dayjs(searchCriteria.value.toDate))
     );
   }
-  if (searchCriteria.value.toDate) {
+  else if (searchCriteria.value.fromDate) {
     filtered = filtered.filter(
-        (item) => item.vacationEnd <= searchCriteria.value.toDate
+        (item) => dayjs(item.vacationStart).isSameOrAfter(dayjs(searchCriteria.value.fromDate))
+    );
+  }
+  else if (searchCriteria.value.toDate) {
+    filtered = filtered.filter(
+        (item) => new Date(item.vacationEnd) <= new Date(searchCriteria.value.toDate)
     );
   }
   if (searchCriteria.value.status) {
@@ -134,6 +161,7 @@ const paginatedDocs = computed(() => {
 
 // 검색 처리
 const handleSearch = () => {
+  console.log("검색 버튼 클릭");
   applyFilter(); // 필터 적용
 };
 
@@ -142,6 +170,12 @@ const handlePageChange = (page) => {
   currentPage.value = page;
   applyFilter(false);
 };
+
+const handleStatusSelect = (selectedStatus) => {
+  searchCriteria.value.status = selectedStatus; // 선택된 상태를 조건에 추가
+  console.log("선택된 상태:", selectedStatus);
+};
+
 
 // 초기 로드
 onMounted(() => {
@@ -169,12 +203,14 @@ onMounted(() => {
               placeholder="휴가 종료일"
               type="date"
           />
-          <!-- 상태 필터 -->
-          <SearchGroupBar
-              v-model="searchCriteria.status"
-              placeholder="상태"
-              type="text"
+          <ButtonDropDown
+              :options="statusOptions"
+              default-option="전체"
+              width="150px"
+              height="40px"
+              @select="handleStatusSelect"
           />
+
         </div>
         <div class="button">
           <ButtonBasic
