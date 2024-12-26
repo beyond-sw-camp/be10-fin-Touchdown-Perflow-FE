@@ -1,6 +1,6 @@
 <script setup>
 import InputField from "@/components/common/InputField.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import ApprovalShareBoxRead from "@/components/approval/ApprovalShareBoxRead.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import {useRoute} from "vue-router";
@@ -10,6 +10,10 @@ const route = useRoute();
 
 // 전달된 데이터 가져오기
 const docId = route.query.docId; // 전달된 docId
+const docType = route.query.type;
+const approveSbjStatus = route.query.approveSbjStatus;
+const processDatetime = route.query.processDatetime;
+const comment = route.query.comment;
 
 const props = defineProps({
   title: { type: String, required: true },  // 문서 제목
@@ -48,6 +52,23 @@ const fetchDocumentDetail = async () => {
   }
 };
 
+const formatStatus = computed(() => {
+  if (approveSbjStatus === "APPROVED") {
+    return "승인";
+  }
+  if (approveSbjStatus === 'REJECTED') {
+    return "반려";
+  }
+  return "알 수 없음";
+})
+
+const formatProcessDatetime = (rawString) => {
+  if (!rawString) return "날짜 정보 없음";
+  const date = new Date(rawString);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 `
+      + `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+}
+
 onMounted(() => {
   fetchDocumentDetail();
 })
@@ -56,7 +77,7 @@ onMounted(() => {
 <template>
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">대기 문서 상세 조회</p>
+      <p id="title">문서 상세 조회</p>
     </div>
     <div id="header-bottom" class="flex-between">
       <div class="tabs">
@@ -101,6 +122,32 @@ onMounted(() => {
       </div>
 
       <div class="box-container" >
+
+        <!-- 처리 문서 정보 -->
+        <div class="processed-info-container">
+          <span class="processed-info-title">나의 처리 이력</span>
+          <div v-if="docType === 'processed'" class="processed-info">
+            <div class="doc-type">
+              <span class="doc-type-label">결재 여부 </span>
+              <span class="doc-type-tag">{{ formatStatus }}</span>
+            </div>
+            <div class="doc-process-time">
+              <span class="doc-process-time-label">처리일시 </span>
+              <span class="doc-process-time-value"> {{ formatProcessDatetime(processDatetime) }}</span>
+            </div>
+            <div class="doc-comment">
+              <span class="comment-title">나의 의견</span>
+              <div
+                  class="approval-comment"
+                  :class="{ 'empty-comment': !comment }"
+              >
+                <span class="comment-text">{{ comment ? comment : '작성한 의견이 없습니다.' }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <!-- 결재선 -->
         <ApprovalShareBoxRead
             title="결재선"
@@ -193,6 +240,79 @@ onMounted(() => {
 .tab.active {
   font-weight: bold;
   border-bottom: 2px solid #ff6600;
+}
+
+/* 처리 문서 정보 */
+.processed-info-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.processed-info {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-type-tag {
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  background-color: #05A730;
+}
+
+.doc-process-time {
+  margin-top: 10px;
+}
+
+.doc-type-label,
+.doc-process-time-label {
+  color: #3C4651;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.doc-process-time-value {
+  margin-left: 10px;
+  font-size: 15px;
+}
+
+.approval-comment {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-comment {
+  margin-top: 10px;
+}
+
+.approval-comment {
+  margin-top: 5px;
+}
+
+.empty-comment {
+  color: #a0a0a0;
+  font-size: 15px;
+}
+
+.comment-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
 }
 
 </style>

@@ -60,11 +60,11 @@ const handleTitleClick = (row) => {
 
   if (templateId === 4) {
     // 기본 서식
-    router.push({ name: "basicDetail", query: { docId: row.docId } });
+    router.push({ name: "basicDetail", query: { docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } });
   } else if (templateId === 5) {
-    router.push({ name: "disbursementDetail", query: {docId: row.docId } })
+    router.push({ name: "disbursementDetail", query: {docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } })
   } else if (templateId === 6) {
-    router.push({ name: "workReportDetail", query: {docId: row.docId } })
+    router.push({ name: "workReportDetail", query: {docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } })
     // 업무 보고서
   } else {
     alert("올바르지 않은 서식입니다.");
