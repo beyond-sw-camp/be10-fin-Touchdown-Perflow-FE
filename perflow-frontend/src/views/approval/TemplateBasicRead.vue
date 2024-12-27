@@ -6,8 +6,10 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import {useRoute} from "vue-router";
 import api from "@/config/axios.js";
 import router from "@/router/router.js";
+import {useAuthStore} from "@/store/authStore.js";
 
 const route = useRoute();
+const authStore = useAuthStore();
 
 // 전달된 데이터 가져오기
 const docId = route.query.docId; // 전달된 docId
@@ -23,6 +25,7 @@ const approveLines = ref([]);
 const shares = ref([]);
 const createDatetime = ref("");
 const createUserData = ref("");
+const docApprovalComment = ref("");
 
 // 한글로 변환
 const TypeMapping = {
@@ -76,6 +79,42 @@ const formatProcessDatetime = (rawString) => {
   const date = new Date(rawString);
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 `
       + `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+}
+
+// 문서 결재(승인, 반려) 처리
+const handleApproval = async (status) => {
+
+  try {
+    // 로그인 한 사용자
+    const empId = authStore.empId;
+
+    // 로그인 한 사용자의 결재 정보 찾기
+    const approveLineData = approveLines.value.find(
+        (line) => line.approveSbjs?.some((sbj) => sbj.empId === empId)
+    );
+
+    // 로그인 한 사용자의 결재 주체 정보 찾기
+    const approveSbjData = approveLineData.approveSbjs.find(
+        (sbj) => sbj.empId === empId
+    );
+
+    const requestData = {
+      docId: docId,
+      approveLineId: approveLineData.approve_line_id,
+      approveSbjId: approveSbjData.approve_sbj_id,
+      empDeptType: "EMPLOYEE",
+      empId: empId,
+      status: status,
+      comment: docApprovalComment.value || null,
+    };
+
+    await api.post("/approval/docs", requestData);
+    alert(`문서가 ${status === "APPROVED" ? "승인" : "반려"}되었습니다.`);
+    router.push("/approval/waiting");
+  } catch (error) {
+    console.error("결재 처리 실패: ", error);
+    alert("결재 처리 중 오류가 발생했습니다.");
+  }
 }
 
 onMounted(() => {
@@ -133,6 +172,33 @@ onMounted(() => {
     </div>
 
     <div class="box-container" >
+
+      <!-- 대기 문서 결재 -->
+      <div class="waiting-approval-container">
+        <div v-if="docType === 'waiting'" class="doc-approval-container">
+          <span class="doc-approval-title">결재</span>
+          <div class="comment-box">
+            <textarea
+                v-model="docApprovalComment"
+                placeholder="의견을 입력할 수 있습니다."
+                class="approval-comment-input"
+            />
+            <ButtonBasic
+                color="white"
+                size="small"
+                label="반려"
+                @click="handleApproval('REJECTED')"
+            />
+            <ButtonBasic
+              color="orange"
+              size="small"
+              label="승인"
+              @click="handleApproval('APPROVED')"
+            />
+          </div>
+        </div>
+      </div>
+
       <!-- 처리 문서 정보 -->
       <div class="processed-info-container">
         <div v-if="docType === 'processed'" class="processed-info">
