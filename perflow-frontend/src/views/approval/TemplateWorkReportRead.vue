@@ -1,13 +1,14 @@
 <script setup>
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import {computed, onMounted, ref} from "vue";
-import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
 import ApprovalShareBoxRead from "@/components/approval/ApprovalShareBoxRead.vue";
 import api from "@/config/axios.js";
 import {useRoute} from "vue-router";
+import {useAuthStore} from "@/store/authStore.js";
 
 const route = useRoute();
+const authStore = useAuthStore();
 
 // 전달된 데이터 가져오기
 const docId = route.query.docId;
@@ -26,6 +27,7 @@ const SPECIAL = ref("");
 const PLANNED = ref("");
 const approveLines = ref([]);
 const shares = ref([]);
+const docApprovalComment = ref("");
 
 // API 호출로 데이터 가져오기
 const fetchDocumentDetail = async () => {
@@ -98,6 +100,42 @@ const formatProcessDatetime = (rawString) => {
       + `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
 }
 
+// 문서 결재(승인, 반려) 처리
+const handleApproval = async (status) => {
+
+  try {
+    // 로그인 한 사용자
+    const empId = authStore.empId;
+
+    // 로그인 한 사용자의 결재 정보 찾기
+    const approveLineData = approveLines.value.find(
+        (line) => line.approveSbjs?.some((sbj) => sbj.empId === empId)
+    );
+
+    // 로그인 한 사용자의 결재 주체 정보 찾기
+    const approveSbjData = approveLineData.approveSbjs.find(
+        (sbj) => sbj.empId === empId
+    );
+
+    const requestData = {
+      docId: docId,
+      approveLineId: approveLineData.approve_line_id,
+      approveSbjId: approveSbjData.approve_sbj_id,
+      empDeptType: "EMPLOYEE",
+      empId: empId,
+      status: status,
+      comment: docApprovalComment.value || null,
+    };
+
+    await api.put("/approval/docs", requestData);
+    alert(`문서가 ${status === "APPROVED" ? "승인" : "반려"}되었습니다.`);
+    router.push("/approval/waiting");
+  } catch (error) {
+    console.error("결재 처리 실패: ", error);
+    alert("결재 처리 중 오류가 발생했습니다.");
+  }
+}
+
 onMounted(() => {
   fetchDocumentDetail();
 })
@@ -168,6 +206,34 @@ onMounted(() => {
     </div>
 
     <div class="box-container">
+
+      <!-- 대기 문서 결재 -->
+      <div class="waiting-approval-container">
+        <div v-if="docType === 'waiting'" class="doc-approval-container">
+          <span class="doc-approval-title">결재</span>
+          <div class="comment-box">
+            <textarea
+                v-model="docApprovalComment"
+                placeholder="의견을 입력할 수 있습니다."
+                class="approval-comment-input"
+            />
+            <div class="comment-button-group">
+              <ButtonBasic
+                  color="white"
+                  size="small"
+                  label="반려"
+                  @click="handleApproval('REJECTED')"
+              />
+              <ButtonBasic
+                  color="orange"
+                  size="small"
+                  label="승인"
+                  @click="handleApproval('APPROVED')"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- 처리 문서 정보 -->
       <div class="processed-info-container">
@@ -419,4 +485,60 @@ onMounted(() => {
   margin-left: 10px;
   font-size: 15px;
 }
+
+/* 대기 문서 결재 */
+.doc-approval-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.approval-comment-input {
+  width: 100%;
+  height: 150px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  outline-color: #D9D9D9;
+  resize: none;
+  padding: 10px 10px;
+  font-size: 15px;
+}
+
+.approval-comment-input::placeholder {
+  color: #afa9a9;
+}
+
+.comment-box {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  justify-content: center;
+  display: flex;  /* 버튼, textarea 정렬 위함 */
+  flex-direction: column; /* 세로 정렬 */
+  gap: 10px;  /* textarea, 버튼 간격 */
+}
+
+.comment-button-group {
+  display: flex;
+  gap: 10px; /* 버튼 간 간격 */
+  justify-content: flex-end;
+  width: 100%
+}
+
+.approval-comment-input::-webkit-scrollbar {
+  width: 5px; /* 스크롤 바 너비 */
+}
+
+.approval-comment-input::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.approval-comment-input::-webkit-scrollbar-thumb {
+  background: #D9D9D9;
+  border-radius: 10px;
+}
+
 </style>

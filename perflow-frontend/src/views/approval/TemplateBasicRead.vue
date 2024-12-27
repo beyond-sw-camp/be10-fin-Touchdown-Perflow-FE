@@ -287,6 +287,7 @@ onMounted(() => {
   flex-direction: column;
   gap: 20px;
   margin-right: 50px;
+  margin-left: 70px;
 }
 
 .field-container {
@@ -499,4 +500,18 @@ onMounted(() => {
   justify-content: flex-end;
   width: 100%
 }
+
+.approval-comment-input::-webkit-scrollbar {
+  width: 5px; /* 스크롤 바 너비 */
+}
+
+.approval-comment-input::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.approval-comment-input::-webkit-scrollbar-thumb {
+  background: #D9D9D9;
+  border-radius: 10px;
+}
+
 </style>
