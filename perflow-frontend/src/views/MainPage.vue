@@ -255,7 +255,7 @@ const goToWaiting = () => {
 };
 
 const goToProcessed = () => {
-  router.push(``)
+  router.push(`/approval/processing`)
 }
 
 const kpiRows = computed(() => {
