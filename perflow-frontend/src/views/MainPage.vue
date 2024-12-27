@@ -16,65 +16,6 @@ const commuteEndTime = ref(null); // 퇴근 시간 기록
 const modalTitle = ref('');
 const actionType = ref(''); // 출근(on) 또는 퇴근(off)
 
-// 모달 열기
-const openModal = (type) => {
-  console.log('openModal 호출됨, type:', type);
-  actionType.value = type; // 'on' 또는 'off'
-  modalTitle.value = type === 'on' ? '출근 QR 인증 ' : '퇴근 QR 인증';
-  isModalVisible.value = true;
-};
-
-// 모달 닫기
-const closeModal = () => {
-  isModalVisible.value = false;
-};
-
-let commuteInterval;
-
-const confirmAction = () => {
-  console.log('confirmAction 호출됨');
-  console.log('actionType:', actionType);  // actionType 값 확인
-  console.log('confirmAction 호출됨, actionType:', actionType.value);
-
-  if (actionType.value === 'on') {
-    console.log('출근 처리 시작');
-    commuteStatus.value = 'ON';
-    console.log("commuteStatus : ", commuteStatus.value);
-    commuteStartTime.value = new Date(); // 출근 시간 기록
-    console.log('commuteStartTime:', commuteStartTime.value);
-
-    commuteInterval = setInterval(calculateCommuteTime, 60000); // 1분마다 출퇴근 시간 계산
-    console.log("calculateCommuteTime() 호출");
-
-    console.log('출근 완료!');
-  } else if (actionType.value === 'off') {
-    console.log('퇴근 처리 시작');
-    commuteStatus.value = 'OFF';
-    console.log("commuteStatus : ", commuteStatus.value);
-    commuteEndTime.value = new Date(); // 퇴근 시간 기록
-    commuteTime.value = 0; // 시간 초기화
-    console.log('commuteEndTime:', commuteEndTime.value);
-
-    // 근무 시간 계산 (분 단위)
-    const workMinutes = Math.floor(
-        (commuteEndTime.value - commuteStartTime.value) / (1000 * 60)
-    );
-    console.log(`퇴근 완료! 총 근무 시간: ${workMinutes}분`);
-
-    // 퇴근 시 interval을 중지
-    clearInterval(commuteInterval);
-    commuteInterval = null;
-  }
-};
-
-// 시간 기록을 문자열로 변환하여 시간만 표시하는 메서드
-const formatTime = (time) => {
-  if (!time) return '';
-  const hours = time.getHours().toString().padStart(2, '0'); // 두 자리로 표시
-  const minutes = time.getMinutes().toString().padStart(2, '0'); // 두 자리로 표시
-  return `${hours}:${minutes}`;
-};
-
 const router = useRouter();
 const authStore = useAuthStore();
 const employee = ref(null);
@@ -359,6 +300,61 @@ const calculateCommuteTime = () => {
     const now = new Date();
     commuteTime.value = Math.floor((now - commuteStartTime.value) / (1000 * 60)); // 분 단위로 계산
   }
+};
+
+// 모달 열기
+const openModal = (type) => {
+  console.log('openModal 호출됨, type:', type);
+  actionType.value = type; // 'on' 또는 'off'
+  modalTitle.value = type === 'on' ? '출근 QR 인증 ' : '퇴근 QR 인증';
+  isModalVisible.value = true;
+};
+
+// 모달 닫기
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+let commuteInterval;
+
+const confirmAction = () => {
+
+  if (actionType.value === 'on') {
+    console.log('출근 처리 시작');
+    commuteStatus.value = 'ON';
+    console.log("commuteStatus : ", commuteStatus.value);
+    commuteStartTime.value = new Date(); // 출근 시간 기록
+    console.log('commuteStartTime:', commuteStartTime.value);
+
+    commuteInterval = setInterval(calculateCommuteTime, 60000); // 1분마다 출퇴근 시간 계산
+
+    console.log('출근 완료!');
+  } else if (actionType.value === 'off') {
+    console.log('퇴근 처리 시작');
+    commuteStatus.value = 'OFF';
+    console.log("commuteStatus : ", commuteStatus.value);
+    commuteEndTime.value = new Date(); // 퇴근 시간 기록
+    commuteTime.value = 0; // 시간 초기화
+    console.log('commuteEndTime:', commuteEndTime.value);
+
+    // 근무 시간 계산 (분 단위)
+    const workMinutes = Math.floor(
+        (commuteEndTime.value - commuteStartTime.value) / (1000 * 60)
+    );
+    console.log(`퇴근 완료! 총 근무 시간: ${workMinutes}분`);
+
+    // 퇴근 시 interval을 중지
+    clearInterval(commuteInterval);
+    commuteInterval = null;
+  }
+};
+
+// 시간 기록을 문자열로 변환하여 시간만 표시하는 메서드
+const formatTime = (time) => {
+  if (!time) return '';
+  const hours = time.getHours().toString().padStart(2, '0'); // 두 자리로 표시
+  const minutes = time.getMinutes().toString().padStart(2, '0'); // 두 자리로 표시
+  return `${hours}:${minutes}`;
 };
 
 onMounted(() => {

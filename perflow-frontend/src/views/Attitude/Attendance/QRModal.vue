@@ -149,8 +149,6 @@ const handleSubmit = async () => {
       closeModal();
       props.confirmAction(); // 부모로부터 전달받은 confirmAction 호출
 
-      console.log("props.confirmAction() 호출");
-
     } else {
       throw new Error('서버 응답 오류'); // 실패 처리 강제 실행
     }
