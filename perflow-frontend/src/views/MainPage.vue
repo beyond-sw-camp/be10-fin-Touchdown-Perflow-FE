@@ -44,6 +44,7 @@ const confirmAction = () => {
   if (actionType.value === 'on') {
     console.log('출근 처리 시작');
     commuteStatus.value = 'ON';
+    console.log("commuteStatus : ", commuteStatus.value);
     commuteStartTime.value = new Date(); // 출근 시간 기록
     console.log('commuteStartTime:', commuteStartTime.value);
 
@@ -54,6 +55,7 @@ const confirmAction = () => {
   } else if (actionType.value === 'off') {
     console.log('퇴근 처리 시작');
     commuteStatus.value = 'OFF';
+    console.log("commuteStatus : ", commuteStatus.value);
     commuteEndTime.value = new Date(); // 퇴근 시간 기록
     commuteTime.value = 0; // 시간 초기화
     console.log('commuteEndTime:', commuteEndTime.value);
@@ -397,14 +399,14 @@ onMounted(() => {
             <button
                 :class="commuteStatus === 'ON' ? 'btn-gray' : 'btn-orange'"
                 @click="openModal('on')"
-                :disabled="commuteStatus === 'OFF'"
+                :disabled="commuteStatus === 'ON'"
             >
               ON
             </button>
             <button
                 :class="commuteStatus === 'OFF' ? 'btn-gray' : 'btn-orange'"
                 @click="openModal('off')"
-                :disabled="commuteStatus === 'ON'"
+                :disabled="commuteStatus === 'OFF'"
             >
               OFF
             </button>
