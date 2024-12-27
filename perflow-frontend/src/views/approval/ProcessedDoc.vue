@@ -151,9 +151,9 @@ onMounted(() => {
     </div>
   </div>
 
-  <div id="outbox-doc-container">
+  <div id="inbox-doc-container">
     <!-- 테이블 -->
-    <div id="outbox-doc-list">
+    <div id="inbox-doc-list">
       <TableCheck
           row-key="docId"
           :rows="processedDocs"
@@ -217,14 +217,14 @@ onMounted(() => {
   margin-bottom: 10px;
   width: 900px;
 }
-#outbox-doc-container {
+#inbox-doc-container {
   display: flex;
   flex-direction: column; /* 테이블과 버튼을 세로로 배치 */
   gap: 10px; /* 테이블과 버튼 간 간격 */
   width: 900px; /* 테이블과 버튼이 같은 폭 */
   margin: 0 auto; /* 중앙 정렬 */
 }
-#outbox-doc-list {
+#inbox-doc-list {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */

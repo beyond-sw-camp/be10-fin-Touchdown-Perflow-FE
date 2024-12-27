@@ -11,12 +11,13 @@ import PagingBar from "@/components/common/PagingBar.vue";
 const columns = [
   {label: "상태", field: "status"},
   {label: "제목", field: "title"},
+  {label: "작성자", field: "createUserName"},
   {label: "작성일", field: "createDatetime"},
 ];
 
-const columnWidths = ["80px", "300px", "200px"]; // 열 값
+const columnWidths = ["80px", "200px", "100px", "200px"]; // 열 값
 
-const processedDocs = ref([]);  // 문서 목록
+const InboxDocs = ref([]);  // 문서 목록
 const totalPages = ref(0);  // 전체 페이지 수
 const totalItems = ref(0); // 전체 아이템 수
 const currentPage = ref(1); // 현재 페이지
@@ -30,7 +31,7 @@ const searchCriteria = ref({
 });
 
 // 수신함 목록 조회
-const fetchProcessedDocs = async (page = 1) => {
+const fetchInboxDocs = async (page = 1) => {
   try {
     const response = (await api.get("approval/inbox", {
       params: {
@@ -40,13 +41,13 @@ const fetchProcessedDocs = async (page = 1) => {
     }));
     console.log("문서 조회 결과: ", response.data.content);
 
-    processedDocs.value = response.data.content;
+    InboxDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
     currentPage.value = response.data.number + 1;
   } catch (error) {
     console.error("문서 목록 조회 실패: ", error);
-    processedDocs.value = [];
+    InboxDocs.value = [];
   }
 };
 
@@ -72,11 +73,11 @@ const handleTitleClick = (row) => {
 const handleSearch = () => {
   console.log("검색 조건: ", searchCriteria.value);
   currentPage.value = 1;  // 검색 시 페이지를 처음으로 초기화
-  fetchProcessedDocsWithCriteria();
+  fetchInboxDocsWithCriteria();
 };
 
 // 검색하기
-const fetchProcessedDocsWithCriteria = async(page = 1) => {
+const fetchInboxDocsWithCriteria = async(page = 1) => {
   try {
     const response = await api.get("approval/inbox/search", {
       params: {
@@ -86,7 +87,7 @@ const fetchProcessedDocsWithCriteria = async(page = 1) => {
       },
     });
 
-    processedDocs.value = response.data.content;
+    InboxDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
     currentPage.value = response.data.number + 1;
@@ -94,12 +95,12 @@ const fetchProcessedDocsWithCriteria = async(page = 1) => {
     console.log("검색 결과: ", response.data.content);
   } catch (error) {
     console.error("검색 실패: ", error);
-    processedDocs.value = [];
+    InboxDocs.value = [];
   }
 };
 
 onMounted(() => {
-  fetchProcessedDocs();
+  fetchInboxDocs();
 })
 </script>
 
@@ -144,26 +145,21 @@ onMounted(() => {
     </div>
   </div>
 
-  <div id="outbox-doc-container">
+  <div id="inbox-doc-container">
     <!-- 테이블 -->
-    <div id="outbox-doc-list">
+    <div id="inbox-doc-list">
       <TableCheck
           row-key="docId"
-          :rows="processedDocs"
+          :rows="InboxDocs"
           :columns="columns"
           :columnWidths="columnWidths"
       >
         <template #status = "{ row }">
           <span
-              class ="status-tag"
-              :class="{
-                '진행': row.status === 'ACTIVATED',
-                '반려': row.status === 'REJECTED',
-                '승인': row.status === 'APPROVED',
-                '기타': !['ACTIVATED', 'REJECTED', 'APPROVED'].includes(row.status),
-              }"
+            class ="status-tag"
+            :class="row.status"
           >
-            {{ row.status === 'ACTIVATED' ? '진행' : row.status === 'REJECTED' ? '반려' : row.status === 'APPROVED' ? '승인' : '기타' }}
+            {{ row.status }}
           </span>
         </template>
         <template #title="{ row }">
@@ -172,6 +168,12 @@ onMounted(() => {
               @click.stop="handleTitleClick(row)"
           >
             {{ row.title }}
+          </span>
+        </template>
+        <!-- 작성자 -->
+        <template #createUserName="{ row }">
+          <span>
+            {{ row.createUserName }}
           </span>
         </template>
         <!-- 날짜 포맷팅 커스터마이징 -->
@@ -187,7 +189,7 @@ onMounted(() => {
           :totalPages="totalPages"
           :totalItems="totalItems"
           :pageSize="pageSize"
-          @page-changed="fetchProcessedDocs"
+          @page-changed="fetchInboxDocs"
       />
     </div>
   </div>
@@ -211,14 +213,14 @@ onMounted(() => {
   margin-bottom: 10px;
   width: 900px;
 }
-#outbox-doc-container {
+#inbox-doc-container {
   display: flex;
   flex-direction: column; /* 테이블과 버튼을 세로로 배치 */
   gap: 10px; /* 테이블과 버튼 간 간격 */
   width: 900px; /* 테이블과 버튼이 같은 폭 */
   margin: 0 auto; /* 중앙 정렬 */
 }
-#outbox-doc-list {
+#inbox-doc-list {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */

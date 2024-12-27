@@ -17,7 +17,7 @@ const comment = route.query.comment;
 
 // 초기화
 const title = ref("");
-const createUser = ref("");
+const createUserData = ref("");
 const createDatetime = ref("");
 const expendDate = ref("");
 const approveLines = ref([]);
@@ -30,7 +30,7 @@ const fetchDocumentDetail = async () => {
     const response = await api.get(`/approval/waiting-docs/${docId}`);
     const docData = response.data;
     title.value = docData.title; // 제목
-    createUser.value = docData.createUserName;  // 작성자
+    createUserData.value = docData.createUserDept + " " + docData.createUserName + " " + docData.createUserPosition;
     createDatetime.value = formatCreateDatetime(docData.createDatetime);  // 작성일시
     expendDate.value = formatExpendDate(docData.fields?.expendDate);  // 지출일
 
@@ -138,7 +138,7 @@ onMounted(() => {
         <!-- 작성자 -->
         <div class="field">
           <span class="label">작성자</span>
-          <span class="value">{{ createUser }}</span>
+          <span class="value">{{ createUserData }}</span>
         </div>
         <!-- 작성일시 -->
         <div class="field">
@@ -274,13 +274,13 @@ onMounted(() => {
   flex-direction: column;
   gap: 20px;
 }
-
 .field-container {
   display: flex;
   flex-direction: column;
   gap: 30px;  /* 필드 간 간격 */
   width: 100%
 }
+
 
 .field {
   display: flex;
@@ -338,7 +338,6 @@ onMounted(() => {
 }
 
 /* 지출 내역 테이블 */
-
 .table-container {
   margin-top: 50px;
   width: 90%;
