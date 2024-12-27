@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, computed} from "vue";
+import {ref, onMounted, computed, defineExpose} from "vue";
 import api from "@/config/axios.js";
 import dayjs from "dayjs";
 
@@ -17,28 +17,39 @@ const totalExtraAllowance = computed(() =>
     salaryData.value.reduce((sum, row) => sum + (row.extraAllowance || 0), 0)
 );
 
+// 계산 결과 저장 변수
+const dailyAveragePay = ref(0);
+const monthlyAveragePay = ref(0);
+const totalSeverance = ref(0);
+
 const handleRest = () => {
   resignDate.value = "";
   annualAllowance.value = 0;
   salaryData.value = [];
 };
 
-const monthlyAveragePay = computed(() => {
-  return dailyAveragePay.value * 30;
-});
-
-const dailyAveragePay = computed(() => {
+// 계산 함수
+const calculate = () => {
+  // 일 평균 급여 계산
   const totalDay = salaryData.value.reduce((sum, row) => sum + row.days, 0);
   const totalPay = salaryData.value.reduce((sum, row) => sum + row.pay, 0);
-  const totalExtraAllowance = salaryData.value.reduce((sum, row) => sum + row.extraAllowance, 0);
+  const totalExtraAllowance = salaryData.value.reduce(
+      (sum, row) => sum + row.extraAllowance, 0);
 
-  return Math.round((totalPay + totalExtraAllowance + annualAllowance.value * (3/12)) / totalDay);
-});
+  dailyAveragePay.value = Math.round(
+      (totalPay + totalExtraAllowance + annualAllowance.value * (3 / 12)) / totalDay
+  );
 
-const totalSeverance = computed(() => {
-  const daysWorked = dayjs(resignDate.value).diff(employee.value?.joinDate, "day") + 1;
-  return monthlyAveragePay.value * 30 * daysWorked;
-});
+  // 월 평균 급여 계산
+  monthlyAveragePay.value = dailyAveragePay.value * 30;
+
+  // 총 퇴직금 계산
+  const daysWorked =
+      dayjs(resignDate.value).diff(employee.value?.joinDate, "day") + 1;
+  totalSeverance.value = Math.round(
+      (monthlyAveragePay.value * daysWorked) / 365
+  );
+};
 
 const generateSalaryTable = () => {
   const endDate = dayjs(resignDate.value); // 퇴사일 설정
@@ -115,9 +126,15 @@ const fetchEmp = async () => {
   }
 };
 
+// 금액 포맷 함수
+const formatCurrency = (value) => {
+  if (!value) return '0';
+  return value.toLocaleString(); // 천 단위 ',' 추가
+};
+
 onMounted(() => {
   fetchEmp();
-})
+});
 </script>
 
 <template>
@@ -184,11 +201,33 @@ onMounted(() => {
             <tr>
               <td class="total-title">합계</td>
               <td>{{ totalDays }}일</td>
-              <td>{{ totalPays }}원</td>
-              <td>{{ totalExtraAllowance }}원</td>
+              <td>{{ formatCurrency(totalPays) }}원</td>
+              <td>{{ formatCurrency(totalExtraAllowance) }}원</td>
             </tr>
           </tfoot>
         </table>
+      </div>
+      <div class="calculation-btn">
+        <button
+            class="btn"
+            @click="calculate"
+        >
+          계산하기
+        </button>
+      </div>
+    </div>
+    <div class="average-pay">
+      <div class="monthly">
+        <p>1개월 평균임금</p>
+        <p>{{ formatCurrency(monthlyAveragePay) }}원</p>
+      </div>
+      <div class="daily">
+        <p>1일 평균임금</p>
+        <p>{{ formatCurrency(dailyAveragePay) }}원</p>
+      </div>
+      <div class="severance">
+        <p>퇴직금</p>
+        <p>{{ formatCurrency(totalSeverance) }}원</p>
       </div>
     </div>
   </div>
@@ -357,10 +396,41 @@ td {
 
 td > input {
   color: #3C4651;
-  width: 180px;
+  width: 120px;
   text-align: right;
   margin-right: 10px;
   border: none;
+}
+
+.calculation-btn {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-top: 30px;
+}
+
+.average-pay {
+  width: 900px;
+  margin-top: 50px;
+  color: #3C4651;
+}
+
+.monthly, .daily {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.monthly p, .daily p {
+  font-size: 25px;
+  margin: 0;
+}
+
+.severance {
+  display: flex;
+  justify-content: space-between;
+  font-size: 35px;
+  font-weight: bold;
+  margin: 0;
 }
 
 </style>
