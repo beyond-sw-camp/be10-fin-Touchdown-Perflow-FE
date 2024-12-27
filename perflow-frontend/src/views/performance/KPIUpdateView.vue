@@ -10,7 +10,7 @@
           :fontSize="'16px'"
           :imgSize="'20px'"
           :marginLeft="'7px'"
-          @select="handleDropdownChange"
+          v-model="selectedOption"
       />
     </div>
     <!-- 선택된 KPI 정보 표시 -->
@@ -47,113 +47,111 @@ const empId = authStore.empId;
 
 // 드롭다운 옵션 데이터
 const dropdownOptions = [
-  { label: "년" },
-  { label: "분기" },
-  { label: "월" },
-]
+  { label: "년", value: "YEAR" },
+  { label: "분기", value: "QUARTER" },
+  { label: "월", value: "MONTH" },
+];
 
 // 선택된 값들
-const selectedOption = ref("")
-const selectedYear = ref(null)
-const selectedQuarter = ref(null)
-const selectedMonth = ref(null)
+const selectedOption = ref(""); // "YEAR", "QUARTER", "MONTH"
+const selectedYear = ref(null);
+const selectedQuarter = ref(null);
+const selectedMonth = ref(null);
 
 // 선택된 항목 여부
-const isYearSelected = computed(() => selectedYear.value !== null)
-const isQuarterSelected = computed(() => selectedQuarter.value !== null)
-const isMonthSelected = computed(() => selectedMonth.value !== null)
+const isYearSelected = computed(() => selectedYear.value !== null);
+const isQuarterSelected = computed(() => selectedQuarter.value !== null);
+const isMonthSelected = computed(() => selectedMonth.value !== null);
 
 // KPI 데이터
-const personalKPIs = ref([])
-const teamKPIs = ref([])
+const personalKPIs = ref([]);
+const teamKPIs = ref([]);
 
-const refreshKpiData = () => {
-  // 개인 및 팀 KPI 데이터를 다시 가져오기
-  fetchPersonalKpiList(empId);
-  fetchTeamKpiList(empId);
+// 드롭다운 선택 시 값 설정 및 KPI 데이터 가져오기
+const handleDropdownChange = (selected) => {
+  const now = new Date(); // 현재 시각
+  selectedYear.value = now.getFullYear(); // 현재 년도
+
+  if (selected === "YEAR") {
+    selectedQuarter.value = null; // 분기 초기화
+    selectedMonth.value = null; // 월 초기화
+  } else if (selected === "QUARTER") {
+    const month = now.getMonth() + 1; // 현재 월 (0부터 시작하므로 +1)
+    selectedQuarter.value = Math.ceil(month / 3); // 현재 분기 계산
+    selectedMonth.value = null; // 월 초기화
+  } else if (selected === "MONTH") {
+    selectedMonth.value = now.getMonth() + 1; // 현재 월
+    selectedQuarter.value = null; // 분기 초기화
+  }
+
+  // KPI 데이터 새로 가져오기
+  fetchKpiData();
 };
 
+// Watch selectedOption and call handleDropdownChange
+watch(selectedOption, (newValue) => {
+  handleDropdownChange(newValue);
+});
 
-// 드롭다운에서 선택된 값에 따라 현재 시각 설정
-const handleDropdownChange = (selected) => {
-  const now = new Date() // 현재 시각
-  selectedYear.value = now.getFullYear() // 현재 년도
+// KPI 데이터 가져오기
+const fetchKpiData = async () => {
+  if (!selectedYear.value) return; // Ensure year is selected
 
-  if (selected === "년") {
-    selectedQuarter.value = null // 분기 초기화
-    selectedMonth.value = null // 월 초기화
-  } else if (selected === "분기") {
-    const month = now.getMonth() + 1 // 현재 월 (0부터 시작하므로 +1)
-    selectedQuarter.value = Math.ceil(month / 3) // 현재 분기 계산
-    selectedMonth.value = null // 월 초기화
-  } else if (selected === "월") {
-    selectedMonth.value = now.getMonth() + 1 // 현재 월
-    selectedQuarter.value = null // 분기 초기화
-  }
-}
+  const requestData = {
+    quarter: selectedQuarter.value,
+    month: selectedMonth.value,
+  };
 
-// 개인 KPI 데이터 가져오기
-const fetchPersonalKpiList = async (empId) => {
   try {
-    const requestData = {
-      quarter: selectedQuarter.value,
-      month: selectedMonth.value,
-    }
-    const response = (
-        await api.get(`/perfomances/kpi/personal/period/current/${empId}/${selectedYear.value}`, {
-          params: requestData,
-        })
-    ).data
-    personalKPIs.value = response.kpiLists
-  } catch (error) {
-    console.error("개인 KPI 데이터를 가져오는 데 실패했습니다.", error)
-  }
-}
+    const [personalResponse, teamResponse] = await Promise.all([
+      api.get(`/perfomances/kpi/personal/period/current/${empId}/${selectedYear.value}`, { params: requestData }),
+      api.get(`/perfomances/kpi/team/period/current/${empId}/${selectedYear.value}`, { params: requestData }),
+    ]);
 
-// 팀 KPI 데이터 가져오기
-const fetchTeamKpiList = async (empId) => {
-  try {
-    const requestData = {
-      quarter: selectedQuarter.value,
-      month: selectedMonth.value,
-    }
-    const response = (
-        await api.get(`/perfomances/kpi/team/period/current/${empId}/${selectedYear.value}`, {
-          params: requestData,
-        })
-    ).data
-    teamKPIs.value = response.kpiLists
+    personalKPIs.value = personalResponse.data.kpiLists || [];
+    teamKPIs.value = teamResponse.data.kpiLists || [];
   } catch (error) {
-    console.error("팀 KPI 데이터를 가져오는 데 실패했습니다.", error)
+    console.error("KPI 데이터를 가져오는 중 오류 발생:", error);
   }
-}
+};
 
 // 드롭다운 값 변경 시 API 호출
-watch([selectedYear, selectedQuarter, selectedMonth], () => {
-  if (isYearSelected.value || isQuarterSelected.value || isMonthSelected.value) {
-    fetchPersonalKpiList(empId)
-    fetchTeamKpiList(empId)
-  }
-})
+watch(
+    [selectedYear, selectedQuarter, selectedMonth],
+    () => {
+      if (isYearSelected.value || isQuarterSelected.value || isMonthSelected.value) {
+        fetchKpiData();
+      }
+    },
+    { deep: true }
+);
 
 // 페이지 로드 시 데이터 가져오기
 onMounted(() => {
-  fetchPersonalKpiList(empId)
-  fetchTeamKpiList(empId)
-})
+  // 초기 선택이 없는 상태이므로 데이터를 가져오지 않음
+  // 필요 시 기본 값을 설정하고 데이터를 가져올 수 있음
+  // 예:
+  // selectedOption.value = "YEAR";
+  // handleDropdownChange("YEAR");
+});
 
 // KPI 업데이트 처리
 const handleUpdateKpi = (updatedKpi) => {
-  // 개인 KPI 업데이트
+  // KPI 리스트 업데이트 함수
   const updateKpiList = (kpiList) => {
-    const index = kpiList.findIndex((kpi) => kpi.kpiId === updatedKpi.kpiId); // kpiId로 비교
+    const index = kpiList.findIndex((kpi) => kpi.kpiId === updatedKpi.kpiId);
     if (index !== -1) {
-      kpiList[index] = { ...kpiList[index], ...updatedKpi }; // 업데이트된 데이터 반영
+      kpiList[index] = { ...kpiList[index], ...updatedKpi };
     }
   };
 
-  updateKpiList(personalKPIs.value); // 개인 KPI 리스트 갱신
-  updateKpiList(teamKPIs.value); // 팀 KPI 리스트 갱신
+  updateKpiList(personalKPIs.value);
+  updateKpiList(teamKPIs.value);
+};
+
+// KPI 데이터를 다시 가져오는 함수
+const refreshKpiData = () => {
+  fetchKpiData();
 };
 </script>
 

@@ -1,26 +1,27 @@
 <template>
   <div class="kpi-container">
     <!-- KPI 항목 리스트 -->
-    <div v-for="(kpi, index) in KPIs" :key="index" class="kpi-item">
-      <!-- 왼쪽: 목표, 목표치, 상태 -->
+    <div v-for="(kpi, index) in rows" :key="kpi.kpiId || index" class="kpi-item">
+      <!-- 목표, 목표치, 상태 표시 -->
       <div class="kpi-info">
         <div class="kpi-goal">{{ kpi.goal }}</div>
         <div class="kpi-value">{{ kpi.goalValue }}{{ kpi.goalValueUnit }}</div>
         <div class="kpi-status">{{ getStatusText(kpi.kpiCurrentStatus) }}</div>
       </div>
-      <!-- 오른쪽: 버튼 그룹 -->
+      <!-- 버튼들 -->
       <div class="kpi-buttons">
-        <!-- 반려 사유 보기 버튼 -->
+        <!-- 반려 사유 보기 -->
         <ButtonBasic
             class="btn edit-btn"
             color="gray"
             size="medium"
             :disabled="kpi.kpiCurrentStatus === 'WAIT' || kpi.kpiCurrentStatus === 'APPROVAL'"
-            @click="openRejectModal(empId, kpi.kpiId)"
+            @click="openRejectModal(kpi.kpiId)"
         >
           반려사유보기
         </ButtonBasic>
-        <!-- 수정하기 버튼 -->
+
+        <!-- 수정하기 -->
         <ButtonBasic
             class="btn delete-btn"
             :disabled="kpi.kpiCurrentStatus === 'APPROVAL'"
@@ -28,7 +29,8 @@
         >
           수정하기
         </ButtonBasic>
-        <!-- 삭제하기 버튼 -->
+
+        <!-- 삭제하기 -->
         <ButtonBasic
             class="btn view-btn"
             :disabled="kpi.kpiCurrentStatus === 'APPROVAL'"
@@ -39,7 +41,7 @@
       </div>
     </div>
 
-    <!-- KPI 추가하기 버튼 -->
+    <!-- KPI 추가 버튼 -->
     <div class="add-kpi-container">
       <ButtonBasic class="add-kpi-btn" @click="openAddModal">작성하기</ButtonBasic>
     </div>
@@ -59,34 +61,49 @@
         <h2 class="modal-title">KPI 수정하기</h2>
 
         <div class="form-group">
+          <label for="period">기간</label>
+          <div class="period-dropdown">
+            <ButtonDropDown
+                id="period"
+                :width="'360px'"
+                :height="'40px'"
+                :fontSize="'16px'"
+                :imgSize="'20px'"
+                :marginLeft="'7px'"
+                :options="periodOptions"
+                v-model="KPIForm.period"
+            />
+          </div>
+        </div>
+
+        <!-- 목표, 목표치, 목표치 단위, 목표 설명 -->
+        <div class="form-group">
           <label for="goal">목표</label>
-          <input id="goal" type="text" v-model="KPIForm.goal" placeholder="목표를 입력하세요" />
+          <input id="goal" type="text" v-model="KPIForm.goal" />
         </div>
 
         <div class="form-group">
           <label for="goalValue">목표치</label>
-          <input id="goalValue" type="number" v-model="KPIForm.goalValue" placeholder="목표치를 입력하세요" />
+          <input id="goalValue" type="number" v-model="KPIForm.goalValue" />
         </div>
 
         <div class="form-group">
           <label for="goalUnit">목표치 단위</label>
-          <input id="goalUnit" v-model="KPIForm.goalValueUnit" placeholder="목표치단위를 입력하세요">
+          <input id="goalUnit" v-model="KPIForm.goalValueUnit" />
         </div>
 
         <div class="form-group">
           <label for="goalDescription">목표 세부설명</label>
-          <textarea
-              id="goalDescription"
-              v-model="KPIForm.goalDetail"
-              placeholder="목표에 대한 세부설명을 입력하세요"
-          ></textarea>
+          <textarea id="goalDescription" v-model="KPIForm.goalDetail"></textarea>
         </div>
 
         <div class="modal-actions">
           <ButtonBasic class="btn cancel-btn" @click="closeUpdateModal">취소</ButtonBasic>
-          <ButtonBasic class="btn save-btn"
-                  :disabled="!KPIForm.goal || !KPIForm.goalValue || !KPIForm.goalValueUnit || !KPIForm.goalDetail"
-                  @click="updateKPI">
+          <ButtonBasic
+              class="btn save-btn"
+              :disabled="!KPIForm.goal || !KPIForm.goalValue || !KPIForm.goalValueUnit || !KPIForm.goalDetail || !KPIForm.period"
+              @click="updateKPI"
+          >
             저장
           </ButtonBasic>
         </div>
@@ -99,7 +116,7 @@
         <h2 class="modal-title">정말 삭제하시겠습니까?</h2>
         <div class="modal-actions">
           <ButtonBasic class="btn cancel-btn" @click="closeDeleteModal">취소</ButtonBasic>
-          <ButtonBasic class="btn delete-btn" @click="confirmDelete(empId)">삭제</ButtonBasic>
+          <ButtonBasic class="btn delete-btn" @click="confirmDelete">삭제하기</ButtonBasic>
         </div>
       </div>
     </div>
@@ -110,34 +127,48 @@
         <h2 class="modal-title">KPI 작성하기</h2>
 
         <div class="form-group">
+          <label for="period">기간</label>
+          <div class="period-dropdown">
+            <ButtonDropDown
+                id="period"
+                :width="'360px'"
+                :height="'40px'"
+                :fontSize="'16px'"
+                :imgSize="'20px'"
+                :marginLeft="'7px'"
+                :options="periodOptions"
+                v-model="KPIForm.period"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
           <label for="goal">목표</label>
-          <input id="goal" type="text" v-model="KPIForm.goal" placeholder="목표를 입력하세요" />
+          <input id="goal" type="text" v-model="KPIForm.goal" />
         </div>
 
         <div class="form-group">
           <label for="goalValue">목표치</label>
-          <input id="goalValue" type="number" v-model="KPIForm.goalValue" placeholder="목표치를 입력하세요" />
+          <input id="goalValue" type="number" v-model="KPIForm.goalValue" />
         </div>
 
         <div class="form-group">
           <label for="goalUnit">목표치 단위</label>
-          <input id="goalUnit" v-model="KPIForm.goalValueUnit" placeholder="목표치단위를 입력하세요"/>
+          <input id="goalUnit" v-model="KPIForm.goalValueUnit" />
         </div>
 
         <div class="form-group">
           <label for="goalDescription">목표 세부설명</label>
-          <textarea
-              id="goalDescription"
-              v-model="KPIForm.goalDetail"
-              placeholder="목표에 대한 세부설명을 입력하세요"
-          ></textarea>
+          <textarea id="goalDescription" v-model="KPIForm.goalDetail"></textarea>
         </div>
 
         <div class="modal-actions">
           <ButtonBasic class="btn cancel-btn" @click="closeAddModal">취소</ButtonBasic>
-          <ButtonBasic class="btn save-btn"
-                  :disabled="!KPIForm.goal || !KPIForm.goalValue || !KPIForm.goalValueUnit || !KPIForm.goalDetail"
-                  @click="addKPI">
+          <ButtonBasic
+              class="btn save-btn"
+              :disabled="!KPIForm.goal || !KPIForm.goalValue || !KPIForm.goalValueUnit || !KPIForm.goalDetail || !KPIForm.period"
+              @click="addKPI"
+          >
             저장
           </ButtonBasic>
         </div>
@@ -147,181 +178,151 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import api from "@/config/axios.js";
+import {ref, defineProps, defineEmits} from "vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import {useAuthStore} from "@/store/authStore.js";
+import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+
+// Props
+const props = defineProps({
+  rows: {
+    type: Array,
+    required: true,
+  },
+  selected: {
+    type: Object,
+    required: true,
+  },
+  empId: {
+    type: String,
+    required: true,
+  },
+});
+
+const emit = defineEmits(["rejectKpi", "updateKpi", "deleteKpi", "addKpi"]);
 
 // 반응형 데이터
-const KPIs = ref([]);
+const authStore = useAuthStore();
 const isRejectModalOpen = ref(false);
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const isAddModalOpen = ref(false);
 const rejectReason = ref("");
+
+// KPIForm
 const KPIForm = ref({
   kpiId: "",
   goal: "",
   goalValue: "",
   goalValueUnit: "",
   goalDetail: "",
+  period: ""
 });
-const authStore = useAuthStore();
 
-const empId = authStore.empId;
+// 삭제 처리
+const kpiIdToDelete = ref(null);
 
-const deleteIndex = ref(null);
-
-// KPI 데이터 가져오기
-const fetchKpiList = async (empId) => {
-  try {
-    const response = (await api.get(`/perfomances/kpi/personal/${empId}`)).data;
-    KPIs.value = response.kpiLists;
-  } catch (error) {
-    console.error("KPI 데이터를 받아오는데 실패했습니다.", error);
+// 드롭다운 옵션
+const periodOptions = [
+  {label: `${props.selected.year}년`, value: `${props.selected.year}_YEAR`},
+  {
+    label: `${props.selected.year}년 ${props.selected.quarter}분기`,
+    value: `${props.selected.year}_QUARTER${props.selected.quarter}`
+  },
+  {
+    label: `${props.selected.year}년 ${props.selected.month}월`,
+    value: `${props.selected.year}_MONTH${props.selected.month}`
   }
-};
+];
 
-// 반려 사유 가져오기
-const fetchRejectReason = async (empId, kpiId) => {
+// 반려 사유 모달
+async function openRejectModal(kpiId) {
   try {
-    const response = (await api.get(`/perfomances/kpi/reject/${empId}/${kpiId}`)).data;
-    rejectReason.value = response.reason;
+    const response = await fetchRejectReason(kpiId);
+    rejectReason.value = response.reason || "반려 사유를 불러올 수 없습니다.";
+    emit("rejectKpi", kpiId);
   } catch (error) {
-    console.error("반려 사유를 받아오는데 실패했습니다.", error);
+    console.error("반려 사유 불러오기 실패:", error);
   }
-};
-
-// KPI 추가하기
-const addKPIdata = async (empId) => {
-  const addKPI = {
-    goal: KPIForm.value.goal,
-    goalValue: KPIForm.value.goalValue,
-    goalValueUnit: KPIForm.value.goalValueUnit,
-    goalDetail: KPIForm.value.goalDetail,
-  };
-
-  try {
-    const response = (await api.post(`/perfomances/kpi/personal/${empId}`, addKPI)).data;
-    console.log("KPI 저장 성공:", response);
-    fetchKpiList(empId); // 수정 후 목록 갱신
-  } catch (error) {
-    console.error("KPI 저장 실패:", error);
-  }
-};
-
-// KPI 수정하기
-const updateKPIdata = async (kpiId) => {
-  const updatedKPI = {
-    status: "WAIT",
-    goal: KPIForm.value.goal,
-    goalValue: KPIForm.value.goalValue,
-    goalValueUnit: KPIForm.value.goalValueUnit,
-    goalDetail: KPIForm.value.goalDetail,
-  };
-
-  try {
-    const response = (await api.put(`/perfomances/kpi/personal/${kpiId}`, updatedKPI)).data;
-    console.log("KPI 수정 성공:", response);
-    fetchKpiList(empId); // 수정 후 목록 갱신
-  } catch (error) {
-    console.error("KPI 수정 실패:", error);
-    alert("삭제 작업에 실패했습니다. 다시 시도해 주세요.");
-  }
-};
-
-// KPI 삭제하기
-const deleteKPIdate = async (kpiId, empId) => {
-  try {
-    const response = (await api.delete(`/perfomances/kpi/personal/${kpiId}/${empId}`)).data;
-    console.log("KPI 삭제 성공:", response);
-    fetchKpiList(empId); // 수정 후 목록 갱신
-  } catch (error) {
-    console.error("KPI 삭제 실패:", error);
-  }
+  isRejectModalOpen.value = true;
 }
 
-// 반려 사유 모달 열기
-const openRejectModal = async (empId, kpiId) => {
-  await fetchRejectReason(empId, kpiId);
-  isRejectModalOpen.value = true;
-};
-
-// 반려 사유 모달 닫기
-const closeRejectModal = () => {
+function closeRejectModal() {
   isRejectModalOpen.value = false;
   rejectReason.value = "";
-};
+}
 
-// 수정 모달 열기
-const openUpdateModal = (kpi) => {
-  KPIForm.value = {...kpi};
+// 수정 모달
+function openUpdateModal(kpi) {
+  KPIForm.value = {...kpi};  // 현재 KPI 데이터를 폼에 할당
   isUpdateModalOpen.value = true;
-};
+}
 
-// 수정 모달 닫기
-const closeUpdateModal = () => {
+function closeUpdateModal() {
   isUpdateModalOpen.value = false;
-};
+}
 
-// 삭제 확인 모달 열기
-const openDeleteModal = (kpiId) => {
-  deleteIndex.value = kpiId;
-  console.log(kpiId);
+function updateKPI() {
+  console.log("updateKPI():", KPIForm.value);
+  emit("updateKpi", {...KPIForm.value});
+  closeUpdateModal();
+}
+
+// 삭제 모달
+function openDeleteModal(kpiId) {
+  kpiIdToDelete.value = kpiId;
   isDeleteModalOpen.value = true;
-};
+}
 
-// 삭제 확인 모달 닫기
-const closeDeleteModal = () => {
+function closeDeleteModal() {
   isDeleteModalOpen.value = false;
-  deleteIndex.value = null;
-};
+  kpiIdToDelete.value = null;
+}
 
-// 삭제 확인
-const confirmDelete = (empId) => {
-  deleteKPIdate(deleteIndex.value, empId);
+function confirmDelete() {
+  console.log("confirmDelete => kpiIdToDelete:", kpiIdToDelete.value);
+  emit("deleteKpi", kpiIdToDelete.value);
   closeDeleteModal();
-};
+}
 
-// KPI 추가 모달 열기
-const openAddModal = () => {
+// 추가 모달
+function openAddModal() {
   resetKPIForm();
   isAddModalOpen.value = true;
+}
 
-};
-
-// KPI 추가 모달 닫기
-const closeAddModal = () => {
+function closeAddModal() {
   isAddModalOpen.value = false;
-};
+}
 
-// 수정 데이터 저장
-const updateKPI = () => {
-  updateKPIdata(KPIForm.value.kpiId);
-  console.log("수정된 KPI 데이터:", KPIForm.value);
-  closeUpdateModal();
-};
-
-// 작성 데이터 저장
-const addKPI = () => {
-  addKPIdata(empId);
-  console.log("저장된 KPI 데이터:", KPIForm.value);
+function addKPI() {
+  console.log("addKPI():", KPIForm.value);
+  emit("addKpi", {...KPIForm.value});
   closeAddModal();
-};
+}
 
 // KPIForm 초기화
-const resetKPIForm = () => {
+function resetKPIForm() {
   KPIForm.value = {
     kpiId: "",
     goal: "",
     goalValue: "",
     goalValueUnit: "",
     goalDetail: "",
+    period: ""
   };
-};
+}
+
+// 반려 사유 조회
+async function fetchRejectReason(kpiId) {
+  // 필요 시 API 호출
+  // 예) const response = await api.get(`/perfomances/kpi/reject/${empId}/${kpiId}`);
+  // return response.data;
+  return {reason: "반려 사유 예시"};
+}
 
 // 상태 변환 함수
-const getStatusText = (status) => {
+function getStatusText(status) {
   switch (status) {
     case "WAIT":
       return "대기";
@@ -332,25 +333,21 @@ const getStatusText = (status) => {
     default:
       return "알 수 없음";
   }
-};
-
-// 데이터 가져오기 실행
-onMounted(() => fetchKpiList(empId));
+}
 </script>
 
 <style scoped>
 .kpi-container {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* 항목 간 간격 */
+  gap: 15px;
   padding: 10px;
 }
 
-/* KPI 항목 스타일 */
 .kpi-item {
   width: 900px;
   display: flex;
-  justify-content: space-between; /* 좌우 요소 간격 */
+  justify-content: space-between;
   align-items: center;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -363,14 +360,14 @@ onMounted(() => fetchKpiList(empId));
   display: flex;
   flex-direction: row;
   gap: 50px;
-  justify-content: space-between; /* 양 끝 요소를 정렬 */
+  justify-content: space-between;
 }
 
 .kpi-goal,
 .kpi-value,
 .kpi-status {
-  flex: 0 0 150px; /* 각 요소의 너비를 고정 (150px) */
-  text-align: left; /* 텍스트 왼쪽 정렬 */
+  flex: 0 0 150px;
+  text-align: left;
 }
 
 .kpi-goal {
@@ -385,7 +382,6 @@ onMounted(() => fetchKpiList(empId));
   color: #666;
 }
 
-/* 버튼 그룹 */
 .kpi-buttons {
   display: flex;
   gap: 10px;
@@ -418,14 +414,14 @@ onMounted(() => fetchKpiList(empId));
   font-size: 14px;
   cursor: pointer;
   background: linear-gradient(to right, #ff9900, #ffcc33);
-  color: white; /* 주황색 */
+  color: white;
 }
 
 .btn:disabled {
-  background-color: #ccc !important; /* 회색 비활성화 색상 */
+  background-color: #ccc !important;
   cursor: not-allowed;
-  opacity: 0.6; /* 약간의 투명도 추가 */
-  background-image: none !important; /* 그라데이션 제거 */
+  opacity: 0.6;
+  background-image: none !important;
 }
 
 .btn:hover {
@@ -495,6 +491,10 @@ textarea {
 
 .cancel-btn {
   background: linear-gradient(to right, #ff9900, #ffcc33);
-  color: white; /* 주황색 */
+  color: white;
+}
+
+.period-dropdown {
+  border: #333 !important;
 }
 </style>
