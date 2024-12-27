@@ -178,7 +178,7 @@ onMounted(() => {
       <div class="over-list">
         <div class="all" v-if="severancePayStub?.totalAnnulAllowance > 0">
           <div class="date">
-            <div>연차수당가산액</div>
+            <div>연차수당</div>
             <p>{{ annualDateStart }} ~ {{ annualDateEnd }} 내 집계</p>
           </div>
           <div>{{ formatCurrency(severancePayStub?.totalAnnulAllowance) }}원</div>
