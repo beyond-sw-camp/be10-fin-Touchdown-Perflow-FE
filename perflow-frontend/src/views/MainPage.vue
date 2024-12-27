@@ -10,7 +10,7 @@ import QRModal from "@/views/Attitude/Attendance/QRModal.vue";
 
 // 상태 관리
 const isModalVisible = ref(false);
-/*const commuteEndTime = ref(null); // 퇴근 시간 기록*/
+const commuteEndTime = ref(null); // 퇴근 시간 기록
 const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
 
 // 모달 데이터
@@ -23,37 +23,51 @@ const isAllowed = ref(true); // 기본값 true 설정
 
 // 모달 열기
 const openModal = (type) => {
+  console.log('openModal 호출됨, type:', type);
   actionType.value = type; // 'on' 또는 'off'
-  modalTitle.value = type === 'on'? '출근 QR 인증 ' : '퇴근 QR 인증';
+  modalTitle.value = type === 'on' ? '출근 QR 인증 ' : '퇴근 QR 인증';
   isModalVisible.value = true;
 };
-
 
 // 모달 닫기
 const closeModal = () => {
   isModalVisible.value = false;
 };
 
-// 모달 확인 버튼 동작
+let commuteInterval;
+
 const confirmAction = () => {
-  if (actionType === 'on') {
-    // 출근 처리
+  console.log('confirmAction 호출됨');
+  console.log('actionType:', actionType);  // actionType 값 확인
+  console.log('confirmAction 호출됨, actionType:', actionType.value);
+
+  if (actionType.value === 'on') {
+    console.log('출근 처리 시작');
     commuteStatus.value = 'ON';
     commuteStartTime.value = new Date(); // 출근 시간 기록
+    console.log('commuteStartTime:', commuteStartTime.value);
+
+    commuteInterval = setInterval(calculateCommuteTime, 60000); // 1분마다 출퇴근 시간 계산
+    console.log("calculateCommuteTime() 호출");
+
     console.log('출근 완료!');
-  } else if (actionType === 'off') {
-    // 퇴근 처리
+  } else if (actionType.value === 'off') {
+    console.log('퇴근 처리 시작');
     commuteStatus.value = 'OFF';
     commuteEndTime.value = new Date(); // 퇴근 시간 기록
+    commuteTime.value = 0; // 시간 초기화
+    console.log('commuteEndTime:', commuteEndTime.value);
 
     // 근무 시간 계산 (분 단위)
     const workMinutes = Math.floor(
         (commuteEndTime.value - commuteStartTime.value) / (1000 * 60)
     );
     console.log(`퇴근 완료! 총 근무 시간: ${workMinutes}분`);
-  }
 
-  isModalVisible.value = false; // 모달 닫기
+    // 퇴근 시 interval을 중지
+    clearInterval(commuteInterval);
+    commuteInterval = null;
+  }
 };
 
 const router = useRouter();
@@ -156,7 +170,7 @@ const fetchPayDate = async () => {
 // 휴가 정보를 가져오는 함수
 const fetchVacation = async () => {
   try {
-    const response = await api.get(``);
+    const response = await api.get(`/emp/vacation/usage`);
     vacation.value = response.data;
   } catch (error) {
     console.error('휴가 정보를 불러오는 중 에러가 발생했습니다. : ', error);
@@ -332,6 +346,8 @@ const formattedCommuteTime = computed(() => {
   return `${hours}시간 ${minutes}분`;
 });
 
+console.log("formattedCommuteTime : ", formattedCommuteTime);
+
 // 출근 시작 시간부터 현재 시간까지의 차이 계산
 const calculateCommuteTime = () => {
   if (commuteStartTime.value) {
@@ -340,40 +356,15 @@ const calculateCommuteTime = () => {
   }
 };
 
-// ON 버튼 클릭 시 모달 창 띄우기
-const handleOn = () => {
-  isModalVisible.value = true; // 모달을 표시
-};
-
-// 모달에서 인증 완료 시 출근 시간 기록
-const handleConfirm = () => {
-  commuteStatus.value = 'ON';
-  commuteStartTime.value = new Date(); // 출근 시작 시간 기록
-  setInterval(calculateCommuteTime, 60000); // 1분마다 출퇴근 시간 계산
-  isModalVisible.value = false; // 모달 닫기
-};
-
-// 모달에서 취소 버튼 클릭 시
-const handleCancel = () => {
-  isModalVisible.value = false; // 모달 닫기
-};
-
-// OFF 버튼 클릭 시 출퇴근 시간 멈추기
-const handleOff = () => {
-  commuteStatus.value = 'OFF';
-  commuteStartTime.value = null;
-  commuteTime.value = 0; // 시간 초기화
-};
-
 onMounted(() => {
 
-/*  const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
-  commuteStatus.value = isCheckedIn ? 'ON' : 'OFF';*/
+  // const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
+  // commuteStatus.value = isCheckedIn ? 'ON' : 'OFF';
   fetchEmp();
   fetchAttendance();
   fetchAnnual();
   fetchPayDate();
-  // fetchVacation();
+  fetchVacation();
   fetchTeamKPI();
   fetchPersonalKPI();
   fetchAnnouncement();
@@ -396,29 +387,28 @@ onMounted(() => {
       </div>
       <div class="commute">
         <h4>출퇴근</h4>
-
+        <h5>{{ currentDate }}</h5>
         <div class="time">
-          <h4>{{ currentDate }}</h4>
-<!--          <img :src="commuteStatus === 'ON' ? On : Off" alt="commute status"/>-->
-<!--          <p>{{ formattedCommuteTime }}</p>-->
+          <img :src="commuteStatus === 'ON' ? On : Off" alt="commute status"/>
+          <p>{{ formattedCommuteTime }}</p>
         </div>
         <div class="btn">
           <div class="button-container">
             <button
-                :class="commuteStatus === 'ON' /*|| localStorage.getItem('isCheckedIn') === 'true'*/  ? 'btn-gray' : 'btn-orange'"
+                :class="commuteStatus === 'ON' ? 'btn-gray' : 'btn-orange'"
                 @click="openModal('on')"
-                :disabled="commuteStatus === 'ON'"
+                :disabled="commuteStatus === 'OFF'"
             >
               ON
             </button>
+            <button
+                :class="commuteStatus === 'OFF' ? 'btn-gray' : 'btn-orange'"
+                @click="openModal('off')"
+                :disabled="commuteStatus === 'ON'"
+            >
+              OFF
+            </button>
           </div>
-          <button
-              :class="commuteStatus === 'OFF' /*|| localStorage.getItem('isCheckedIn') === 'true'*/  ? 'btn-gray' : 'btn-orange'"
-              @click="openModal('off')"
-          :disabled="commuteStatus === 'ON'"
-          >
-          OFF
-          </button>
         </div>
       </div>
     </div>
@@ -426,8 +416,9 @@ onMounted(() => {
       :isOpen="isModalVisible"
       :title="modalTitle"
       :type = "actionType"
+      :confirmAction="confirmAction"
       @close="closeModal"
-  />
+    />
     <!-- 근무시간, 남은 연차, 남은 급여일 정보 -->
     <div class="period">
       <div>
@@ -528,7 +519,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  margin-top: 50px;
+  margin-top: 10px;
 }
 
 /* 사원 정보 섹션 */
@@ -621,11 +612,13 @@ onMounted(() => {
   gap: 10px;
   justify-content: space-between;
   margin: 17px 50px 20px 50px;
+  padding: 0;
 }
 
 .button-container {
   display: flex;
   align-items: center;
+  gap: 25px;
 }
 
 .button-container p {
@@ -635,8 +628,8 @@ onMounted(() => {
 }
 
 .btn-orange {
-  width: 150px;
-  height: 41px;
+  width: 160px;
+  height: 40px;
   justify-content: center;
   align-items: center;
   border: none;
@@ -645,11 +638,12 @@ onMounted(() => {
   font-weight: bold;
   color: white;
   background-image: linear-gradient(to right, #f37321 0%, #fb0 100%);
+  cursor: pointer;
 }
 
 .btn-gray {
   width: 160px;
-  height: 41px;
+  height: 40px;
   justify-content: center;
   align-items: center;
   border: none;
@@ -658,6 +652,7 @@ onMounted(() => {
   font-weight: bold;
   color: #3C4651;
   background-color: #D9D9D9;
+  cursor: not-allowed;
 }
 
 /* 근무시간, 남은 연차, 남은 급여일 섹션 */
@@ -665,8 +660,8 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   width: 900px;
-  gap: 100px;
-  margin-top: 40px;
+  gap: 30px;
+  margin-top: 20px;
 }
 
 .period div {
@@ -703,7 +698,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   width: 900px;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .vacation {
@@ -815,7 +810,7 @@ onMounted(() => {
   justify-content: space-between;
   width: 900px;
   gap: 20px;
-  margin-top: 40px;
+  margin-top: 20px;
   height: 400px;
 }
 
