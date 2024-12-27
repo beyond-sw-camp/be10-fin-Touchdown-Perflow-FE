@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, computed, defineExpose} from "vue";
+import {ref, onMounted, computed} from "vue";
 import api from "@/config/axios.js";
 import dayjs from "dayjs";
 
@@ -10,12 +10,13 @@ const salaryData = ref([]);
 const useSalaryTable = ref(true); // 테이블 입력
 
 const totalDays = ref(0);
-const totalPays = computed(() =>
-    salaryData.value.reduce((sum, row) => sum + (row.pay || 0), 0)
-);
-const totalExtraAllowance = computed(() =>
-    salaryData.value.reduce((sum, row) => sum + (row.extraAllowance || 0), 0)
-);
+const totalPays = computed(() => {
+  return salaryData.value.reduce((sum, item) => sum + item.pay, 0);
+});
+
+const totalExtraAllowance = computed(() => {
+  return salaryData.value.reduce((sum, item) => sum + item.extraAllowance, 0);
+});
 
 // 계산 결과 저장 변수
 const dailyAveragePay = ref(0);
@@ -64,9 +65,6 @@ const generateSalaryTable = () => {
     const periodStart0 = periodEnd0.startOf("month"); // 퇴사일 하루 전이 포함된 월의 첫날
     const days0 = periodEnd0.diff(periodStart0, "day") + 1; // 퇴사일 하루 전까지의 기간
 
-    console.log("i = 0", "periodStart = ", periodStart0);
-    console.log("i = 0", "periodEnd = ", periodEnd0);
-
     totalDays.value += days0; // 총 일수에 더하기
 
     salaryData.value.unshift({
@@ -82,17 +80,16 @@ const generateSalaryTable = () => {
     const periodEnd = endDate.subtract(i, "month").endOf("month");
     let periodStart = periodEnd.startOf("month");
 
-    console.log("i = ", i, "periodStart = ", periodStart);
-    console.log("i = ", i, "periodEnd = ", periodEnd);
-
     // i = 3일 경우, periodStart는 퇴사일을 포함한 마지막 달의 첫날
     if (i === 3) {
 
       const resignDay = endDate.date(); // 퇴사일의 일
       periodStart = periodEnd.date(resignDay);
 
-      console.log("i = ", i, "periodStart = ", periodStart);
-      console.log("i = ", i, "periodEnd = ", periodEnd);
+      // 월의 마지막 날을 계산해서 존재하지 않는 날짜로 넘어가지 않도록 처리
+      if (endDate.date() > periodEnd.date()) {
+        periodStart = periodEnd.endOf('month');
+      }
 
     }
 
@@ -110,10 +107,6 @@ const generateSalaryTable = () => {
   // pay와 extraAllowance 합계 계산
   totalPays.value = salaryData.value.reduce((sum, item) => sum + item.pay, 0);
   totalExtraAllowance.value = salaryData.value.reduce((sum, item) => sum + item.extraAllowance, 0);
-
-  console.log("totalPays : ", totalPays.value);
-  console.log("totalExtraAllowance : ", totalExtraAllowance.value);
-  console.log("salaryDate : ", salaryData.value);
 };
 
 // 사원 정보를 가져오는 함수
