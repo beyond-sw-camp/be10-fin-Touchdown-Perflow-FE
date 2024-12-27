@@ -39,7 +39,7 @@ const fetchSeverancePayStub = async () => {
 
     // 연차 집계 시작일 (퇴직일 기준 1년 전)
     const annualStartDate = new Date(resignDate);
-    annualStartDate.setFullYear(annualStartDate.getFullYear() - 1); // 1년 전으로 이동
+    annualStartDate.setFullYear(annualStartDate.getFullYear()); // 1년 전으로 이동
     annualStartDate.setMonth(0);
     annualStartDate.setDate(1); // 퇴직일의 일로 설정
     annualDateStart.value = `${annualStartDate.getFullYear()}.${(annualStartDate.getMonth() + 1).toString().padStart(2, '0')}.${annualStartDate.getDate().toString().padStart(2, '0')}`;
@@ -178,7 +178,7 @@ onMounted(() => {
       <div class="over-list">
         <div class="all" v-if="severancePayStub?.totalAnnulAllowance > 0">
           <div class="date">
-            <div>연차수당가산액</div>
+            <div>연차수당</div>
             <p>{{ annualDateStart }} ~ {{ annualDateEnd }} 내 집계</p>
           </div>
           <div>{{ formatCurrency(severancePayStub?.totalAnnulAllowance) }}원</div>
