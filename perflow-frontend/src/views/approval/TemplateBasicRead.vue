@@ -108,7 +108,7 @@ const handleApproval = async (status) => {
       comment: docApprovalComment.value || null,
     };
 
-    await api.post("/approval/docs", requestData);
+    await api.put("/approval/docs", requestData);
     alert(`문서가 ${status === "APPROVED" ? "승인" : "반려"}되었습니다.`);
     router.push("/approval/waiting");
   } catch (error) {
@@ -183,18 +183,20 @@ onMounted(() => {
                 placeholder="의견을 입력할 수 있습니다."
                 class="approval-comment-input"
             />
-            <ButtonBasic
-                color="white"
-                size="small"
-                label="반려"
-                @click="handleApproval('REJECTED')"
-            />
-            <ButtonBasic
-              color="orange"
-              size="small"
-              label="승인"
-              @click="handleApproval('APPROVED')"
-            />
+            <div class="comment-button-group">
+              <ButtonBasic
+                  color="white"
+                  size="small"
+                  label="반려"
+                  @click="handleApproval('REJECTED')"
+              />
+              <ButtonBasic
+                  color="orange"
+                  size="small"
+                  label="승인"
+                  @click="handleApproval('APPROVED')"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -454,5 +456,47 @@ onMounted(() => {
 .outbox-datetime-value {
   margin-left: 10px;
   font-size: 15px;
+}
+
+/* 대기 문서 결재 */
+.doc-approval-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.approval-comment-input {
+  width: 100%;
+  height: 150px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  outline-color: #D9D9D9;
+  resize: none;
+  padding: 10px 10px;
+  font-size: 15px;
+}
+
+.approval-comment-input::placeholder {
+  color: #afa9a9;
+}
+
+.comment-box {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  justify-content: center;
+  display: flex;  /* 버튼, textarea 정렬 위함 */
+  flex-direction: column; /* 세로 정렬 */
+  gap: 10px;  /* textarea, 버튼 간격 */
+}
+
+.comment-button-group {
+  display: flex;
+  gap: 10px; /* 버튼 간 간격 */
+  justify-content: flex-end;
+  width: 100%
 }
 </style>
