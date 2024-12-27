@@ -11,15 +11,10 @@ import QRModal from "@/views/Attitude/Attendance/QRModal.vue";
 // 상태 관리
 const isModalVisible = ref(false);
 const commuteEndTime = ref(null); // 퇴근 시간 기록
-const isCheckedIn = localStorage.getItem('isCheckedIn') === 'true';
 
 // 모달 데이터
 const modalTitle = ref('');
-const modalContent = ref('');
-const modalButtonLabel = ref('');
 const actionType = ref(''); // 출근(on) 또는 퇴근(off)
-const isAllowed = ref(true); // 기본값 true 설정
-
 
 // 모달 열기
 const openModal = (type) => {
@@ -70,6 +65,14 @@ const confirmAction = () => {
     clearInterval(commuteInterval);
     commuteInterval = null;
   }
+};
+
+// 시간 기록을 문자열로 변환하여 시간만 표시하는 메서드
+const formatTime = (time) => {
+  if (!time) return '';
+  const hours = time.getHours().toString().padStart(2, '0'); // 두 자리로 표시
+  const minutes = time.getMinutes().toString().padStart(2, '0'); // 두 자리로 표시
+  return `${hours}:${minutes}`;
 };
 
 const router = useRouter();
@@ -401,7 +404,7 @@ onMounted(() => {
                 @click="openModal('on')"
                 :disabled="commuteStatus === 'ON'"
             >
-              ON
+              ON<span v-if="commuteStatus === 'ON'">/{{ formatTime(commuteStartTime) }}</span>
             </button>
             <button
                 :class="commuteStatus === 'OFF' ? 'btn-gray' : 'btn-orange'"
