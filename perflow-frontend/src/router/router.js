@@ -1,12 +1,12 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import EmpLogin from "@/views/hr/employee/EmpLogin.vue";
-import WorkStatus from "@/views/Attitude/WorkStatusForHRWeek.vue";
-import WorkHours from "@/views/Attitude/WorkHours.vue";
-import Vacation from "@/views/Attitude/Vacation.vue";
-import Annual from "@/views/Attitude/Annual.vue";
-import Overtime from "@/views/Attitude/Overtime.vue";
-import AttendanceStatus from "@/views/Attitude/AttendanceStatus.vue";
-import Travel from "@/views/Attitude/Travel.vue";
+import WorkStatus from "@/views/Attitude/WorkHours/WorkStatusForHRWeek.vue";
+import WorkHours from "@/views/Attitude/WorkHours/WorkHours.vue";
+import Vacation from "@/views/Attitude/Vacation/VacationForEmp.vue";
+import Annual from "@/views/Attitude/Annual/Annual.vue";
+import Overtime from "@/views/Attitude/Overtime/Overtime.vue";
+import AttendanceStatus from "@/views/Attitude/Attendance/AttendanceStatus.vue";
+import Travel from "@/views/Attitude/Travel/Travel.vue";
 import ApprovalHome from "@/views/approval/ApprovalHome.vue";
 import TemplateBasic from "@/views/approval/TemplateBasic.vue";
 import WaitingDoc from "@/views/approval/WaitingDoc.vue";
@@ -38,6 +38,9 @@ import KPIRecordView from "@/views/performance/KPIRecordView.vue";
 import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
+import AnnCreate from "@/views/announcement/AnnCreate.vue";
+import SeverancePayStub from "@/views/payment/SeverancePayStub.vue";
+import Calculator from "@/views/payment/Calculator.vue";
 import Outbox from "@/views/approval/Outbox.vue";
 import Inbox from "@/views/approval/Inbox.vue";
 
@@ -48,6 +51,8 @@ const routes = [
     {path: '/', name: 'LoginPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
     {path: '/hr/my-page', name: 'MyPage', component: EmpMyPage},
+    {path: '/main-page', name: 'MainPage', component: MainPage},
+
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
@@ -73,19 +78,22 @@ const routes = [
     {path: '/approval/outbox', name: 'outbox', component: Outbox},
     {path: '/approval/inbox', name: 'inbox', component: Inbox},
 
-
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
     {path: '/performance/kpi-current', name: 'KPIUpdate', component: KPIUpdateView},
     {path: '/performance/kpi-past', name: 'KPIRecord', component: KPIRecordView},
     {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
+
+    // 급여
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
-    {path: '/main-page', name: 'MainPage', component: MainPage},
     {path: '/payment/payroll-detail/:payrollId', name:'PayrollDetail', component: PayrollDetail},
     {path: '/payment/pay-stub', name: 'PayStub', component: PayStub},
     {path: '/severance/severance-pay', name: 'SeverancePay', component: SeverancePay},
     {path: '/severance/severance-pay-detail/:severancePayId', name: 'SeverancePayDetail', component: SeverancePayDetail},
-    //근태
+    {path: '/severance/severance-stub', name: 'SeverancePayStub', component: SeverancePayStub},
+    {path: '/severance/calculator', name: Calculator, component: Calculator},
+
+    // 근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
     {path:'/attitude/vacation',name:'vacation',component:Vacation},
@@ -93,7 +101,11 @@ const routes = [
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
     {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
-    {path:'/announcements', name: 'announcements-list', component: AnnList}
+    {path:'/announcements', name: 'announcements-list', component: AnnList},
+
+    // 공지
+    {path:'/announcements', name: 'announcements-list', component: AnnList},
+    {path: '/announcements/create', name: 'announcements-create', component: AnnCreate}
 
 ]
 
