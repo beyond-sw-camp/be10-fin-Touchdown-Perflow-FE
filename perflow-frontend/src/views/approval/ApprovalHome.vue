@@ -2,59 +2,59 @@
 
 import TableMini from "@/components/common/TableMini.vue";
 import router from "@/router/router.js";
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import api from "@/config/axios.js";
 
-const waiting = ref(null);
+const waitingDocs = ref(null);
 
 // title 이 10자 이상일 경우 ... 로 대체
 const truncateTitle = (title) => {
-  return title.length > 8 ? title.substring(0, 8) + '...' : title;
+  return title.length > 10 ? title.substring(0, 10) + '...' : title;
 }
+
+// 날짜 형식 변경
+const formatDate = (dateString) => {
+  return `${dateString.slice(0, 4)}.${dateString.slice(5, 7)}.${dateString.slice(8, 10)}`;
+};
 
 const waitingRows = computed(() => {
-  const wait = Array.isArray(waiting.value) ? waiting.value : [];
-  return wait.map((item) => ({
-    ...item,
-    title: truncateTitle(item.title),
-    createDatetime: formatDate(item.createDatetime),
+  return (waitingDocs.value || []).map((doc) => ({
+    docId: doc.docId,
+    title: truncateTitle(doc.title), // 제목 길이 제한
+    createUserName: doc.createUserName, // 작성자 이름
+    createDatetime: formatDate(doc.createDatetime), // 생성일시 포맷
   }));
-})
+});
 
-const fetchWaiting = async() => {
+const waitingColumns = [
+  { field: "title", label: "제목" },
+  { field: "createUserName", label: "작성자" },
+  { field: "createDatetime", label: "작성일시" },
+];
 
+// 데이터 가져오기
+const fetchWaitingDocs = async () => {
   try {
-    const pageResponse = await api.get('/approval/waiting', {
-      params: { size: 10 }
+    const response = await api.get("/approval/waiting-docs", {
+      params: { size: 10 },
     });
-
-    const lastPage = pageResponse.data.totalPages - 1;
-
-    const response = await api.get('/approval/waiting', {
-      params: {
-        page: lastPage,
-        size: 10
-      }
-    });
-
-    waiting.value = response.data.content.sort((a, b) => {
-      const dateA = new Date(a.createDatetime);
-      const dateB = new Date(b.createDatetime);
-      return dateB - dateA; // 내림차순 정렬
-    })
+    waitingDocs.value = response.data.content; // content에 데이터가 담겨 있음
+    console.log("waitingDocs.value");
   } catch (error) {
-    console.error('대기 문서 정보를 불러올 수 없습니다. :', error);
+    console.error("대기 문서 데이터를 가져오는 중 오류 발생:", error);
   }
-}
+};
 
 const goToWaiting = () => {
   router.push('/approval/waiting')
 }
+
+onMounted(() => {
+  fetchWaitingDocs();
+})
 </script>
 
 <template>
-<h1> 결재 홈 입니다. 열심히 만드는 중! ^_^ /</h1>
-
   <div class="home-container">
     <!-- 헤더 -->
     <div class="home-header">
@@ -76,9 +76,9 @@ const goToWaiting = () => {
             </Button>
           </div>
           <TableMini
-              row-key="id"
-              rows="waitingRows"
-              columns="waitingColumns"
+              row-key="docId"
+              :rows="waitingRows"
+              :columns="waitingColumns"
           />
         </div>
         <!-- 처리 문서 -->
