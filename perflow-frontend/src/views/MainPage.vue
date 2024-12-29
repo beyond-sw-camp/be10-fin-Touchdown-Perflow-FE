@@ -7,6 +7,8 @@ import Off from "../assets/image/work_off.png";
 import TableMini from "@/components/common/TableMini.vue";
 import {useAuthStore} from "@/store/authStore.js";
 import QRModal from "@/views/Attitude/Attendance/QRModal.vue";
+import Luggage from "../assets/image/luggage.png";
+import Beach from "../assets/image/beach.png";
 
 // 상태 관리
 const isModalVisible = ref(false);
@@ -23,6 +25,7 @@ const attendance = ref([]);
 const annual = ref(null);
 const company = ref(null);
 const vacation = ref([]);
+const preAnnual = ref([]);
 const teamKPI = ref([]);
 const personalKPI = ref([]);
 const announcement = ref(null);
@@ -120,6 +123,37 @@ const fetchVacation = async () => {
     vacation.value = response.data;
   } catch (error) {
     console.error('휴가 정보를 불러오는 중 에러가 발생했습니다. : ', error);
+  }
+};
+
+// 예정 연차 데이터를 가져오는 함수
+const fetchPreAnnual = async () => {
+  try {
+    const response = await api.get(`/emp/annual/list`);
+    const currentDate = new Date();
+
+    preAnnual.value = response.data
+        .filter(item => {
+          const annualStart = new Date(item.annualStart);
+          return (
+              item.status === 'CONFIRMED' && annualStart > currentDate
+          );
+        })
+        .map(item => {
+          const annualStart = new Date(item.annualStart);
+          const annualEnd = new Date(item.annualEnd);
+
+          const days = Math.ceil(
+              (annualEnd - annualStart) / (1000 * 60 * 60 * 24)
+          );
+
+          return {
+            ...item,
+            days,
+          };
+        });
+  } catch (error) {
+    console.error('예정 연차를 불러오는 중 에러가 발생했습니다: ', error);
   }
 };
 
@@ -365,7 +399,8 @@ onMounted(() => {
   fetchAttendance();
   fetchAnnual();
   fetchPayDate();
-  fetchVacation();
+  // fetchVacation();
+  fetchPreAnnual();
   fetchTeamKPI();
   fetchPersonalKPI();
   fetchAnnouncement();
@@ -443,22 +478,18 @@ onMounted(() => {
       <div class="vacation">
         <div class="vacation-title">
           <h2>예정 휴가</h2>
-          <h3>2</h3>
+          <h3>{{  preAnnual.length }}</h3>
         </div>
-        <div class="vacation-list">
-          <img src="../assets/image/luggage.png" alt="luggage" />
+        <div class="vacation-list" v-for="(item, index) in preAnnual" :key="index">
+          <!-- 이미지 교차 출력 -->
+          <img
+              :src="index % 2 === 0 ? Luggage : Beach"
+              :alt="index % 2 === 0 ? 'luggage' : 'beach'"
+          />
           <p>연차</p>
-          <h4>2024.12.19</h4>
+          <h4>{{ new Date(item.annualStart).toLocaleDateString('ko-KR') }}</h4>
           <div class="vacation-box">
-            <p>1일</p>
-          </div>
-        </div>
-        <div class="vacation-list">
-          <img src="../assets/image/beach.png" alt="beach" />
-          <p>휴가</p>
-          <h4>2024.12.23</h4>
-          <div class="vacation-box">
-            <p>5일</p>
+            <p>{{ item.days }}일</p>
           </div>
         </div>
       </div>
