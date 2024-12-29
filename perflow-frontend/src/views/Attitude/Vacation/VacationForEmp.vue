@@ -73,7 +73,7 @@ const statusOptions = [
 // API 데이터 호출 (전체 조회)
 const fetchVacationData = async () => {
   try {
-    const response = await api.get("emp/vacation/usage");
+    const response = await api.get("emp/vacation/details");
     console.log("API 응답 데이터:", response.data);
 
 
