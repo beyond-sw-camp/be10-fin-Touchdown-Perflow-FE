@@ -1,5 +1,4 @@
 <script setup>
-
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import {onMounted, ref, computed} from "vue";
@@ -8,14 +7,16 @@ import router from "@/router/router.js";
 import TableBasic from "@/components/common/TableBasic.vue";
 import PagingBar from "@/components/common/PagingBar.vue";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
-import dayjs from 'dayjs';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'; // 플러그인 추가
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"; // 플러그인 추가
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import ModalBasic from "@/components/common/ModalBasic.vue";
+import AnnualModal from "@/views/Attitude/Annual/AnnualModal.vue";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 const today = dayjs(); // 현재 날짜와 시간
-console.log(today.format('YYYY-MM-DD'));
+console.log(today.format("YYYY-MM-DD"));
 
 // 테이블 컬럼 설정
 const columns = [
@@ -29,14 +30,11 @@ const columns = [
 // 열 너비 설정
 const columnWidths = ["150px", "120px", "120px", "120px", "100px"];
 
-
-
 // 매핑 테이블 (영문 -> 한글 변환)
 const annualTypeMap = {
   FULLDAY: "종일 연차",
   MORNINGHALF: "오전 반차",
   AFTERNOONHALF: "오후 반차",
-
 };
 
 const annualStatusMap = {
@@ -46,8 +44,8 @@ const annualStatusMap = {
 };
 
 // 상태 변수
-const allDocs = ref([]);         // 전체 데이터
-const filteredDocs = ref([]);    // 필터링된 데이터
+const allDocs = ref([]); // 전체 데이터
+const filteredDocs = ref([]); // 필터링된 데이터
 const totalPages = ref(1);
 const totalItems = ref(0);
 const currentPage = ref(1);
@@ -56,19 +54,17 @@ const pageSize = 10;
 // 검색 조건
 const searchCriteria = ref({
   annualType: "",
-  fromDate: "",  // 시작일 기본값: 오늘 날짜
-  toDate: "",    // 종료일 기본값: 오늘 날짜
+  fromDate: "",
+  toDate: "",
   status: ""
 });
 
-
 const statusOptions = [
-  { label: "전체", id: "" },         // 기본값: 전체 (필터 해제)
-  { label: "대기", id: "PENDING" },  // 대기
-  { label: "승인", id: "CONFIRMED" }, // 승인
-  { label: "반려", id: "REJECTED" }  // 반려
+  {label: "전체", id: ""}, // 기본값: 전체 (필터 해제)
+  {label: "대기", id: "PENDING"},
+  {label: "승인", id: "CONFIRMED"},
+  {label: "반려", id: "REJECTED"}
 ];
-
 
 // API 데이터 호출 (전체 조회)
 const fetchAnnualData = async () => {
@@ -76,27 +72,22 @@ const fetchAnnualData = async () => {
     const response = await api.get("emp/annual/list");
     console.log("API 응답 데이터:", response.data);
 
-
-
     // 데이터 변환 및 저장
     allDocs.value = response.data
-        .filter((item) => ["CONFIRMED", "REJECTED", "PENDING"].includes(item.status)) // 필요 상태만 포함
-        .map((item) => ({
-          annualId: item.annualId, // 고유 ID
+        .filter(item => ["CONFIRMED", "REJECTED", "PENDING"].includes(item.status)) // 필요 상태만 포함
+        .map(item => ({
+          annualId: item.annualId,                        // 고유 ID
           annualTypeLabel: annualTypeMap[item.annualType], // 한글 연차 종류
-          enrollAnnual: item.enrollAnnual.split("T")[0],  // 신청일
-          annualStart: item.annualStart.split("T")[0],    // 시작일
-          annualEnd: item.annualEnd.split("T")[0],        // 종료일
+          enrollAnnual: item.enrollAnnual.split("T")[0],   // 신청일
+          annualStart: item.annualStart.split("T")[0],     // 시작일
+          annualEnd: item.annualEnd.split("T")[0],         // 종료일
           annualStatusLabel: annualStatusMap[item.status], // 상태 (한글 매핑)
-          annualType: item.annualType,  // 필터링 용도
-          annualStatus: item.status // 원본 상태 (필터링 용도)
+          annualType: item.annualType,                     // 필터링 용도
+          annualStatus: item.status                        // 필터링 용도
         }));
 
-    console.log("API 응답 데이터:", response.data);
-    console.log("변환된 데이터:", allDocs.value);
     // 필터 초기화 및 페이징 적용
     applyFilter(true);
-
   } catch (error) {
     console.error("연차 데이터 조회 실패:", error);
     allDocs.value = [];
@@ -107,45 +98,34 @@ const fetchAnnualData = async () => {
 const applyFilter = (resetPage = true) => {
   console.log("현재 검색 조건:", searchCriteria.value);
 
-  // 초기 필터 대상 데이터
   let filtered = [...allDocs.value]; // 배열 복사 (원본 데이터 보존)
-  console.log("필터 적용 전 데이터:", filtered);
-
-  // 필터 조건 확인 및 적용
   if (searchCriteria.value.annualType) {
-    filtered = filtered.filter(
-        (item) => item.annualType === searchCriteria.value.annualType
-    );
+    filtered = filtered.filter(item => item.annualType === searchCriteria.value.annualType);
   }
-  if (searchCriteria.value.fromDate && searchCriteria.value.toDate) {
-    filtered = filtered.filter(
-        (item) =>
-            dayjs(item.annualStart).isSameOrAfter(dayjs(searchCriteria.value.fromDate)) &&
-            dayjs(item.annualEnd).isSameOrBefore(dayjs(searchCriteria.value.toDate))
-    );
-  }
-  else if (searchCriteria.value.fromDate) {
-    filtered = filtered.filter(
-        (item) => dayjs(item.annualStart).isSameOrAfter(dayjs(searchCriteria.value.fromDate))
-    );
-  }
-  else if (searchCriteria.value.toDate) {
-    filtered = filtered.filter(
-        (item) => new Date(item.annualEnd) <= new Date(searchCriteria.value.toDate)
-    );
-  }
-  if (searchCriteria.value.status) {
-    filtered = filtered.filter(
-        (item) => item.annualStatus === searchCriteria.value.status
-    );
-  }
-  console.log("필터 적용 후 데이터:", filtered);
 
-  // 필터링된 결과 저장 및 페이징 적용
+  if (searchCriteria.value.fromDate && searchCriteria.value.toDate) {
+    filtered = filtered.filter(item =>
+        dayjs(item.annualStart).isSameOrAfter(dayjs(searchCriteria.value.fromDate)) &&
+        dayjs(item.annualEnd).isSameOrBefore(dayjs(searchCriteria.value.toDate))
+    );
+  } else if (searchCriteria.value.fromDate) {
+    filtered = filtered.filter(item =>
+        dayjs(item.annualStart).isSameOrAfter(dayjs(searchCriteria.value.fromDate))
+    );
+  } else if (searchCriteria.value.toDate) {
+    filtered = filtered.filter(item =>
+        dayjs(item.annualEnd).isSameOrBefore(dayjs(searchCriteria.value.toDate))
+    );
+  }
+
+  if (searchCriteria.value.status) {
+    filtered = filtered.filter(item => item.annualStatus === searchCriteria.value.status);
+  }
+
   filteredDocs.value = filtered;
   totalItems.value = filtered.length;
   totalPages.value = Math.ceil(totalItems.value / pageSize);
-  // 필터 적용 시 첫 페이지로 초기화
+
   if (resetPage) {
     currentPage.value = 1;
   }
@@ -155,18 +135,12 @@ const applyFilter = (resetPage = true) => {
 const paginatedDocs = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
   const end = start + pageSize;
-
-  console.log("현재 페이지:", currentPage.value);
-  console.log("필터링된 데이터 수:", filteredDocs.value.length);
-  console.log("현재 페이지 데이터:", filteredDocs.value.slice(start, end));
-
   return filteredDocs.value.slice(start, end);
 });
 
 // 검색 처리
 const handleSearch = () => {
-  console.log("검색 버튼 클릭");
-  applyFilter(); // 필터 적용
+  applyFilter();
 };
 
 // 페이지 변경 시 호출
@@ -175,17 +149,25 @@ const handlePageChange = (page) => {
   applyFilter(false);
 };
 
+// 상태 드롭다운 변경 시
 const handleStatusSelect = (selectedLabel) => {
-  // 선택된 상태 라벨을 영문(enum) 값으로 변환
   const selectedStatus = statusOptions.find(option => option.label === selectedLabel)?.id || "";
-  searchCriteria.value.status = selectedStatus; // 영문(enum) 값 저장
-
-  console.log("선택된 상태:", selectedStatus);
-
-  // 상태 변경 즉시 필터 적용 (첫 페이지로 리셋)
-  applyFilter(true); // 첫 페이지로 리셋
+  searchCriteria.value.status = selectedStatus;
+  applyFilter(true);
 };
 
+// ------------------------------------
+// 모달 제어용 상태 및 함수
+// ------------------------------------
+const showModal = ref(false); // 모달 열림 여부
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
 
 // 초기 로드
 onMounted(() => {
@@ -193,12 +175,12 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">연차 관리 </p>
+      <p id="title">연차 관리</p>
     </div>
+
     <div id="header-bottom" class="flex-between">
       <div id="search-container">
         <!-- 검색 필드 -->
@@ -220,8 +202,8 @@ onMounted(() => {
               height="40px"
               @select="handleStatusSelect"
           />
-
         </div>
+
         <div class="button">
           <ButtonBasic
               color="orange"
@@ -242,27 +224,55 @@ onMounted(() => {
       />
     </div>
 
-    <!-- 페이징 바 -->
-    <div class="paging-bar">
-      <PagingBar
-          :page-size="pageSize"
-          :total-items="totalItems"
-          :total-pages="totalPages"
-          :current-page="currentPage"
-          @page-changed="handlePageChange"
-      />
-      <ButtonBasic
-          color="orange"
-          size="medium"
-          label="연차 신청"
-          @click="openModal"
-          style="position: absolute; right: 0; margin: 20px;"
-      />
+    <!-- 페이징 바 + 연차 신청 버튼을 같은 라인에 배치 -->
+    <div class="paging-bar-and-button flex-between"
+         style="width:900px; display: flex; justify-content: center; margin-top:20px;">
+      <!-- 페이징 바 -->
+      <div class="paging-bar-wrapper">
+        <PagingBar
+            :page-size="pageSize"
+            :total-items="totalItems"
+            :total-pages="totalPages"
+            :current-page="currentPage"
+            @page-changed="handlePageChange"
+        />
+      </div>
+      <!-- 연차 신청 버튼 -->
+      <div class="button-wrapper">
+        <ButtonBasic
+            color="orange"
+            size="medium"
+            label="연차 신청"
+            @click="openModal"
+        />
+
+      </div>
+
     </div>
   </div>
+
+  <!-- 모달 컴포넌트 -->
+  <AnnualModal
+      :isOpen="showModal"
+      @close="closeModal"
+  />
+
 </template>
 
 <style scoped>
+
+.button-wrapper {
+  /* 버튼은 오른쪽에 위치 */
+  display: flex;
+  justify-content: flex-end;
+  width: auto; /* 혹은 100px 등, 필요에 따라 조정 */
+}
+.paging-bar-wrapper {
+  /* 페이징 바를 감싸는 요소 안에서 가운데 정렬 */
+  flex: 1; /* 버튼과 공간을 나눠 갖기 위해 */
+  display: flex;
+  justify-content: center;
+}
 
 #title {
   font-size: 35px;
@@ -311,7 +321,6 @@ onMounted(() => {
   text-decoration: underline;
 }
 
-
 /* 검색 컨테이너 */
 #search-container {
   display: flex;
@@ -333,12 +342,19 @@ onMounted(() => {
 .button {
   display: flex;
   justify-content: flex-end;
-  width: 100% /* 오른쪽 끝에 검색*/
+  width: 100%; /* 오른쪽 끝에 검색*/
 }
 
 .table-container {
   width: 900px;
   margin-top: 20px;
+}
+
+/* 페이징 바 + 버튼을 같은 줄에 배치하기 위해 새 클래스 추가 */
+.paging-bar-and-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .paging-bar {
@@ -372,6 +388,4 @@ tr:nth-child(even) {
 tr:hover {
   background-color: #f1f1f1;
 }
-
-
 </style>

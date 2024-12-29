@@ -1,167 +1,175 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineProps, defineEmits, watch } from "vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import ModalBasic from "@/components/common/ModalBasic.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
+import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import api from "@/config/axios.js";
+
+// 부모에서 전달된 props 정의
+defineProps({
+  isOpen: Boolean // 모달 열림 여부
+});
+
+// 부모로 이벤트 전달 설정
+const emit = defineEmits(["close"]);
 
 // 상태 관리
-const isOpen = ref(false); // 모달 열림 여부
 const annualType = ref(""); // 연차 구분
-const applyDate = ref(""); // 연차 신청일
-const approver = ref(""); // 결재자
-const startDate = ref(""); // 기간 시작일
-const endDate = ref(""); // 기간 종료일
+const applyDate = ref("");  // 연차 신청일
+const approver = ref("");   // 결재자
+const startDate = ref("");  // 기간 시작일
+const endDate = ref("");    // 기간 종료일
+const errorMessage = ref(""); // 에러 메시지
 
 // 연차 구분 옵션
 const annualTypeOptions = [
-  { label: "연차", value: "FULLDAY" },
+  { label: "종일 연차", value: "FULLDAY" },
   { label: "오전 반차", value: "MORNINGHALF" },
   { label: "오후 반차", value: "AFTERNOONHALF" },
 ];
 
-// 모달 열기/닫기
-const openModal = () => (isOpen.value = true);
-const closeModal = () => (isOpen.value = false);
+// 날짜 포맷 함수 (외부 정의)
+const formatDate = (date, time) => {
+  // 날짜 포맷을 'YYYY-MM-DDTHH:mm:ss' 형식으로 변환
+  const isoDate = new Date(date).toISOString().split('T')[0];
+  return `${isoDate}T${time}`;
+};
 
-// 신청 버튼 클릭 핸들러
-const handleApply = () => {
-  console.log("연차 신청 정보:");
-  console.log({
-    annualType: annualType.value,
-    applyDate: applyDate.value,
-    approver: approver.value,
-    startDate: startDate.value,
-    endDate: endDate.value,
-  });
+const handleApply = async () => {
+  try {
+    // 1. 입력값 가져오기
+    const requestData = {
+      approver: approver.value, // 결재자 사번
+      annualStart: formatDate(startDate.value, "09:00:00"), // 시작 시간 반영
+      annualEnd: formatDate(endDate.value, "18:00:00"),     // 종료 시간 반영
+      annualType: annualType.value,                        // 연차 유형
+    };
 
-  // 여기서 API 호출 또는 처리 로직 추가
-  alert("연차 신청이 완료되었습니다!");
+    // 요청 데이터 확인
+    console.log("Request Data:", requestData);
 
-  // 모달 닫기
-  closeModal();
+    // 2. 서버 요청 (API 호출)
+    const response = await api.post('/emp/annual', requestData);
+
+    // 3. 성공 처리
+    console.log('연차 신청 성공:', response);
+    alert('연차 신청이 완료되었습니다!');
+  } catch (error) {
+    // 4. 에러 처리
+    console.error('연차 신청 실패:', error);
+
+    if (error.response) {
+      console.error('서버 응답 데이터:', error.response.data); // 서버 에러 메시지 출력
+      alert(`연차 신청 실패: ${error.response.data.message || '알 수 없는 오류'}`);
+    } else {
+      alert('올바르지 않은 값이 입력되었습니다.');
+    }
+  }
+};
+
+
+const resetForm = () => {
+  annualType.value = "";
+  applyDate.value = "";
+  approver.value = "";
+  startDate.value = "";
+  endDate.value = "";
+  errorMessage.value = "";
+};
+/*watch(
+    () => props.isOpen,
+    (newVal, oldVal) => {
+      if (newVal === true) {
+        // 모달이 "열릴 때" 폼 초기화
+        resetForm();
+      }
+    }
+);*/
+
+// ButtonDropDown에서 선택된 값을 annualType에 반영
+const handleAnnualTypeSelect = (selectedLabel) => {
+  // ButtonDropDown은 label을 반환하므로,
+  // annualTypeOptions에서 해당 label을 가진 value를 찾는다.
+  const option = annualTypeOptions.find(opt => opt.label === selectedLabel);
+  annualType.value = option ? option.value : "";
 };
 </script>
 
 <template>
-  <div>
-    <!-- 연차 신청 버튼 -->
-    <ButtonBasic label="연차 신청하기" color="orange" @click="openModal" />
-
-    <!-- 연차 신청 모달 -->
+  <div v-if="isOpen" class="modal-wrapper">
     <ModalBasic
         :isOpen="isOpen"
         title="연차 신청하기"
-        :button1="{ label: '취소', color: 'gray', onClick: closeModal }"
+        :button1="{ label: '취소', color: 'gray', onClick: () => emit('close') }"
         :button2="{ label: '신청', color: 'orange', onClick: handleApply }"
         width="800px"
-        height="auto"
-        @close="closeModal"
+        height="500px"
+        @close="emit('close')"
     >
       <!-- 연차 신청 폼 -->
       <div class="form-container">
-        <!-- 연차 신청일 -->
+<!--        <div class="form-group">
+          <SearchGroupBar v-model="applyDate" placeholder="연차 신청일" type="date"/>
+        </div>-->
+
         <div class="form-group">
-          <SearchGroupBar
-              v-model="applyDate"
-              placeholder="연차 신청일"
-              type="date"
+          <ButtonDropDown
+              :options="annualTypeOptions"
+              default-option="연차 구분"
+              width="200px"
+              height="40px"
+              @select="handleAnnualTypeSelect"
           />
         </div>
 
-        <!-- 연차 구분 -->
-        <div class="form-group">
-          <select v-model="annualType" class="dropdown">
-            <option value="" disabled>연차 구분</option>
-            <option
-                v-for="option in annualTypeOptions"
-                :key="option.value"
-                :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </div>
-
-        <!-- 결재자 검색 -->
         <div class="form-group search-box">
-          <input v-model="approver" placeholder="결재자 검색" />
-          <button class="search-btn">🔍</button>
+          <SearchGroupBar
+              v-model="approver"
+              placeholder="결재자 사번"
+              type="text"
+          />
         </div>
 
-        <!-- 기간 선택 -->
         <div class="form-group date-range">
-          <SearchGroupBar
-              v-model="startDate"
-              placeholder="기간"
-              type="date"
-          />
+          <SearchGroupBar v-model="startDate" placeholder="연차 시작일" type="date"/>
           ~
-          <SearchGroupBar v-model="endDate" placeholder="" type="date" />
+          <SearchGroupBar v-model="endDate" placeholder="연차 종료일" type="date"/>
         </div>
+
+        <!-- 에러 메시지 출력 -->
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       </div>
     </ModalBasic>
   </div>
 </template>
 
 <style scoped>
-/* 폼 컨테이너 */
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
 .form-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
   padding: 20px;
 }
-
-/* 폼 그룹 */
 .form-group {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
-/* 드롭다운 */
-.dropdown {
-  width: 100%;
-  height: 40px;
-  padding: 0 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-/* 검색 박스 */
-.search-box {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 5px;
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  width: 100%;
-}
-
-.search-btn {
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-/* 날짜 범위 선택 */
-.date-range {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-/* 버튼 스타일 */
-.button-container {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
 </style>
+
+
