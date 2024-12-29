@@ -7,6 +7,7 @@ import api from "@/config/axios.js";
 import TableCheck from "@/components/common/TableCheck.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 import router from "@/router/router.js";
+import dayjs from "dayjs";
 
 const columns = [
   { label: "제목", field: "title" },
@@ -117,13 +118,26 @@ const handleTitleClick = (row) => {
   }
 }
 
+
+// 날짜 형식 변경
+const formatDate = (date) => {
+  return date ? dayjs(date).format("YYYY-MM-DD") : null;
+}
+
 // 검색하기
 const fetchWaitingDocsWithCriteria = async (page = 1) => {
   console.log("검색 조건으로 api 호출: ", searchCriteria.value);
+
+  const formattedCriteria = {
+    ...searchCriteria.value,
+    fromDate : formatDate(searchCriteria.value.fromDate),
+    toDate: formatDate(searchCriteria.value.toDate),
+  };
+
   try {
     const response = await api.get("/approval/waiting-docs/search", {
       params: {
-        ...searchCriteria.value,
+        ...formattedCriteria,
         page: page - 1,
         size: pageSize
       },
