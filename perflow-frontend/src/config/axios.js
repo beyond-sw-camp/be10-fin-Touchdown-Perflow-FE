@@ -3,7 +3,7 @@ import { useAuthStore } from '@/store/authStore';
 
 // Axios 기본 설정
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api/v1'
+    baseURL: import.meta.env.VITE_API_BASE_URL
 });
 
 // 요청 인터셉터: Access Token 자동 추가
