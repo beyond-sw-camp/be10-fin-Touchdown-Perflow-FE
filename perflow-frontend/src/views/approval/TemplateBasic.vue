@@ -28,7 +28,10 @@ const dropdownOptions = [
 
 // 드롭다운 선택 시 호출
 const handleDropdownSelect = (id) => {
-  router.push({ name: id });
+  console.log(`선택된 드롭다운 옵션 id: ${id}`);
+  router.push({ name: id }).catch((error) => {
+    console.error("라우팅 에러: ", error);
+  });
 }
 
 // 모달 상태
