@@ -53,7 +53,7 @@ const routes = [
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
-    {path: '/hr/employees/register/lists', name: 'EmpRegister', component: EmpListRegister},
+    {path: '/hr/employees/register/lists', name: 'EmpRegisterList', component: EmpListRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
     {path: '/hr/appoint', name: 'AppointList', component: AppointList},
