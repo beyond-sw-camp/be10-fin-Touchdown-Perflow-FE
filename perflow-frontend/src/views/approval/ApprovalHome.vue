@@ -173,9 +173,9 @@ onMounted(() => {
 <template>
   <div class="home-container">
     <!-- 헤더 -->
-    <div class="home-header">
-      <span class="home-title">결재 홈</span>
-    </div>
+<!--    <div class="home-header">-->
+<!--      <span class="home-title">결재 홈</span>-->
+<!--    </div>-->
 
     <!-- 내용 -->
     <div class="home-content">
@@ -273,7 +273,7 @@ onMounted(() => {
 }
 
 .home-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 20px;
 }
 
