@@ -11,7 +11,6 @@ import api from "@/config/axios.js";
 import {useStore} from "@/store/store.js";
 import router from "@/router/router.js";
 import DateSearchBar from "@/components/common/DateSearchBar.vue";
-import {values} from "vuedraggable/dist/vuedraggable.common.js";
 
 const store = useStore();
 
@@ -67,20 +66,30 @@ const updateJoinDate = (value) => {
 
 
 const departments = ref([]);
-const jobs = ref([]);
-const positions = ref([]);
-
+const jobs = ref();
+const positions = ref();
+const test = ref();
 const fetchDepts = async () => {
-  const response = await api.get("/hr/departments/list");
+  const response = await api.get("/departments/list");
   departments.value = response.data.map(dept => ({ label: dept.name, id: dept.deptId }));
 }
 const fetchJobs = async () => {
-  const response = await api.get("/job");
-  jobs.value = response.data.map(job => ({ label: job.name, id: job.jobId }));
+  const response = (await api.get("/job", {
+    params: {
+      page: 1,
+      size: 10000
+    }
+  })).data;
+  jobs.value = response.jobResponseDTOList.map(job => ({ label: job.name, id: job.jobId }));
 }
 const fetchPositions = async () => {
-  const response = await api.get("/position");
-  positions.value = response.data.map(position => ({ label: position.name, id: position.positionId }));
+  const response = (await api.get("/position", {
+    params: {
+      page: 1,
+      size: 10000
+    }
+  })).data;
+  positions.value = response.positions.map(position => ({ label: position.name, id: position.positionId }));
 }
 const registerEmp = async () => {
   const totalAddress = address.value.postcode + " " + address.value.roadAddress + " " + address.value.extraAddress;
@@ -114,11 +123,9 @@ const registerEmp = async () => {
 }
 
 onMounted(async ()=>{
-  store.showLoading();
   await fetchDepts();
   await fetchJobs();
   await fetchPositions();
-  store.hideLoading();
 });
 </script>
 
