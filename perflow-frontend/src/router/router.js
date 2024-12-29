@@ -82,7 +82,6 @@ const routes = [
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
     {path: '/performance/kpi-current', name: 'KPIUpdate', component: KPIUpdateView},
     {path: '/performance/kpi-past', name: 'KPIRecord', component: KPIRecordView},
-    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
 
     // 급여
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
