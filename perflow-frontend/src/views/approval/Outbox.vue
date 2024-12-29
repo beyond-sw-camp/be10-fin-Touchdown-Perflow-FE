@@ -7,6 +7,7 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 import TableCheck from "@/components/common/TableCheck.vue";
 import PagingBar from "@/components/common/PagingBar.vue";
+import dayjs from "dayjs";
 
 const columns = [
   {label: "상태", field: "status"},
@@ -75,12 +76,24 @@ const handleSearch = () => {
   fetchOutboxDocsWithCriteria();
 };
 
+// 날짜 형식 변경
+const formatDate = (date) => {
+  return date ? dayjs(date).format("YYYY-MM-DD") : null;
+}
+
 // 검색하기
 const fetchOutboxDocsWithCriteria = async(page = 1) => {
+
+  const formattedCriteria = {
+    ...searchCriteria.value,
+    fromDate : formatDate(searchCriteria.value.fromDate),
+    toDate: formatDate(searchCriteria.value.toDate),
+  };
+
   try {
     const response = await api.get("approval/outbox/search", {
       params: {
-        ...searchCriteria.value,
+        ...formattedCriteria,
         page: page - 1,
         size: pageSize,
       },
