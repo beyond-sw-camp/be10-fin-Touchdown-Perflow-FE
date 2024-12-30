@@ -2,11 +2,8 @@
 
 import ModifyInputFeild from "@/components/hr/ModifyInputFeild.vue";
 import {computed, onMounted, reactive, ref} from "vue";
-import AddressInputFeild from "@/components/hr/AddressInputField.vue";
 import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
-import {values} from "vuedraggable/dist/vuedraggable.common.js";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -42,7 +39,7 @@ const modifyPosition = async (id) => {
     if (error.response.data.message){
       alert(error.response.data.message);
     } else {
-      alert("직위 수정 중 오류가 발생했습니다.")
+      alert("직위 수정 중 오류가 발생했습니다.");
     }
   }
 
