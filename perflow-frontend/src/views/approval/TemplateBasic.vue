@@ -189,7 +189,7 @@ const createNewDoc = async () => {
     const data = docData();
     const response = await createNewDocument(data);
     alert('결재 문서 생성 완료');
-    goTo("/approval/waiting");
+    goTo("/approval/home");
   } catch (error) {
     alert(`결재 문서 생성에 실패했습니다. 오류: ${error.message}`);
     console.error(error);
@@ -226,18 +226,19 @@ const goTo = (url) => {
           label="제목"
           placeholder="제목을 입력해 주세요."
           :isRequired="true"
-          width="600px"
+          width="500px"
       />
 
       <!-- 내용 -->
       <InputField
+          class="input-field-content"
           v-model="content"
           label="내용"
           placeholder="내용을 입력해 주세요."
           type="textarea"
           :isRequired="true"
           height="400px"
-          width="600px"
+          width="500px"
       />
 
       <div class="button-group">
@@ -245,7 +246,7 @@ const goTo = (url) => {
             color="gray"
             size="medium"
             label="취소하기"
-            @click=""
+            @click="router.go(-1)"
         />
         <ButtonBasic
             color="orange"
@@ -660,5 +661,19 @@ const goTo = (url) => {
   font-size: 14px;
   font-weight: bold;
   color: #3C4651;
+}
+
+/* input field 스크롤 설정 */
+/* input field 의 textarea 까지 전달 */
+.input-field-content::v-deep(textarea)::-webkit-scrollbar {
+  width: 5px;
+}
+.input-field-content::v-deep(textarea)::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.input-field-content::v-deep(textarea)::-webkit-scrollbar-thumb {
+  background: #D9D9D9;
+  border-radius: 10px;
 }
 </style>

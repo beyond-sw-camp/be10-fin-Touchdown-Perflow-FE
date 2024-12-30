@@ -227,7 +227,7 @@ const createNewDoc = async () => {
     const data = docData();
     const response = await createNewDocument(data);
     alert('결재 문서 생성 완료');
-    goTo("/approval/waiting");
+    goTo("/approval/home");
   } catch (error) {
     alert(`결재 문서 생성에 실패했습니다. 오류: ${error.message}`);
     console.error(error);
@@ -256,9 +256,7 @@ const goTo = (url) => {
   <div class="main-container">
     <!-- 빈 컨테이너 -->
     <div class="empty-container"></div>
-
     <div class="form-container">
-
       <div class="field-container">
         <!-- 제목 -->
         <InputField
@@ -541,8 +539,9 @@ const goTo = (url) => {
 .main-container {
   display: flex;
   justify-content: center; /* 중앙 정렬 */
-  align-items: center; /* 세로 정렬 */
+  align-items: flex-start; /* 세로 정렬 */
   gap: 0px;
+  overflow: hidden;
 }
 
 .empty-container {
@@ -558,7 +557,7 @@ const goTo = (url) => {
   gap: 0px;
   width: 400px;
   margin-top: 50px;
-  position: relative; /* 유동적인 위치 */
+  /* position: relative; */
 }
 
 .box-container {
