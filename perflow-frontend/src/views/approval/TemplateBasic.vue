@@ -8,7 +8,7 @@ import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import ButtonDropDown2 from "@/components/common/ButtonDropDown2.vue";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -261,7 +261,7 @@ const goTo = (url) => {
 
       <!-- 드롭 다운 -->
       <span class="dropdown-title">서식 선택</span>
-      <ButtonDropDown
+      <ButtonDropDown2
         :options="dropdownOptions"
         defaultOption="기본 서식"
         width="155px"
