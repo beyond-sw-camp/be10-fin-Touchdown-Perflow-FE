@@ -101,48 +101,53 @@ const handleAnnualTypeSelect = (selectedLabel) => {
     <ModalBasic
         :isOpen="isOpen"
         title="연차 신청하기"
-        :button1="{ label: '취소', color: 'gray', onClick: () => emit('close') }"
-        :button2="{ label: '신청', color: 'orange', onClick: handleApply }"
         width="800px"
-        height="500px"
+        height="450px"
         @close="emit('close')"
     >
-      <!-- 연차 신청 폼 -->
-      <div class="form-container">
-<!--        <div class="form-group">
-          <SearchGroupBar v-model="applyDate" placeholder="연차 신청일" type="date"/>
-        </div>-->
+      <!-- 전체 컨테이너 -->
+      <div class="modal-container">
+        <!-- 연차 신청 폼 -->
+        <div class="modal-body">
+          <div class="form-container">
+            <div class="form-group date-range">
+              <SearchGroupBar v-model="startDate" placeholder="연차 시작일" type="date"/>
+              ~
+              <SearchGroupBar v-model="endDate" placeholder="연차 종료일" type="date"/>
+            </div>
 
-        <div class="form-group">
-          <ButtonDropDown
-              :options="annualTypeOptions"
-              default-option="연차 구분"
-              width="200px"
-              height="40px"
-              @select="handleAnnualTypeSelect"
-          />
+            <div class="form-group search-box">
+              <SearchGroupBar
+                  v-model="approver"
+                  placeholder="결재자 사번을 입력해주세요"
+                  type="text"
+              />
+            </div>
+            <div class="form-group">
+              <ButtonDropDown
+                  :options="annualTypeOptions"
+                  default-option="연차 구분"
+                  width="200px"
+                  height="40px"
+                  @select="handleAnnualTypeSelect"
+              />
+            </div>
+
+            <!-- 에러 메시지 -->
+            <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+          </div>
         </div>
 
-        <div class="form-group search-box">
-          <SearchGroupBar
-              v-model="approver"
-              placeholder="결재자 사번"
-              type="text"
-          />
+        <!-- 푸터 버튼 -->
+        <div class="modal-footer">
+          <ButtonBasic label="취소" size = "medium" color="gray" @click="emit('close')" />
+          <ButtonBasic label="신청" size = "medium" color="orange" @click="handleApply" />
         </div>
-
-        <div class="form-group date-range">
-          <SearchGroupBar v-model="startDate" placeholder="연차 시작일" type="date"/>
-          ~
-          <SearchGroupBar v-model="endDate" placeholder="연차 종료일" type="date"/>
-        </div>
-
-        <!-- 에러 메시지 출력 -->
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       </div>
     </ModalBasic>
   </div>
 </template>
+
 
 <style scoped>
 .modal-wrapper {
@@ -150,10 +155,21 @@ const handleAnnualTypeSelect = (selectedLabel) => {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 150vh;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+/* 모달 전체 컨테이너 */
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  height: 350px; /* 모달 높이를 100%로 유지 */
+}
+
 .error-message {
   color: red;
   font-size: 14px;
@@ -169,6 +185,43 @@ const handleAnnualTypeSelect = (selectedLabel) => {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  height: calc(100% - 60px); /* 버튼 높이를 뺀 나머지 영역 사용 */
+  overflow-y: auto; /* 스크롤 필요 시 추가 */
+}
+/* 모달 본문 */
+.modal-body {
+  flex: 2; /* 남은 공간 모두 차지 */
+  overflow-y: visible; /* 내부 스크롤 활성화 */
+  padding: 5px;
+  height: 400px/* 내용 여백 */
+}
+.modal-header {
+   padding: 10px 20px; /* 헤더 패딩 최소화 */
+   font-size: 18px; /* 글자 크기 조정 */
+   border-bottom: none; /* 헤더 구분선 제거 */
+ }
+
+/* 푸터 버튼 */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end; /* 버튼을 오른쪽 정렬 */
+  padding: 8px 10px; /* 내부 여백 줄임 */
+  gap: 8px; /* 버튼 사이 간격 */
+  height: 40px; /* 푸터 높이 설정 */
+  background: white;
+  border: none; /* 테두리 제거 */
+}
+
+/* 달력 스타일 수정 (우선 순위 조정) */
+.date-picker-dropdown {
+  position: absolute;
+  z-index: 10; /* 달력이 푸터보다 위에 오도록 설정 */
 }
 </style>
 
