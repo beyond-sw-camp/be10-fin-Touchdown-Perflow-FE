@@ -202,10 +202,10 @@ const handleAnnualTypeSelect = (selectedLabel) => {
   height: 400px/* 내용 여백 */
 }
 .modal-header {
-   padding: 10px 20px; /* 헤더 패딩 최소화 */
-   font-size: 18px; /* 글자 크기 조정 */
-   border-bottom: none; /* 헤더 구분선 제거 */
- }
+  padding: 10px 20px; /* 헤더 패딩 최소화 */
+  font-size: 18px; /* 글자 크기 조정 */
+  border-bottom: none; /* 헤더 구분선 제거 */
+}
 
 /* 푸터 버튼 */
 .modal-footer {
@@ -224,5 +224,3 @@ const handleAnnualTypeSelect = (selectedLabel) => {
   z-index: 10; /* 달력이 푸터보다 위에 오도록 설정 */
 }
 </style>
-
-
