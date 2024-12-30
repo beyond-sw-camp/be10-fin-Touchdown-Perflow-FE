@@ -2,11 +2,8 @@
 
 import ModifyInputFeild from "@/components/hr/ModifyInputFeild.vue";
 import {computed, onMounted, reactive, ref} from "vue";
-import AddressInputFeild from "@/components/hr/AddressInputField.vue";
 import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
-import {values} from "vuedraggable/dist/vuedraggable.common.js";
 import HRButtonDropDown from "@/components/hr/HRButtonDropDown.vue";
 
 const props = defineProps({
@@ -14,10 +11,13 @@ const props = defineProps({
         type: Boolean,
         default: false
       },
+      jobId: Number,
       title: String
 });
 const emit = defineEmits(['close-sidebar'])
-
+const jobId = computed(()=> {
+  return props.jobId;
+})
 const name = ref();
 const responsibility = ref();
 const departmentId = ref();
@@ -34,20 +34,20 @@ const updateDept = (value) => {
 }
 
 
-const registerJob = async () => {
+const updateJob = async (jobId) => {
   try {
-    await api.post("/hr/job",{
+    await api.put(`/hr/job/${jobId}`,{
       name: name.value,
       responsibility: responsibility.value,
       deptId: departmentId.value
     });
-    alert("직책 등록 성공!.")
+    alert("직책 수정 성공!")
     location.reload(true);
   } catch (error) {
     if (error.response.data.message){
       alert(error.response.data.message);
     } else {
-      alert("직책 등록 중 오류가 발생했습니다.")
+      alert("직책 수정 중 오류가 발생했습니다.")
     }
   }
 
@@ -73,11 +73,12 @@ onMounted(()=>{
     <p id="title">{{props.title}}</p>
   </div>
   <div id="modify-contents">
+    <p class="sub-title">직책 번호 : {{jobId}}</p>
     <ModifyInputFeild title="직책명" @update-value="updateName"/>
     <ModifyInputFeild title="직책담당업무" @update-value="updateResponsibility"/>
     <p class="sub-title">부서</p>
     <HRButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="deptList" @select-id="updateDept"/>
-    <SubmitButton @submit="registerJob" text="등록하기"/>
+    <SubmitButton @submit="updateJob(jobId)" text="수정하기"/>
   </div>
 </div>
 </template>

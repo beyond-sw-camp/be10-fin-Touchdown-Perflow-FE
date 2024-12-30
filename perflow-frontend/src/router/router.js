@@ -41,6 +41,7 @@ import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
 import AnnCreate from "@/views/announcement/AnnCreate.vue";
 import SeverancePayStub from "@/views/payment/SeverancePayStub.vue";
 import Calculator from "@/views/payment/Calculator.vue";
+import EmpDetailPage from "@/views/hr/employee/EmpDetailPage.vue";
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
@@ -52,6 +53,7 @@ const routes = [
 
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
+    {path: '/hr/employees/:empId', name: 'EmpDetail', component: EmpDetailPage},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
     {path: '/hr/employees/register/lists', name: 'EmpRegisterList', component: EmpListRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},

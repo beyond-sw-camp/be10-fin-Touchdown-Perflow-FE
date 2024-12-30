@@ -1,83 +1,65 @@
 <script setup>
 
 import ModifyInputFeild from "@/components/hr/ModifyInputFeild.vue";
-import {computed, onMounted, reactive, ref} from "vue";
-import AddressInputFeild from "@/components/hr/AddressInputField.vue";
+import {computed, ref} from "vue";
 import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
-import {values} from "vuedraggable/dist/vuedraggable.common.js";
-import HRButtonDropDown from "@/components/hr/HRButtonDropDown.vue";
 
 const props = defineProps({
       isSidebarOpen: {
         type: Boolean,
         default: false
       },
+      positionId:Number,
       title: String
 });
+const positionId = computed(()=>{
+  return props.positionId;
+})
 const emit = defineEmits(['close-sidebar'])
-
 const name = ref();
-const responsibility = ref();
-const departmentId = ref();
-const deptList = ref();
+const level = ref();
 
 const updateName = (value) => {
   name.value = value;
 }
-const updateResponsibility = (value) => {
-  responsibility.value = value;
-}
-const updateDept = (value) => {
-  departmentId.value = value;
+const updateLevel = (value) => {
+  level.value = value;
 }
 
-
-const registerJob = async () => {
+const modifyPosition = async (id) => {
   try {
-    await api.post("/hr/job",{
+    await api.put(`/hr/position/${id}`,{
       name: name.value,
-      responsibility: responsibility.value,
-      deptId: departmentId.value
+      positionLevel: level.value
     });
-    alert("직책 등록 성공!.")
+    alert("직위 수정 성공!")
     location.reload(true);
   } catch (error) {
     if (error.response.data.message){
       alert(error.response.data.message);
     } else {
-      alert("직책 등록 중 오류가 발생했습니다.")
+      alert("직위 수정 중 오류가 발생했습니다.");
     }
   }
 
 }
 
-const fetchDeptList = async () => {
-  const response = await api.get("/departments/list");
-  deptList.value = response.data.map(dept => ({ label: dept.name, id: dept.deptId }));
-}
-
 function closeSidebar() {
   emit('close-sidebar')
 }
-onMounted(()=>{
-  fetchDeptList();
-})
 </script>
 
 <template>
 <div class="modify-sidebar" :class="{ open: props.isSidebarOpen }">
   <div id="side-header">
-    <img src="../../../assets/image/arrow-right.png" @click="closeSidebar" id="close">
+    <img src="@/assets/image/arrow-right.png" @click="closeSidebar" id="close">
     <p id="title">{{props.title}}</p>
   </div>
   <div id="modify-contents">
-    <ModifyInputFeild title="직책명" @update-value="updateName"/>
-    <ModifyInputFeild title="직책담당업무" @update-value="updateResponsibility"/>
-    <p class="sub-title">부서</p>
-    <HRButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="deptList" @select-id="updateDept"/>
-    <SubmitButton @submit="registerJob" text="등록하기"/>
+    <ModifyInputFeild title="이름" @update-value="updateName"/>
+    <ModifyInputFeild title="직위등급" @update-value="updateLevel"/>
+    <SubmitButton @submit="modifyPosition(positionId)" text="수정하기"/>
   </div>
 </div>
 </template>
@@ -125,9 +107,5 @@ p{
 #title {
   font-weight: bold;
   font-size: 20px;
-}
-.sub-title {
-  font-weight: bold;
-  margin-bottom: 10px;
 }
 </style>

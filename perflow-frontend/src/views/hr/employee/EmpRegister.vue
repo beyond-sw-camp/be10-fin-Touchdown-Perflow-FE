@@ -4,13 +4,13 @@ import HeaderContainer from "@/components/hr/HeaderContainer.vue";
 import RegisterInputField from "@/components/hr/RegisterInputField.vue";
 import RrnInputField from "@/components/hr/RrnInputField.vue";
 import AddressInputField from "@/components/hr/AddressInputField.vue";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
 import {onMounted, reactive, ref} from "vue";
 import api from "@/config/axios.js";
 import {useStore} from "@/store/store.js";
 import router from "@/router/router.js";
 import DateSearchBar from "@/components/common/DateSearchBar.vue";
+import HRButtonDropDown from "@/components/hr/HRButtonDropDown.vue";
 
 const store = useStore();
 
@@ -123,9 +123,11 @@ const registerEmp = async () => {
 }
 
 onMounted(async ()=>{
+  store.showLoading();
   await fetchDepts();
   await fetchJobs();
   await fetchPositions();
+  store.hideLoading();
 });
 </script>
 
@@ -151,17 +153,17 @@ onMounted(async ()=>{
       <div class="dropdown-list">
         <div class="dropdown-container">
           <p class="item-title">직급</p>
-          <ButtonDropDown default-option="직급을 선택하세요" width="200px" height="40px" font-size="13px" :options="positions" @select-id="updatePositionId"/>
+          <HRButtonDropDown default-option="직급을 선택하세요" width="200px" height="40px" font-size="13px" :options="positions" @select-id="updatePositionId"/>
         </div>
         <div class="dropdown-container">
           <p class="item-title">직책</p>
-          <ButtonDropDown default-option="직책을 선택하세요" width="200px" height="40px" font-size="13px" :options="jobs" @select-id="updateJobId"/>
+          <HRButtonDropDown default-option="직책을 선택하세요" width="200px" height="40px" font-size="13px" :options="jobs" @select-id="updateJobId"/>
         </div>
       </div>
       <div class="dropdown-list">
         <div class="dropdown-container">
           <p class="item-title">부서</p>
-          <ButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="departments" @select-id="updateDeptId"/>
+          <HRButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="departments" @select-id="updateDeptId"/>
         </div>
         <div class="dropdown-container">
           <RegisterInputField title="월급" placeholder="월급을 입력해주세요." size="small" @update-value="updateSalary"/>
