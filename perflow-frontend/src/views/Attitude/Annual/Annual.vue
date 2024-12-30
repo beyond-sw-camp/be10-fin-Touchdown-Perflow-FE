@@ -1,22 +1,77 @@
 <script setup>
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
-import {onMounted, ref, computed} from "vue";
+import {computed, onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import router from "@/router/router.js";
-import TableBasic from "@/components/common/TableBasic.vue";
 import PagingBar from "@/components/common/PagingBar.vue";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter"; // 플러그인 추가
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import ModalBasic from "@/components/common/ModalBasic.vue";
 import AnnualModal from "@/views/Attitude/Annual/AnnualModal.vue";
+import AnnualUpdateModal from "@/views/Attitude/Annual/AnnualUpdateModal.vue";
+import TableCheck from "@/components/common/TableCheck.vue";
+import {useStore} from "@/store/store.js";
 
+const store = useStore();
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 const today = dayjs(); // 현재 날짜와 시간
 console.log(today.format("YYYY-MM-DD"));
+
+
+const showUpdateModal = ref(false);
+const selectedAnnual = ref(null);
+
+const onRowSelected = (selectedRows) => {
+  if (selectedRows.length > 1) {
+    // 2개 이상 선택 시 경고
+    alert("수정할 하나의 연차만 골라주세요.");
+
+    // 강제로 1개만 선택되도록 selectedRows 재설정
+    const updatedSelection = [selectedRows[0]];
+
+    // 선택 항목 초기화 후 첫 번째 항목만 남김
+    selectedAnnual.value = updatedSelection[0];
+
+    // 테이블 상태 강제 반영 (선택 값 재설정)
+    setTimeout(() => {
+      selectedRows.splice(1); // 첫 번째 이후의 선택 항목 제거
+    }, 0); // 다음 렌더링 주기에 적용
+  } else if (selectedRows.length === 1) {
+    // 정상적으로 1개 선택한 경우
+    selectedAnnual.value = selectedRows[0];
+  } else {
+    // 아무것도 선택되지 않은 경우 초기화
+    selectedAnnual.value = null;
+  }
+};
+
+const openUpdateModal = () => {
+  // 체크된 항목이 없다면 경고 처리
+  if (!selectedAnnual.value) {
+    alert("수정할 연차를 체크박스로 선택해 주세요.");
+    return;
+  }
+  showUpdateModal.value = true;
+};
+
+const closeUpdateModal = () => {
+  showUpdateModal.value = false;
+};
+
+const resetSelection = () => {
+  selectedAnnual.value = null;
+};
+
+showUpdateModal.value = false;
+resetSelection(); // 모달 닫을 때 선택 초기화
+
+const handleUpdateSuccess = () => {
+  showUpdateModal.value = false; // 모달 닫기
+  fetchAnnualData();             // 연차 데이터 재조회
+};
+
 
 // 테이블 컬럼 설정
 const columns = [
@@ -69,8 +124,10 @@ const statusOptions = [
 // API 데이터 호출 (전체 조회)
 const fetchAnnualData = async () => {
   try {
+    store.showLoading();
     const response = await api.get("emp/annual/list");
     console.log("API 응답 데이터:", response.data);
+    store.hideLoading();
 
     // 데이터 변환 및 저장
     allDocs.value = response.data
@@ -216,11 +273,24 @@ onMounted(() => {
     </div>
 
     <div class="table-container">
-      <TableBasic
+      <TableCheck
           :row-key="'annualId'"
           :rows="paginatedDocs"
           :columns="columns"
           :column-widths="columnWidths"
+          :showCheckbox="true"
+          :single-select="true"
+          :max-selection = "1"
+          @row-selected="onRowSelected"
+      />
+
+
+      <!-- 수정 모달 -->
+      <AnnualUpdateModal
+          :isOpen="showUpdateModal"
+          :annualData="selectedAnnual"
+          @close="closeUpdateModal"
+          @update-success="handleUpdateSuccess"
       />
     </div>
 
@@ -239,6 +309,12 @@ onMounted(() => {
       </div>
       <!-- 연차 신청 버튼 -->
       <div class="button-wrapper">
+        <ButtonBasic
+            color="gray"
+            size="medium"
+            label="연차 수정"
+            @click="openUpdateModal"
+        />
         <ButtonBasic
             color="orange"
             size="medium"
@@ -265,7 +341,8 @@ onMounted(() => {
   /* 버튼은 오른쪽에 위치 */
   display: flex;
   justify-content: flex-end;
-  width: auto; /* 혹은 100px 등, 필요에 따라 조정 */
+  width: auto;
+  gap:20px;
 }
 .paging-bar-wrapper {
   /* 페이징 바를 감싸는 요소 안에서 가운데 정렬 */
