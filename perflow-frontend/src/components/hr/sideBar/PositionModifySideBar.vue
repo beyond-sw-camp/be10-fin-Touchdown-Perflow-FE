@@ -1,7 +1,7 @@
 <script setup>
 
 import ModifyInputFeild from "@/components/hr/ModifyInputFeild.vue";
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, ref} from "vue";
 import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
 

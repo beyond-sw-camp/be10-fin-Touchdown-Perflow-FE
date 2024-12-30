@@ -47,7 +47,7 @@ const updateType = (value) => {
   type.value = value
 }
 const fetchDeptList = async () => {
-  const response = await api.get("/hr/departments/list");
+  const response = await api.get("/departments/list");
   deptList.value = response.data.map(dept => ({ label: dept.name, id: dept.deptId }));
 }
 const fetchJobList = async () => {
