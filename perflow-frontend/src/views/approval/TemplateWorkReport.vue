@@ -366,6 +366,12 @@ const goTo = (url) => {
                     @click="addToApprovalList('합의')"
                 />
                 <ButtonBasic
+                    label="병렬"
+                    color="white"
+                    size="medium"
+                    @click="addToApprovalList('병렬')"
+                />
+                <ButtonBasic
                     label="병렬합의"
                     color="white"
                     size="medium"
