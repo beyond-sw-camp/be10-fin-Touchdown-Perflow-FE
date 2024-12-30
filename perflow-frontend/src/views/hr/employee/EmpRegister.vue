@@ -4,14 +4,13 @@ import HeaderContainer from "@/components/hr/HeaderContainer.vue";
 import RegisterInputField from "@/components/hr/RegisterInputField.vue";
 import RrnInputField from "@/components/hr/RrnInputField.vue";
 import AddressInputField from "@/components/hr/AddressInputField.vue";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
 import {onMounted, reactive, ref} from "vue";
 import api from "@/config/axios.js";
 import {useStore} from "@/store/store.js";
 import router from "@/router/router.js";
 import DateSearchBar from "@/components/common/DateSearchBar.vue";
-import {values} from "vuedraggable/dist/vuedraggable.common.js";
+import HRButtonDropDown from "@/components/hr/HRButtonDropDown.vue";
 
 const store = useStore();
 
@@ -67,20 +66,30 @@ const updateJoinDate = (value) => {
 
 
 const departments = ref([]);
-const jobs = ref([]);
-const positions = ref([]);
-
+const jobs = ref();
+const positions = ref();
+const test = ref();
 const fetchDepts = async () => {
-  const response = await api.get("/hr/departments/list");
+  const response = await api.get("/departments/list");
   departments.value = response.data.map(dept => ({ label: dept.name, id: dept.deptId }));
 }
 const fetchJobs = async () => {
-  const response = await api.get("/job");
-  jobs.value = response.data.map(job => ({ label: job.name, id: job.jobId }));
+  const response = (await api.get("/job", {
+    params: {
+      page: 1,
+      size: 10000
+    }
+  })).data;
+  jobs.value = response.jobResponseDTOList.map(job => ({ label: job.name, id: job.jobId }));
 }
 const fetchPositions = async () => {
-  const response = await api.get("/position");
-  positions.value = response.data.map(position => ({ label: position.name, id: position.positionId }));
+  const response = (await api.get("/position", {
+    params: {
+      page: 1,
+      size: 10000
+    }
+  })).data;
+  positions.value = response.positions.map(position => ({ label: position.name, id: position.positionId }));
 }
 const registerEmp = async () => {
   const totalAddress = address.value.postcode + " " + address.value.roadAddress + " " + address.value.extraAddress;
@@ -144,17 +153,17 @@ onMounted(async ()=>{
       <div class="dropdown-list">
         <div class="dropdown-container">
           <p class="item-title">직급</p>
-          <ButtonDropDown default-option="직급을 선택하세요" width="200px" height="40px" font-size="13px" :options="positions" @select-id="updatePositionId"/>
+          <HRButtonDropDown default-option="직급을 선택하세요" width="200px" height="40px" font-size="13px" :options="positions" @select-id="updatePositionId"/>
         </div>
         <div class="dropdown-container">
           <p class="item-title">직책</p>
-          <ButtonDropDown default-option="직책을 선택하세요" width="200px" height="40px" font-size="13px" :options="jobs" @select-id="updateJobId"/>
+          <HRButtonDropDown default-option="직책을 선택하세요" width="200px" height="40px" font-size="13px" :options="jobs" @select-id="updateJobId"/>
         </div>
       </div>
       <div class="dropdown-list">
         <div class="dropdown-container">
           <p class="item-title">부서</p>
-          <ButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="departments" @select-id="updateDeptId"/>
+          <HRButtonDropDown default-option="부서를 선택하세요" width="200px" height="40px" font-size="13px" :options="departments" @select-id="updateDeptId"/>
         </div>
         <div class="dropdown-container">
           <RegisterInputField title="월급" placeholder="월급을 입력해주세요." size="small" @update-value="updateSalary"/>

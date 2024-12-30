@@ -38,7 +38,10 @@ import KPIRecordView from "@/views/performance/KPIRecordView.vue";
 import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
-
+import AnnCreate from "@/views/announcement/AnnCreate.vue";
+import SeverancePayStub from "@/views/payment/SeverancePayStub.vue";
+import Calculator from "@/views/payment/Calculator.vue";
+import EmpDetailPage from "@/views/hr/employee/EmpDetailPage.vue";
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
@@ -46,10 +49,13 @@ const routes = [
     {path: '/', name: 'LoginPage', component: EmpLogin},
     {path: '/login', name: 'Login', component: EmpLogin},
     {path: '/hr/my-page', name: 'MyPage', component: EmpMyPage},
+    {path: '/main-page', name: 'MainPage', component: MainPage},
+
     // 인사
     {path: '/hr/employees', name: 'EmpList', component: EmpList},
+    {path: '/hr/employees/:empId', name: 'EmpDetail', component: EmpDetailPage},
     {path: '/hr/employees/register', name: 'EmpRegister', component: EmpRegister},
-    {path: '/hr/employees/register/lists', name: 'EmpRegister', component: EmpListRegister},
+    {path: '/hr/employees/register/lists', name: 'EmpRegisterList', component: EmpListRegister},
     {path: '/hr/job', name: 'JobList', component: JobList},
     {path: '/hr/position', name: 'PositionList', component: PositionList},
     {path: '/hr/appoint', name: 'AppointList', component: AppointList},
@@ -69,19 +75,21 @@ const routes = [
     {path: '/approval/disbursement/detail', name: 'disbursementDetail', component: TemplateDisbursementRead},
     {path: '/approval/processing', name: 'processedDoc', component: ProcessedDoc},
 
-
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
     {path: '/performance/kpi-current', name: 'KPIUpdate', component: KPIUpdateView},
     {path: '/performance/kpi-past', name: 'KPIRecord', component: KPIRecordView},
-    {path: '/approval/waiting', name: 'waitingDoc', component: WaitingDoc},
+
+    // 급여
     {path: '/payment/payroll', name: 'Payroll', component: PayrollList},
-    {path: '/main-page', name: 'MainPage', component: MainPage},
     {path: '/payment/payroll-detail/:payrollId', name:'PayrollDetail', component: PayrollDetail},
     {path: '/payment/pay-stub', name: 'PayStub', component: PayStub},
     {path: '/severance/severance-pay', name: 'SeverancePay', component: SeverancePay},
     {path: '/severance/severance-pay-detail/:severancePayId', name: 'SeverancePayDetail', component: SeverancePayDetail},
-    //근태
+    {path: '/severance/severance-stub', name: 'SeverancePayStub', component: SeverancePayStub},
+    {path: '/severance/calculator', name: Calculator, component: Calculator},
+
+    // 근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
     {path:'/attitude/vacation',name:'vacation',component:Vacation},
@@ -89,7 +97,11 @@ const routes = [
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
     {path:'/attitude/travel',name:'travel',component:Travel},
     {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
-    {path:'/announcements', name: 'announcements-list', component: AnnList}
+    {path:'/announcements', name: 'announcements-list', component: AnnList},
+
+    // 공지
+    {path:'/announcements', name: 'announcements-list', component: AnnList},
+    {path: '/announcements/create', name: 'announcements-create', component: AnnCreate}
 
 ]
 

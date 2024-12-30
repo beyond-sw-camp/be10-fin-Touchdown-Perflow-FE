@@ -7,9 +7,11 @@ import PagingBar from "@/components/common/PagingBar.vue";
 import router from "@/router/router.js";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
 import PositionRegisterSideBar from "@/components/hr/sideBar/PositionRegisterSideBar.vue";
+import PositionModifySideBar from "@/components/hr/sideBar/PositionModifySideBar.vue";
+import TableMove from "@/components/common/TableMove.vue";
 
 const positions = ref([]);
-
+const positionId=ref();
 // 페이지에 들어갈 변수 목록
 const pages = ref({
   pageSize: 0,       // 초기값: 0
@@ -49,14 +51,20 @@ const columns = [
 ];
 
 const isSidebarOpen = ref(false)
-
+const isModifySidebarOpen = ref(false)
 function showSidebar() {
   isSidebarOpen.value = true;
 }
 function hideSidebar() {
   isSidebarOpen.value = false;
 }
-
+function showModifySidebar(id) {
+  positionId.value = id;
+  isModifySidebarOpen.value = true;
+}
+function hideModifySidebar() {
+  isModifySidebarOpen.value = false;
+}
 onMounted(() => {
   fetchPositionList(1);
 });
@@ -65,6 +73,10 @@ onMounted(() => {
 
 <template>
   <PositionRegisterSideBar :isSidebarOpen="isSidebarOpen" @close-sidebar="hideSidebar" title="직위 등록"/>
+  <PositionModifySideBar :isSidebarOpen="isModifySidebarOpen"
+                         @close-sidebar="hideModifySidebar"
+                         :positionId="positionId"
+                         title="직위 수정"/>
   <div id="header-div">
     <div id="header-top" class="flex-between">
       <p id="title">직위 관리</p>
@@ -79,7 +91,7 @@ onMounted(() => {
   <!-- 표 사용 -->
   <div id="jobList-div">
     <p id="total">{{pages.totalItems}}개</p>
-    <TableBasic :row-key="'id'" :rows="positions" :columns="columns"/>
+    <TableMove :row-key="'positionId'" :rows="positions" :columns="columns" @rowSelected="showModifySidebar"/>
     <paging-bar :page-size="pages.pageSize"
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"

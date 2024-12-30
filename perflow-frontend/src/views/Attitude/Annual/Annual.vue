@@ -230,13 +230,16 @@ const closeModal = () => {
 onMounted(() => {
   fetchAnnualData();
 });
+
 </script>
 
 <template>
   <div id="header-div">
     <div id="header-top" class="flex-between">
+
       <p id="title">연차 관리</p>
     </div>
+
 
     <div id="header-bottom" class="flex-between">
       <div id="search-container">
@@ -260,6 +263,7 @@ onMounted(() => {
               @select="handleStatusSelect"
           />
         </div>
+
 
         <div class="button">
           <ButtonBasic
@@ -333,6 +337,7 @@ onMounted(() => {
       @close="closeModal"
   />
 
+
 </template>
 
 <style scoped>
@@ -350,6 +355,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
 }
+
 
 #title {
   font-size: 35px;
@@ -398,6 +404,7 @@ onMounted(() => {
   text-decoration: underline;
 }
 
+
 /* 검색 컨테이너 */
 #search-container {
   display: flex;
@@ -405,6 +412,7 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 10px; /* 내부 여백 */
+
   border: 1px solid #AFA9A9;
   border-radius: 10px;
   gap: 0px;
@@ -413,7 +421,9 @@ onMounted(() => {
 .conditions {
   display: flex;
   flex-wrap: wrap;
+
   gap: 10px; /* 필드 간 간격 */
+
 }
 
 .button {
@@ -466,3 +476,4 @@ tr:hover {
   background-color: #f1f1f1;
 }
 </style>
+

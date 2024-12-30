@@ -74,6 +74,7 @@ const statusOptions = [
 const fetchVacationData = async () => {
   try {
     const response = await api.get("emp/vacation/details");
+
     console.log("API 응답 데이터:", response.data);
 
 
@@ -180,6 +181,7 @@ const handleStatusSelect = (selectedLabel) => {
 
   // 상태 변경 즉시 필터 적용 (첫 페이지로 리셋)
   applyFilter(true); // 첫 페이지로 리셋
+
 };
 
 

@@ -1,60 +1,3 @@
-<script setup>
-import { ref } from 'vue';
-
-const props = defineProps({
-  options: {
-    type: Array,
-    default: () => [],
-  },
-  defaultOption: {
-    type: String,
-    default: "",
-  },
-  width: {
-    type: String,
-    default: "150px", // 기본 너비
-  },
-  height: {
-    type: String,
-    default: "50px", // 기본 높이
-  },
-  fontSize: {
-    type: String,
-    default: "16px", // 글자 크기
-  },
-  imgSize: {
-    type: String,
-    default: "30px", // 이미지 크기
-  },
-  marginLeft: {
-    type: String,
-    default: "40px",
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  }
-});
-
-const emit = defineEmits(["select","select-id"]);
-
-const isMenuOpen = ref(false);
-const selectedOption = ref(props.defaultOption);
-
-const toggleMenu = () => {
-  if (props.disabled) return; // 비활성화 상태일 경우 메뉴 열리지 않음
-  isMenuOpen.value = !isMenuOpen.value;
-};
-
-const selectOption = (option, id) => {
-  if (props.disabled) return; // 비활성화 상태일 경우 옵션 선택 불가
-  selectedOption.value = option;
-  isMenuOpen.value = false;
-  emit("select", option);
-  emit("select-id", id);
-};
-</script>
-
 <template>
   <div
       class="dropdown-container btn-gray"
@@ -64,7 +7,7 @@ const selectOption = (option, id) => {
   >
     <!-- 선택된 옵션 -->
     <div class="selected-option">
-      <span>{{ selectedOption }}</span>
+      <span>{{ selectedOptionLabel }}</span>
       <img
           v-if="isMenuOpen"
           src="../../assets/image/arrow_up_2.png"
@@ -88,13 +31,80 @@ const selectOption = (option, id) => {
       <li
           v-for="(option, index) in options"
           :key="index"
-          @click.stop="selectOption(option.label, option.id)"
+          @click.stop="selectOption(option)"
       >
         {{ option.label }}
       </li>
     </ul>
   </div>
 </template>
+
+<script setup>
+import { ref, watch, computed } from 'vue';
+
+const props = defineProps({
+  options: {
+    type: Array,
+    default: () => [],
+  },
+  modelValue: {
+    type: String,
+    default: "",
+  },
+  width: {
+    type: String,
+    default: "150px",
+  },
+  height: {
+    type: String,
+    default: "50px",
+  },
+  fontSize: {
+    type: String,
+    default: "16px",
+  },
+  imgSize: {
+    type: String,
+    default: "20px",
+  },
+  marginLeft: {
+    type: String,
+    default: "7px",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  }
+});
+
+const emit = defineEmits(["update:modelValue"]);
+
+const isMenuOpen = ref(false);
+const selectedOption = ref(props.modelValue);
+
+// Watch for changes in modelValue prop
+watch(() => props.modelValue, (newVal) => {
+  selectedOption.value = newVal;
+});
+
+// Compute the label of the selected option
+const selectedOptionLabel = computed(() => {
+  const found = props.options.find(option => option.value === selectedOption.value);
+  return found ? found.label : "선택하세요";
+});
+
+const toggleMenu = () => {
+  if (props.disabled) return;
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const selectOption = (option) => {
+  if (props.disabled) return;
+  selectedOption.value = option.value;
+  isMenuOpen.value = false;
+  emit("update:modelValue", option.value); // v-model을 위한 이벤트
+};
+</script>
 
 <style scoped>
 .dropdown-container {
@@ -105,6 +115,7 @@ const selectOption = (option, id) => {
   align-items: center;
   position: relative;
   border-radius: 5px;
+  width: 100%;
 }
 
 .btn-gray {
@@ -117,6 +128,7 @@ const selectOption = (option, id) => {
   padding: 8px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .options {
@@ -127,12 +139,14 @@ const selectOption = (option, id) => {
   background-color: white;
   color: #3c4651;
   border-radius: 5px;
-  top: 100%; /* 버튼 바로 아래로 드롭다운 메뉴 표시 */
-  left: 0; /* 왼쪽 정렬 */
-  z-index: 10; /* 다른 요소 위에 표시 */
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
   margin-top: 4px;
   max-height: 200px;
-  overflow-y: auto; /* 스크롤이 필요할 때 스크롤바 표시 */
+  overflow-y: auto;
+  width: 100%;
 }
 
 .options li {
@@ -146,9 +160,8 @@ const selectOption = (option, id) => {
 }
 
 .disabled {
-  pointer-events: none; /* 클릭 이벤트 차단 */
-  opacity: 0.5; /* 비활성화 상태를 시각적으로 표시 */
-  cursor: not-allowed; /* 마우스 커서를 "금지" 아이콘으로 표시 */
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
-
 </style>
