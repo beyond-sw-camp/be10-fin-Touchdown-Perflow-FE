@@ -8,6 +8,7 @@ import TableCheck from "@/components/common/TableCheck.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 import router from "@/router/router.js";
 import dayjs from "dayjs";
+import Tooltip from "@/components/common/ToolTip.vue";
 
 const columns = [
   { label: "제목", field: "title" },
@@ -28,6 +29,12 @@ const searchCriteria = ref({
   fromDate: null,
   toDate: null,
 });
+
+// 툴팁
+const tooltipVisible = ref(false);
+const tooltipText = "대기 문서란? \n" +
+    "내가 결재선에 포함되어 있고, 내가 결재할 차례인 문서"
+const tooltipWidth = "400px";
 
 // 대기 문서 목록 조회
 const fetchWaitingDocs = async (page = 1) => {
@@ -164,7 +171,23 @@ onMounted(() => {
   <!-- 헤더 -->
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">대기 문서</p>
+      <div class="tooltip-container">
+        <p id="title">대기 문서</p>
+        <!-- 툴팁 -->
+        <img
+            src="@/assets/icons/tooltip.png"
+            alt="툴팁"
+            class="tooltip-icon"
+            @mouseenter="tooltipVisible = true"
+            @mouseleave="tooltipVisible = false"
+        />
+        <Tooltip
+            :text="tooltipText"
+            :visible="tooltipVisible"
+            :width="tooltipWidth"
+            :position="{ bottom: '15px', left: '45%' }"
+        />
+      </div>
     </div>
     <div id="header-bottom" class="flex-between">
       <div id="search-container">
@@ -332,5 +355,25 @@ onMounted(() => {
   width: 100% /* 오른쪽 끝에 검색*/
 }
 
+/* 툴팁 */
+.tooltip-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
 
+.tooltip-basic {
+  white-space: pre-line;  /* 툴팁 내용 줄바꿈 허용 */
+}
+
+.tooltip-icon {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  margin-bottom: 15px;  /* 수신함 글씨와 툴팁 아이콘 정렬 위해 */
+}
+
+.Tooltip {
+  pointer-events: none;
+}
 </style>
