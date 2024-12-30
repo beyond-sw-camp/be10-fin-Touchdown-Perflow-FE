@@ -28,6 +28,8 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 
+
+
 // 모달이 열릴 때 QR 코드 생성
 watch(() => props.isOpen, async (newVal) => {
   if (newVal && isAllowed.value) { // 모달 열릴 때
@@ -147,6 +149,7 @@ const handleSubmit = async () => {
       alert(`${props.type === 'on' ? '출근' : '퇴근'} 처리 완료`);
       clearInterval(timerInterval);
       closeModal();
+
       props.confirmAction(); // 부모로부터 전달받은 confirmAction 호출
 
     } else {
