@@ -50,7 +50,9 @@ const logout = async () => {
 }
 
 const goTo = (url) => {
-  router.push(url);
+  if(authStore.isLogin){
+      router.push(url);
+  }
 }
 
 onMounted(()=> {
