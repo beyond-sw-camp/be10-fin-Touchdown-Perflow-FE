@@ -230,22 +230,25 @@ const goTo = (url) => {
 
       <div class="field-container">
 
-        <!-- 진행 기간 -->
-        <label class="label">
-          <span class="label-name">진행일시</span>
-          <span class="asterisk">*</span>
-        </label>
-        <SearchGroupBar
-            v-model="fromDate"
-            placeholder="시작일"
-            type="date"
-        />
-        <span class="tilde"> ~ </span>
-        <SearchGroupBar
-            v-model="toDate"
-            placeholder="완료일"
-            type="date"
-        />
+        <div class="date-selection-container">
+          <!-- 진행 기간 -->
+          <label class="label">
+            <span class="label-name">진행일시</span>
+            <span class="asterisk">*</span>
+          </label>
+          <SearchGroupBar
+              v-model="fromDate"
+              placeholder="시작일"
+              type="date"
+          />
+          <span class="tilde"> ~ </span>
+          <SearchGroupBar
+              v-model="toDate"
+              placeholder="완료일"
+              type="date"
+          />
+        </div>
+
         <!-- 제목 -->
         <InputField
             v-model="title"
@@ -505,7 +508,7 @@ const goTo = (url) => {
 .main-container {
   display: flex;
   justify-content: center; /* 중앙 정렬 */
-  align-items: center; /* 세로 정렬 */
+  /* align-items: center; /* 세로 정렬 */
   gap: 0px;
   min-width: 1200px;  /* 최소 너비 설정 */
   padding: 0 50px;  /* 좌우 여백 */
@@ -522,10 +525,17 @@ const goTo = (url) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0px;
+  gap: 20px;
   min-width: 600px;
   margin-top: 50px;
   margin-right: 30px;
+}
+
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 700px;
 }
 
 .box-container {
@@ -533,6 +543,7 @@ const goTo = (url) => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin-top: 50px;
 }
 
 .button-group {
@@ -608,6 +619,24 @@ const goTo = (url) => {
   margin-top: 10px; /* 테이블과 버튼 사이의 간격 */
 }
 
+.date-selection-container {
+  display: flex;
+  align-items: center;
+  height: 40px; /* 고정 높이 설정 */
+  margin-bottom: 20px;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  width: 80px;
+}
+
+.tilde {
+  margin: 0 5px;
+  line-height: 40px;
+}
+
 .center {
   display: flex;
   align-items: center;
@@ -675,7 +704,6 @@ const goTo = (url) => {
   background-color: #f4f4f4;
   font-weight: bold;
 }
-
 
 #title {
   font-size: 35px;
