@@ -8,7 +8,7 @@ import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import ButtonDropDown2 from "@/components/common/ButtonDropDown2.vue";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
 const selectedShareEmployees = ref([]); // 체크된 사원 목록
@@ -28,7 +28,10 @@ const dropdownOptions = [
 
 // 드롭다운 선택 시 호출
 const handleDropdownSelect = (id) => {
-  router.push({ name: id });
+  console.log(`선택된 드롭다운 옵션 id: ${id}`);
+  router.push({ name: id }).catch((error) => {
+    console.error("라우팅 에러: ", error);
+  });
 }
 
 // 모달 상태
@@ -186,7 +189,7 @@ const createNewDoc = async () => {
     const data = docData();
     const response = await createNewDocument(data);
     alert('결재 문서 생성 완료');
-    goTo("/approval/waiting");
+    goTo("/approval/home");
   } catch (error) {
     alert(`결재 문서 생성에 실패했습니다. 오류: ${error.message}`);
     console.error(error);
@@ -223,18 +226,19 @@ const goTo = (url) => {
           label="제목"
           placeholder="제목을 입력해 주세요."
           :isRequired="true"
-          width="600px"
+          width="500px"
       />
 
       <!-- 내용 -->
       <InputField
+          class="input-field-content"
           v-model="content"
           label="내용"
           placeholder="내용을 입력해 주세요."
           type="textarea"
           :isRequired="true"
           height="400px"
-          width="600px"
+          width="500px"
       />
 
       <div class="button-group">
@@ -242,7 +246,7 @@ const goTo = (url) => {
             color="gray"
             size="medium"
             label="취소하기"
-            @click=""
+            @click="router.go(-1)"
         />
         <ButtonBasic
             color="orange"
@@ -258,7 +262,7 @@ const goTo = (url) => {
 
       <!-- 드롭 다운 -->
       <span class="dropdown-title">서식 선택</span>
-      <ButtonDropDown
+      <ButtonDropDown2
         :options="dropdownOptions"
         defaultOption="기본 서식"
         width="155px"
@@ -316,6 +320,12 @@ const goTo = (url) => {
                     color="white"
                     size="medium"
                     @click="addToApprovalList('합의')"
+                />
+                <ButtonBasic
+                    label="병렬"
+                    color="white"
+                    size="medium"
+                    @click="addToApprovalList('병렬')"
                 />
                 <ButtonBasic
                     label="병렬합의"
@@ -453,10 +463,13 @@ const goTo = (url) => {
   justify-content: center;  /* 중앙 정렬 */
   align-items: center;  /* 세로 정렬 */
   gap: 0px;
+  min-width: 1200px;  /* 최소 너비 설정 */
+  padding: 0 50px;  /* 좌우 여백 */
 }
 
 .empty-container {
   flex: 0.3;
+  min-width: 200px;
   max-width: 300px;
 }
 
@@ -466,8 +479,9 @@ const goTo = (url) => {
   flex-direction: column;
   align-items: center;
   gap: 0px;
-  width: 400px;
+  min-width: 500px; /* InputField 너비와 일치시킴 */
   margin-top: 50px;
+  margin-right: 30px;
 }
 
 .box-container {
@@ -651,5 +665,19 @@ const goTo = (url) => {
   font-size: 14px;
   font-weight: bold;
   color: #3C4651;
+}
+
+/* input field 스크롤 설정 */
+/* input field 의 textarea 까지 전달 */
+.input-field-content::v-deep(textarea)::-webkit-scrollbar {
+  width: 5px;
+}
+.input-field-content::v-deep(textarea)::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.input-field-content::v-deep(textarea)::-webkit-scrollbar-thumb {
+  background: #D9D9D9;
+  border-radius: 10px;
 }
 </style>

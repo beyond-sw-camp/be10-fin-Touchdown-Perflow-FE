@@ -1,17 +1,21 @@
 <script setup>
 import ButtonBasic from "@/components/common/ButtonBasic.vue";
-import {onMounted, ref} from "vue";
-import {createNewDocument} from "@/config/approval.js";
+import {computed, onMounted, ref} from "vue";
 import router from "@/router/router.js";
 import ApprovalShareBoxRead from "@/components/approval/ApprovalShareBoxRead.vue";
 import api from "@/config/axios.js";
 import {useRoute} from "vue-router";
+import {useAuthStore} from "@/store/authStore.js";
 
 const route = useRoute();
+const authStore = useAuthStore();
 
 // 전달된 데이터 가져오기
-const docId = route.query.docId; // 전달된 docId
-
+const docId = route.query.docId;
+const docType = route.query.type;
+const approveSbjStatus = route.query.approveSbjStatus;
+const processDatetime = route.query.processDatetime;
+const comment = route.query.comment;
 
 // 초기화
 const title = ref("");
@@ -23,6 +27,7 @@ const SPECIAL = ref("");
 const PLANNED = ref("");
 const approveLines = ref([]);
 const shares = ref([]);
+const docApprovalComment = ref("");
 
 // API 호출로 데이터 가져오기
 const fetchDocumentDetail = async () => {
@@ -78,6 +83,59 @@ const TypeMapping = {
   PLLAGR: "병렬 합의",
 }
 
+const formatStatus = computed(() => {
+  if (approveSbjStatus === "APPROVED") {
+    return "승인";
+  }
+  if (approveSbjStatus === 'REJECTED') {
+    return "반려";
+  }
+  return "알 수 없음";
+})
+
+const formatProcessDatetime = (rawString) => {
+  if (!rawString) return "날짜 정보 없음";
+  const date = new Date(rawString);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 `
+      + `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+}
+
+// 문서 결재(승인, 반려) 처리
+const handleApproval = async (status) => {
+
+  try {
+    // 로그인 한 사용자
+    const empId = authStore.empId;
+
+    // 로그인 한 사용자의 결재 정보 찾기
+    const approveLineData = approveLines.value.find(
+        (line) => line.approveSbjs?.some((sbj) => sbj.empId === empId)
+    );
+
+    // 로그인 한 사용자의 결재 주체 정보 찾기
+    const approveSbjData = approveLineData.approveSbjs.find(
+        (sbj) => sbj.empId === empId
+    );
+
+    const requestData = {
+      docId: docId,
+      approveLineId: approveLineData.approve_line_id,
+      approveSbjId: approveSbjData.approve_sbj_id,
+      empDeptType: "EMPLOYEE",
+      empId: empId,
+      status: status,
+      comment: docApprovalComment.value || null,
+    };
+
+    await api.put("/approval/docs", requestData);
+    alert(`문서가 ${status === "APPROVED" ? "승인" : "반려"}되었습니다.`);
+    router.push("/approval/waiting");
+  } catch (error) {
+    console.error("결재 처리 실패: ", error);
+    alert("결재 처리 중 오류가 발생했습니다.");
+  }
+}
+
 onMounted(() => {
   fetchDocumentDetail();
 })
@@ -88,7 +146,7 @@ onMounted(() => {
 
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">결재 문서 생성</p>
+      <p id="title">문서 상세 조회</p>
     </div>
     <div id="header-bottom" class="flex-between">
       <div class="tabs">
@@ -142,12 +200,75 @@ onMounted(() => {
           color="orange"
           size="medium"
           label="목록으로"
-          @click=""
+          @click="router.go(-1)"
       />
       </div>
     </div>
 
     <div class="box-container">
+
+      <!-- 대기 문서 결재 -->
+      <div class="waiting-approval-container">
+        <div v-if="docType === 'waiting'" class="doc-approval-container">
+          <span class="doc-approval-title">결재</span>
+          <div class="comment-box">
+            <textarea
+                v-model="docApprovalComment"
+                placeholder="의견을 입력할 수 있습니다."
+                class="approval-comment-input"
+            />
+            <div class="comment-button-group">
+              <ButtonBasic
+                  color="white"
+                  size="small"
+                  label="반려"
+                  @click="handleApproval('REJECTED')"
+              />
+              <ButtonBasic
+                  color="orange"
+                  size="small"
+                  label="승인"
+                  @click="handleApproval('APPROVED')"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 처리 문서 정보 -->
+      <div class="processed-info-container">
+        <div v-if="docType === 'processed'" class="processed-info">
+          <span class="processed-info-title">나의 처리 이력</span>
+          <div class="doc-type">
+            <span class="doc-type-label">결재 여부 </span>
+            <span class="doc-type-tag">{{ formatStatus }}</span>
+          </div>
+          <div class="doc-process-time">
+            <span class="doc-process-time-label">처리일시 </span>
+            <span class="doc-process-time-value"> {{ formatProcessDatetime(processDatetime) }}</span>
+          </div>
+          <div class="doc-comment">
+            <span class="comment-title">나의 의견</span>
+            <div
+                class="approval-comment"
+                :class="{ 'empty-comment': !comment }"
+            >
+              <span class="comment-text">{{ comment ? comment : '작성한 의견이 없습니다.' }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 발신함 문서 정보 -->
+      <div v-if="docType === 'outbox'" class="outbox-info-container">
+        <span class="outbox-info-title">나의 발신 이력</span>
+        <div class="outbox-datetime">
+          <span class="outbox-datetime-label">발신일시</span>
+          <span class="outbox-datetime-value"> {{ createDatetime }}</span>
+        </div>
+      </div>
+
       <!-- 결재선 -->
       <ApprovalShareBoxRead
           title="결재선"
@@ -199,15 +320,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.button-group {
-  display: flex;
-  flex-direction: row; /* 버튼 가로 정렬 */
-  gap: 40px; /* 버튼 간 간격 */
-  align-items: center; /* 중앙 정렬 */
-  margin-top: auto; /* 버튼을 항상 아래쪽으로 */
-  padding-top: 20px;  /* 버튼 위에 여유 공간 */
 }
 
 .field-container {
@@ -272,5 +384,161 @@ onMounted(() => {
   border-bottom: 2px solid #ff6600;
 }
 
+
+/* 처리 문서 정보 */
+.processed-info-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.processed-info {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-type-tag {
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  background-color: #05A730;
+}
+
+.doc-process-time {
+  margin-top: 10px;
+}
+
+.doc-type-label,
+.doc-process-time-label {
+  color: #3C4651;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.doc-process-time-value {
+  margin-left: 10px;
+  font-size: 15px;
+}
+
+.approval-comment {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-comment {
+  margin-top: 10px;
+}
+
+.approval-comment {
+  margin-top: 5px;
+}
+
+.empty-comment {
+  color: #a0a0a0;
+  font-size: 15px;
+}
+.comment-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+/* 발신함 정보 */
+.outbox-info-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.outbox-datetime {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  align-items: center;
+  justify-content: center;
+}
+
+.outbox-datetime-label {
+  color: #3C4651;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.outbox-datetime-value {
+  margin-left: 10px;
+  font-size: 15px;
+}
+
+/* 대기 문서 결재 */
+.doc-approval-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3C4651;
+}
+
+.approval-comment-input {
+  width: 100%;
+  height: 150px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  outline-color: #D9D9D9;
+  resize: none;
+  padding: 10px 10px;
+  font-size: 15px;
+}
+
+.approval-comment-input::placeholder {
+  color: #afa9a9;
+}
+
+.comment-box {
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  background-color: #fafafa;
+  justify-content: center;
+  display: flex;  /* 버튼, textarea 정렬 위함 */
+  flex-direction: column; /* 세로 정렬 */
+  gap: 10px;  /* textarea, 버튼 간격 */
+}
+
+.comment-button-group {
+  display: flex;
+  gap: 10px; /* 버튼 간 간격 */
+  justify-content: flex-end;
+  width: 100%
+}
+
+.approval-comment-input::-webkit-scrollbar {
+  width: 5px; /* 스크롤 바 너비 */
+}
+
+.approval-comment-input::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.approval-comment-input::-webkit-scrollbar-thumb {
+  background: #D9D9D9;
+  border-radius: 10px;
+}
 
 </style>

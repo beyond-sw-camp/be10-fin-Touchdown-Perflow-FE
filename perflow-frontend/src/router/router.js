@@ -50,6 +50,9 @@ import Attendance from "@/views/Attitude/Attendance/Attendance.vue";
 import AnnCreate from "@/views/announcement/AnnCreate.vue";
 import SeverancePayStub from "@/views/payment/SeverancePayStub.vue";
 import Calculator from "@/views/payment/Calculator.vue";
+import Outbox from "@/views/approval/Outbox.vue";
+import Inbox from "@/views/approval/Inbox.vue";
+
 import EmpDetailPage from "@/views/hr/employee/EmpDetailPage.vue";
 
 
@@ -84,6 +87,8 @@ const routes = [
     {path: '/approval/create/disbursement', name: 'cashDisbursement', component: TemplateDisbursement},
     {path: '/approval/disbursement/detail', name: 'disbursementDetail', component: TemplateDisbursementRead},
     {path: '/approval/processing', name: 'processedDoc', component: ProcessedDoc},
+    {path: '/approval/outbox', name: 'outbox', component: Outbox},
+    {path: '/approval/inbox', name: 'inbox', component: Inbox},
 
     {path: '/performance/personal-kpi', name: 'personalKPI', component: PersonalKPIView},
     {path: '/performance/team-kpi', name: 'teamKPI', component: TeamKPIView},
