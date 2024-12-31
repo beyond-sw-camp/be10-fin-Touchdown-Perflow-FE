@@ -3,7 +3,7 @@ import { useAuthStore } from '@/store/authStore';
 
 // Axios 기본 설정
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api/v1'
+    baseURL: import.meta.env.VITE_API_BASE_URL
 });
 
 // 요청 인터셉터: Access Token 자동 추가
@@ -32,12 +32,15 @@ api.interceptors.response.use(
     }, // 성공 응답은 그대로 반환
     async (error) => {
 
+        const { errorCode, message } = error.response.data;
+        console.error(`ErrorCode: ${errorCode}, Message: ${message}`);
+
         console.log(`response interceptor 시작!`)
 
         const authStore = useAuthStore();
         const originalRequest = error.config;
 
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 && errorCode==='NOT_VALID_ACCESS_TOKEN') {
             try {
                 const newToken = await authStore.refreshAccessToken();
                 originalRequest.headers['Authorization'] = `${newToken}`;

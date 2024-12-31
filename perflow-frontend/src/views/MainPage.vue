@@ -10,6 +10,7 @@ import QRModal from "@/views/Attitude/Attendance/QRModal.vue";
 import Luggage from "../assets/image/luggage.png";
 import Beach from "../assets/image/beach.png";
 
+
 // 상태 관리
 const isModalVisible = ref(false);
 const commuteEndTime = ref(null); // 퇴근 시간 기록
@@ -145,7 +146,7 @@ const fetchPreAnnual = async () => {
 
           const days = Math.ceil(
               (annualEnd - annualStart) / (1000 * 60 * 60 * 24)
-          );
+          ) + 1;
 
           return {
             ...item,
