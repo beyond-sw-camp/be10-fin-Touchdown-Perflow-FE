@@ -4,6 +4,7 @@ import api from "@/config/axios.js";
 import TableBasic from "@/components/common/TableBasic.vue";
 import PagingBar from "@/components/common/PagingBar.vue";
 import SearchBar from "@/components/common/SearchBar.vue";
+import {useRouter} from "vue-router";
 
 // 공지사항 데이터와 페이지 정보 관리
 const announcements = ref([]);
@@ -15,6 +16,8 @@ const pages = ref({
   currentPage: 1,
 });
 
+const router = useRouter(); // Vue Router 사용
+
 const searchKeyword = ref(""); // 검색 키워드 관리
 const selectedDept = ref("전체"); // 부서명 필터
 const selectedSortOrder = ref("최신순"); // 정렬 기준
@@ -22,6 +25,10 @@ let isSearching = ref(false); // 검색 상태 관리
 
 const formatDate = (datetime) => {
   return new Date(datetime).toISOString().split("T")[0];
+};
+
+const goToCreatePage = () => {
+  router.push("/announcements/create");
 };
 
 // 공지사항 리스트 조회
@@ -122,7 +129,7 @@ const handlePageChange = (page) => {
 // 부서 목록 조회
 const fetchDepartments = async () => {
   try {
-    const response = await api.get("/hr/departments/list");
+    const response = await api.get("/departments/list");
     departments.value = response.data.map((dept) => dept.name);
   } catch (error) {
     console.error("부서 목록 조회 실패", error);
@@ -166,7 +173,7 @@ const columns = [
             <option value="최신순">최신순</option>
             <option value="오래된순">오래된순</option>
           </select>
-          <button class="write-button" @click="() => alert('글쓰기 페이지로 이동')">글쓰기</button>
+          <button class="write-button" @click="goToCreatePage">글쓰기</button>
         </div>
       </div>
     </div>

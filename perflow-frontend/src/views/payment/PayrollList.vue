@@ -208,28 +208,30 @@ onMounted(() => {
       </div>
     </div>
     <!-- 파일 업로드 컴포넌트 -->
-    <div v-if="isFileUploadVisible" class="file-upload-modal">
-      <FileUpload
-          mode="both"
-          :buttonWidth="'150px'"
-          :buttonHeight="'50px'"
-          :multiple="false"
-          @files-selected="handleFilesSelected"
-      />
-      <div class="button">
-        <ButtonBasic
-            color="orange"
-            size="medium"
-            label="업로드"
-            @click="handleFileUpload"
+    <div v-if="isFileUploadVisible" class="file-upload-overlay" @click="handleCancel">
+      <div class="file-upload-modal" @click.stop>
+        <FileUpload
+            mode="both"
+            :buttonWidth="'150px'"
+            :buttonHeight="'50px'"
+            :multiple="false"
+            @files-selected="handleFilesSelected"
         />
-        <div style="margin-left: 10px"/>
-        <ButtonBasic
-            color="gray"
-            size="medium"
-            label="취소"
-            @click="handleCancel"
-        />
+        <div class="button">
+          <ButtonBasic
+              color="orange"
+              size="medium"
+              label="업로드"
+              @click="handleFileUpload"
+          />
+          <div style="margin-left: 10px"></div>
+          <ButtonBasic
+              color="gray"
+              size="medium"
+              label="취소"
+              @click="handleCancel"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -289,6 +291,18 @@ hr {
 
 .paging-bar {
   width: 900px
+}
+
+.file-upload-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
 .file-upload-modal {

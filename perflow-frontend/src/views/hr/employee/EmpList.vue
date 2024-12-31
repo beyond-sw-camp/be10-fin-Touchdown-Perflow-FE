@@ -7,6 +7,7 @@ import PagingBar from "@/components/common/PagingBar.vue";
 import ExcelDropDown from "@/components/common/ExcelDropDown.vue";
 import router from "@/router/router.js";
 import SearchBar from "@/components/common/SearchBar.vue";
+import TableMove from "@/components/common/TableMove.vue";
 
 const employees = ref([]);
 
@@ -86,6 +87,10 @@ const fetchEmpListByName = async (name) => {
 const goTo = (url) => {
   router.push(url);
 }
+const goToDetail = (empId) => {
+  console.log(empId+"이거다");
+  router.push({name:'EmpDetail', params : { empId : empId } });
+}
 
 // 버튼 드롭다운에 들어갈 버튼 목록
 const menus = [
@@ -130,7 +135,7 @@ onMounted(() => {
   <!-- 표 사용 -->
   <div id="empList-div">
     <p id="total">{{pages.totalItems}}명</p>
-    <TableBasic :row-key="'id'" :rows="employees" :columns="columns"/>
+    <TableMove :row-key="'empId'" :rows="employees" :columns="columns" @row-selected="goToDetail"/>
     <paging-bar :page-size="pages.pageSize"
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"

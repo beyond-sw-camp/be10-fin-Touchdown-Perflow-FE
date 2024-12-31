@@ -7,6 +7,7 @@ import SubmitButton from "@/components/hr/SubmitButton.vue";
 import api from "@/config/axios.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import SearchButtonDropDown from "@/components/common/SearchButtonDropDown.vue";
+import HRButtonDropDown from "@/components/hr/HRButtonDropDown.vue";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -105,7 +106,7 @@ onMounted(async ()=>{
     <ModifyInputFeild title="부서명" @update-value="updateName"/>
     <ModifyInputFeild title="부서 담당 업무" @update-value="updateResponsibility"/>
     <ModifyInputFeild title="연락처" @update-value="updateContact"/>
-    <ButtonDropDown width="220px" default-option="상위 부서" :options="deptList" @select-id="updateManageDept"/>
+    <HRButtonDropDown width="220px" default-option="상위 부서" :options="deptList" @select-id="updateManageDept"/>
     <SearchButtonDropDown default-option="부서 담당자" width="220px" :options="empList" @select-id="updatePic"/>
     <SubmitButton @submit="registerDepartment" text="등록하기"/>
   </div>

@@ -2,14 +2,15 @@
 
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import TableBasic from "@/components/common/TableBasic.vue"
 import PagingBar from "@/components/common/PagingBar.vue";
 import router from "@/router/router.js";
 import ButtonBasic from "@/components/common/ButtonBasic.vue"
-import PositionRegisterSideBar from "@/components/hr/sideBar/JobRegisterSideBar.vue";
+import TableMove from "@/components/common/TableMove.vue";
+import JobRegisterSideBar from "@/components/hr/sideBar/JobRegisterSideBar.vue";
+import JobModifySideBar from "@/components/hr/sideBar/JobModifySideBar.vue";
 
 const jobs = ref([]);
-
+const jobId = ref();
 // 페이지에 들어갈 변수 목록
 const pages = ref({
   pageSize: 0,       // 초기값: 0
@@ -50,14 +51,20 @@ const columns = [
 ];
 
 const isSidebarOpen = ref(false)
-
+const isModifySidebarOpen = ref(false)
 function showSidebar() {
   isSidebarOpen.value = true;
 }
 function hideSidebar() {
   isSidebarOpen.value = false;
 }
-
+function showModifySidebar(id) {
+  jobId.value = id;
+  isModifySidebarOpen.value = true;
+}
+function hideModifySidebar() {
+  isModifySidebarOpen.value = false;
+}
 onMounted(() => {
   fetchJobList(1)
 });
@@ -65,7 +72,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <PositionRegisterSideBar :isSidebarOpen="isSidebarOpen" @close-sidebar="hideSidebar" title="직위 등록"/>
+  <JobRegisterSideBar :isSidebarOpen="isSidebarOpen" @close-sidebar="hideSidebar" title="직책 등록"/>
+  <JobModifySideBar :isSidebarOpen="isModifySidebarOpen"
+                    @close-sidebar="hideModifySidebar"
+                    title="직책 수정"
+                    :jobId="jobId"/>
   <div id="header-div">
     <div id="header-top" class="flex-between">
       <p id="title">직책 관리</p>
@@ -80,7 +91,7 @@ onMounted(() => {
   <!-- 표 사용 -->
   <div id="jobList-div">
     <p id="total">{{pages.totalItems}}개</p>
-    <TableBasic :row-key="'id'" :rows="jobs" :columns="columns"/>
+    <TableMove :row-key="'jobId'" :rows="jobs" :columns="columns" @rowSelected="showModifySidebar"/>
     <paging-bar :page-size="pages.pageSize"
                 :total-items="pages.totalItems"
                 :total-pages="pages.totalPages"

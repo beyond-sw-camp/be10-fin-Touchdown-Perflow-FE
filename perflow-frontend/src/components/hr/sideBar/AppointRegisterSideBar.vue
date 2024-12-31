@@ -6,6 +6,7 @@ import api from "@/config/axios.js";
 import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
 import DateSearchBar from "@/components/common/DateSearchBar.vue";
 import EmpButtonDropDown from "@/components/common/SearchButtonDropDown.vue";
+import HRButtonDropDown from "@/components/hr/HRButtonDropDown.vue";
 
 const props = defineProps({
       isSidebarOpen: {
@@ -46,7 +47,7 @@ const updateType = (value) => {
   type.value = value
 }
 const fetchDeptList = async () => {
-  const response = await api.get("/hr/departments/list");
+  const response = await api.get("/departments/list");
   deptList.value = response.data.map(dept => ({ label: dept.name, id: dept.deptId }));
 }
 const fetchJobList = async () => {
@@ -131,23 +132,23 @@ onMounted(()=>{
     </div>
     <div>
       <p>발령 구분</p>
-      <ButtonDropDown default-option="발령 구분을 선택하세요"
+      <HRButtonDropDown default-option="발령 구분을 선택하세요"
                       width="220px" height="40px" font-size="13px" :options="types" @select-id="updateType"/>
     </div>
     <div v-if="type===types[0].id || type===types[1].id ">
       <p>직급 선택</p>
-      <ButtonDropDown default-option="직급을 선택하세요"
+      <HRButtonDropDown default-option="직급을 선택하세요"
                       width="220px" height="40px" font-size="13px" :options="positionList" @select-id="updateAfter"/>
     </div>
     <div v-if="type===types[2].id">
       <p>부서 선택</p>
-      <ButtonDropDown default-option="부서를 선택하세요"
+      <HRButtonDropDown default-option="부서를 선택하세요"
                       width="220px" height="40px" font-size="13px"
                       :options="deptList" @select-id="updateAfter"/>
     </div>
     <div v-if="type===types[3].id">
       <p>직책 선택</p>
-      <ButtonDropDown default-option="직책을 선택하세요"
+      <HRButtonDropDown default-option="직책을 선택하세요"
                       width="220px" height="40px" font-size="13px" :options="jobList" @select-id="updateAfter"/>
     </div>
     <div>

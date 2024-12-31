@@ -10,10 +10,9 @@
           :fontSize="'16px'"
           :imgSize="'20px'"
           :marginLeft="'7px'"
-          @select="handlePeriodChange"
+          v-model="selectedPeriod"
       />
 
-      <!-- 2) 년도 선택 드롭다운 (년/분기/월 중 아무거나 고른 경우에만 노출) -->
       <ButtonDropDown
           v-if="showYearDropdown"
           :options="yearDropdownOptions"
@@ -22,42 +21,42 @@
           :fontSize="'16px'"
           :imgSize="'20px'"
           :marginLeft="'7px'"
-          @select="handleYearChange"
+          v-model="selectedYear"
       />
 
-      <!-- 3) 분기 선택 드롭다운 (분기를 선택한 경우에만 노출) -->
       <ButtonDropDown
-          v-if="selectedPeriod === '분기' && selectedYear"
+          v-if="selectedPeriod === 'QUARTER' && selectedYear"
           :options="quarterOptions"
           :width="'110px'"
           :height="'40px'"
           :fontSize="'16px'"
           :imgSize="'20px'"
           :marginLeft="'7px'"
-          @select="handleQuarterChange"
+          v-model="selectedQuarter"
       />
 
-      <!-- 4) 월 선택 드롭다운 (월을 선택한 경우에만 노출) -->
       <ButtonDropDown
-          v-if="selectedPeriod === '월' && selectedYear"
+          v-if="selectedPeriod === 'MONTH' && selectedYear"
           :options="monthOptions"
           :width="'110px'"
           :height="'40px'"
           :fontSize="'16px'"
           :imgSize="'20px'"
           :marginLeft="'7px'"
-          @select="handleMonthChange"
+          v-model="selectedMonth"
       />
+
+
     </div>
 
     <!-- 선택된 기간 표시 -->
     <div class="header-container">
       <h1 v-if="selectedYear" class="header-title">
         {{ selectedYear }}년
-        <span v-if="selectedPeriod === '분기' && selectedQuarter">
+        <span v-if="selectedPeriod === 'QUARTER' && selectedQuarter">
           {{ selectedQuarter }}분기
         </span>
-        <span v-if="selectedPeriod === '월' && selectedMonth">
+        <span v-if="selectedPeriod === 'MONTH' && selectedMonth">
           {{ selectedMonth }}월
         </span>
       </h1>
@@ -103,20 +102,23 @@ const empId = authStore.empId;
    1) 드롭다운 옵션 데이터들
 ----------------------------------------- */
 const periodOptions = [
-  { label: "년" },
-  { label: "분기" },
-  { label: "월" },
+  { label: "년", value: "YEAR" },
+  { label: "분기", value: "QUARTER" },
+  { label: "월", value: "MONTH" },
 ];
 
-// 분기 / 월 옵션
+
 const quarterOptions = [
-  { label: 1 },
-  { label: 2 },
-  { label: 3 },
-  { label: 4 },
+  { label: "1분기", value: 1 },
+  { label: "2분기", value: 2 },
+  { label: "3분기", value: 3 },
+  { label: "4분기", value: 4 },
 ];
-const monthOptions = Array.from({ length: 12 }, (_, i) => ({ label: i + 1 }));
 
+const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+  label: `${i + 1}월`,
+  value: i + 1,
+}));
 /* ---------------------------------------
    2) 선택한 드롭다운 값들
 ----------------------------------------- */
@@ -136,16 +138,18 @@ const creationYear = new Date().getFullYear() - 3;
 const yearDropdownOptions = computed(() => {
   const options = [];
   for (let y = creationYear; y <= currentYear - 1; y++) {
-    options.push({ label: y });
+    options.push({ label: y.toString(), value: y }); // value를 숫자로 설정
   }
   return options;
 });
+
 
 /* ---------------------------------------
    4) 드롭다운 핸들러
 ----------------------------------------- */
 // '년/분기/월' 옵션을 바꿀 때
 const handlePeriodChange = (value) => {
+  console.log(value);
   selectedPeriod.value = value;
   // 이전 선택값들 리셋
   selectedYear.value = null;
@@ -182,8 +186,8 @@ const fetchKpiData = async () => {
   try {
     // 공통 파라미터 (년)
     const requestData = {
-      quarter: selectedPeriod.value === "분기" ? selectedQuarter.value : null,
-      month: selectedPeriod.value === "월" ? selectedMonth.value : null,
+      quarter: selectedPeriod.value === "QUARTER" ? selectedQuarter.value : null,
+      month: selectedPeriod.value === "MONTH" ? selectedMonth.value : null,
     };
 
     // 개인 KPI
@@ -208,25 +212,26 @@ const fetchKpiData = async () => {
    6) 드롭다운 값이 변경될 때마다 조회
 ----------------------------------------- */
 watch(
-    [selectedPeriod, selectedYear, selectedQuarter, selectedMonth],
-    () => {
-      // 년도가 선택되어 있어야 조회 진행
-      if (!selectedYear.value) return;
+    () => ({
+      period: selectedPeriod.value,
+      year: selectedYear.value,
+      quarter: selectedQuarter.value,
+      month: selectedMonth.value,
+    }),
+    (newValues) => {
+      if (!newValues.year) return;
 
-      // "년"만 고른 경우 => selectedQuarter/selectedMonth가 null이어야 한다.
-      // "분기"를 고른 경우 => selectedQuarter가 있어야 한다.
-      // "월"을 고른 경우 => selectedMonth가 있어야 한다.
-
-      // period별로 필수 값이 세팅되었는지 확인
-      if (selectedPeriod.value === "년") {
+      if (newValues.period === "YEAR") {
         fetchKpiData();
-      } else if (selectedPeriod.value === "분기" && selectedQuarter.value) {
+      } else if (newValues.period === "QUARTER" && newValues.quarter) {
         fetchKpiData();
-      } else if (selectedPeriod.value === "월" && selectedMonth.value) {
+      } else if (newValues.period === "MONTH" && newValues.month) {
         fetchKpiData();
       }
-    }
+    },
+    { deep: true }
 );
+
 
 /* ---------------------------------------
    7) 페이지 로드시 기본 로직
@@ -244,7 +249,7 @@ onMounted(() => {
 ----------------------------------------- */
 const showYearDropdown = computed(() => {
   // '년/분기/월' 중 아무것도 선택안한 경우 숨김
-  return ["년", "분기", "월"].includes(selectedPeriod.value);
+  return ["YEAR", "QUARTER", "MONTH"].includes(selectedPeriod.value);
 });
 </script>
 

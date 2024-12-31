@@ -22,9 +22,13 @@ const props = defineProps({
   type: { type: String, default: 'on' },
   width: { type: String, default: "400px" },
   height: { type: String, default: "auto" },
+  confirmAction: { type: Function, required: true },
 });
 
 const emit = defineEmits(["close"]);
+
+
+
 
 // 모달이 열릴 때 QR 코드 생성
 watch(() => props.isOpen, async (newVal) => {
@@ -145,6 +149,9 @@ const handleSubmit = async () => {
       alert(`${props.type === 'on' ? '출근' : '퇴근'} 처리 완료`);
       clearInterval(timerInterval);
       closeModal();
+
+      props.confirmAction(); // 부모로부터 전달받은 confirmAction 호출
+
     } else {
       throw new Error('서버 응답 오류'); // 실패 처리 강제 실행
     }
