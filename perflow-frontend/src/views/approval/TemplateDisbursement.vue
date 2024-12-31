@@ -539,13 +539,15 @@ const goTo = (url) => {
 .main-container {
   display: flex;
   justify-content: center; /* 중앙 정렬 */
-  align-items: flex-start; /* 세로 정렬 */
+  align-items: center; /* 세로 정렬 */
   gap: 0px;
-  overflow: hidden;
+  min-width: 1200px;  /* 최소 너비 설정 */
+  padding: 0 50px;  /* 좌우 여백 */
 }
 
 .empty-container {
   flex: 0.3;
+  min-width: 200px;
   max-width: 300px;
 }
 
@@ -555,9 +557,9 @@ const goTo = (url) => {
   flex-direction: column;
   align-items: center;
   gap: 0px;
-  width: 400px;
+  min-width: 600px; /* InputField 너비와 일치시킴*/
   margin-top: 50px;
-  /* position: relative; */
+  margin-right: 30px;
 }
 
 .box-container {
