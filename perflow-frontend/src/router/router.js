@@ -38,10 +38,20 @@ import KPIRecordView from "@/views/performance/KPIRecordView.vue";
 import ProcessedDoc from "@/views/approval/ProcessedDoc.vue";
 import SeverancePay from "@/views/payment/SeverancePay.vue";
 import SeverancePayDetail from "@/views/payment/SeverancePayDetail.vue";
+import AnnualForHR from "@/views/Attitude/Annual/AnnualForHR.vue";
+import AnnualForLeader from "@/views/Attitude/Annual/AnnualForLeader.vue";
+import OvertimeForHR from "@/views/Attitude/Overtime/OvertimeForHR.vue";
+import OvertimeForLeader from "@/views/Attitude/Overtime/OvertimeForLeader.vue";
+import TravelForLeader from "@/views/Attitude/Travel/TravelForLeader.vue";
+import TravelForHR from "@/views/Attitude/Travel/TravelForHR.vue";
+import VacationForLeader from "@/views/Attitude/Vacation/VacationForLeader.vue";
+import VacationForHR from "@/views/Attitude/Vacation/VacationForHR.vue";
+import Attendance from "@/views/Attitude/Attendance/Attendance.vue";
 import AnnCreate from "@/views/announcement/AnnCreate.vue";
 import SeverancePayStub from "@/views/payment/SeverancePayStub.vue";
 import Calculator from "@/views/payment/Calculator.vue";
 import EmpDetailPage from "@/views/hr/employee/EmpDetailPage.vue";
+
 
 const routes = [
     // { path: '/', name: 'Home', component: Home },
@@ -91,12 +101,22 @@ const routes = [
 
     // 근태
     {path:'/attitude/work-status',name:'workStatus',component:WorkStatus},
+    {path:'/attendance',name:'attendance',component:Attendance},
     {path:'/attitude/work-hours',name:'workHours',component:WorkHours},
     {path:'/attitude/vacation',name:'vacation',component:Vacation},
+    {path:'/attitude/vacationForLeader',name:'vacationForLeader',component:VacationForLeader},
+    {path:'/attitude/vacationForHR',name:'vacationForHR',component:VacationForHR},
     {path:'/attitude/annual',name:'annual',component:Annual},
     {path:'/attitude/overtime',name:'overtime',component:Overtime},
+    {path:'/attitude/overtimeForHR',name:'overtimeForHR',component:OvertimeForHR},
+    {path:'/attitude/overtimeForLeader',name:'overtimeForLeader',component:OvertimeForLeader},
     {path:'/attitude/travel',name:'travel',component:Travel},
+    {path:'/attitude/travelForLeader',name:'travelForLeader',component:TravelForLeader},
+    {path:'/attitude/travelForHR',name:'travelForHR',component:TravelForHR},
+    {path:'/attitude/annualForHR',name:'annual-for-HR',component:AnnualForHR},
+    {path:'/attitude/annualForLeader',name:'annual-for-Leader',component:AnnualForLeader},
     {path:'/attitude/attendance-status',name:'attendance-status',component:AttendanceStatus},
+
     {path:'/announcements', name: 'announcements-list', component: AnnList},
 
     // 공지
