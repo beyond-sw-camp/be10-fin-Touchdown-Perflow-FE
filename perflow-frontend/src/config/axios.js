@@ -32,12 +32,15 @@ api.interceptors.response.use(
     }, // 성공 응답은 그대로 반환
     async (error) => {
 
+        const { errorCode, message } = error.response.data;
+        console.error(`ErrorCode: ${errorCode}, Message: ${message}`);
+
         console.log(`response interceptor 시작!`)
 
         const authStore = useAuthStore();
         const originalRequest = error.config;
 
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 && errorCode==='NOT_VALID_ACCESS_TOKEN') {
             try {
                 const newToken = await authStore.refreshAccessToken();
                 originalRequest.headers['Authorization'] = `${newToken}`;
