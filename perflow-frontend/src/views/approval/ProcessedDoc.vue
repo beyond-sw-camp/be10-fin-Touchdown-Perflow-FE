@@ -1,6 +1,5 @@
 <script setup>
 
-// 테이블 컬럼
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
 import router from "@/router/router.js";
@@ -8,6 +7,8 @@ import ButtonBasic from "@/components/common/ButtonBasic.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 import TableCheck from "@/components/common/TableCheck.vue";
 import PagingBar from "@/components/common/PagingBar.vue";
+import dayjs from "dayjs";
+import Tooltip from "@/components/common/ToolTip.vue";
 
 const columns = [
   {label: "상태", field: "status"},
@@ -31,6 +32,12 @@ const searchCriteria = ref({
   fromDate: null,
   toDate: null,
 });
+
+// 툴팁
+const tooltipVisible = ref(false);
+const tooltipText = "처리 문서란? \n" +
+    "내가 이미 결재한 문서"
+const tooltipWidth = "200px";
 
 // 처리 문서 목록 조회
 const fetchProcessedDocs = async (page = 1) => {
@@ -60,11 +67,11 @@ const handleTitleClick = (row) => {
 
   if (templateId === 4) {
     // 기본 서식
-    router.push({ name: "basicDetail", query: { docId: row.docId } });
+    router.push({ name: "basicDetail", query: { docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } });
   } else if (templateId === 5) {
-    router.push({ name: "disbursementDetail", query: {docId: row.docId } })
+    router.push({ name: "disbursementDetail", query: {docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } })
   } else if (templateId === 6) {
-    router.push({ name: "workReportDetail", query: {docId: row.docId } })
+    router.push({ name: "workReportDetail", query: {docId: row.docId, type: "processed", approveSbjStatus: row.approveSbjStatus, processDatetime: row.processDatetime, comment: row.comment } })
     // 업무 보고서
   } else {
     alert("올바르지 않은 서식입니다.");
@@ -78,12 +85,24 @@ const handleSearch = () => {
   fetchProcessedDocsWithCriteria();
 };
 
+// 날짜 형식 변경
+const formatDate = (date) => {
+  return date ? dayjs(date).format("YYYY-MM-DD") : null;
+}
+
 // 검색하기
 const fetchProcessedDocsWithCriteria = async(page = 1) => {
+
+  const formattedCriteria = {
+    ...searchCriteria.value,
+    fromDate : formatDate(searchCriteria.value.fromDate),
+    toDate: formatDate(searchCriteria.value.toDate),
+  };
+
   try {
     const response = await api.get("approval/processed-docs/search", {
       params: {
-        ...searchCriteria.value,
+        ...formattedCriteria,
         page: page - 1,
         size: pageSize,
       },
@@ -110,7 +129,23 @@ onMounted(() => {
   <!-- 헤더 -->
   <div id="header-div">
     <div id="header-top" class="flex-between">
-      <p id="title">처리 문서</p>
+      <div class="tooltip-container">
+        <p id="title">처리 문서</p>
+        <!-- 툴팁 -->
+        <img
+            src="@/assets/icons/tooltip.png"
+            alt="툴팁"
+            class="tooltip-icon"
+            @mouseenter="tooltipVisible = true"
+            @mouseleave="tooltipVisible = false"
+        />
+        <Tooltip
+            :text="tooltipText"
+            :visible="tooltipVisible"
+            :width="tooltipWidth"
+            :position="{ bottom: '10px', left: '35%' }"
+        />
+      </div>
     </div>
     <div id="header-bottom" class="flex-between">
       <div id="search-container">
@@ -152,9 +187,9 @@ onMounted(() => {
     </div>
   </div>
 
-  <div id="processed-doc-container">
+  <div id="inbox-doc-container">
     <!-- 테이블 -->
-    <div id="processed-doc-list">
+    <div id="inbox-doc-list">
       <TableCheck
           row-key="docId"
           :rows="processedDocs"
@@ -163,8 +198,9 @@ onMounted(() => {
       >
         <template #status = "{ row }">
           <span
+              class="status-tag"
             :class="{
-              'approved': row.approveSbjStatus ==='APPROCED',
+              'approved': row.approveSbjStatus ==='APPROVED',
               'rejected': row.approveSbjStatus === 'REJECTED',
               'unknown': !['APPROVED', 'REJECTED'].includes(row.approveSbjStatus),
             }"
@@ -217,14 +253,14 @@ onMounted(() => {
   margin-bottom: 10px;
   width: 900px;
 }
-#processed-doc-container {
+#inbox-doc-container {
   display: flex;
   flex-direction: column; /* 테이블과 버튼을 세로로 배치 */
   gap: 10px; /* 테이블과 버튼 간 간격 */
   width: 900px; /* 테이블과 버튼이 같은 폭 */
   margin: 0 auto; /* 중앙 정렬 */
 }
-#processed-doc-list {
+#inbox-doc-list {
   display: flex;
   flex-direction: column; /* 세로 방향으로 정렬 */
   justify-content: center; /* 세로 중앙 정렬 */
@@ -268,4 +304,51 @@ onMounted(() => {
   width: 100% /* 오른쪽 끝에 검색*/
 }
 
+.status-tag {
+  display: inline-block;
+  padding: 5px 5px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  min-width: 50px;
+}
+
+/* 승인 */
+.status-tag.approved {
+  background-color: #4CAF50;
+}
+
+/* 반려 */
+.status-tag.rejected {
+  background-color: #FF9800;
+}
+
+/* 알 수 없음 */
+.status-tag.unknown {
+  background-color: #007bff; /* 회색 */
+}
+
+/* 툴팁 */
+.tooltip-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.tooltip-basic {
+  white-space: pre-line;  /* 툴팁 내용 줄바꿈 허용 */
+}
+
+.tooltip-icon {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  margin-bottom: 15px;  /* 수신함 글씨와 툴팁 아이콘 정렬 위해 */
+}
+
+.Tooltip {
+  pointer-events: none;
+}
 </style>

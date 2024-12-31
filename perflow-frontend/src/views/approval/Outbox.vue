@@ -1,28 +1,29 @@
 <script setup>
 
-import ButtonBasic from '@/components/common/ButtonBasic.vue';
-import PagingBar from "@/components/common/PagingBar.vue";
 import {onMounted, ref} from "vue";
 import api from "@/config/axios.js";
-import TableCheck from "@/components/common/TableCheck.vue";
-import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 import router from "@/router/router.js";
+import ButtonBasic from "@/components/common/ButtonBasic.vue";
+import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
+import TableCheck from "@/components/common/TableCheck.vue";
+import PagingBar from "@/components/common/PagingBar.vue";
 import dayjs from "dayjs";
 import Tooltip from "@/components/common/ToolTip.vue";
 
 const columns = [
-  { label: "제목", field: "title" },
-  { label: "작성자", field: "createUserName" },
-  { label: "작성일", field: "createDatetime" }
+  {label: "상태", field: "status"},
+  {label: "제목", field: "title"},
+  {label: "작성일", field: "createDatetime"},
 ];
 
-const waitingDocs = ref([]);    // 문서 목록
-const totalPages = ref(0);      // 전체 페이지 수
-const totalItems = ref(0);      // 전체 아이템 수
-const currentPage = ref(1);     // 현재 페이지 번호
-const pageSize = 10;            // 페이지당 문서 수
+const columnWidths = ["80px", "300px", "200px"]; // 열 값
 
-const selectedRows = ref([]);
+const OutboxDocs = ref([]);  // 문서 목록
+const totalPages = ref(0);  // 전체 페이지 수
+const totalItems = ref(0); // 전체 아이템 수
+const currentPage = ref(1); // 현재 페이지
+const pageSize = 10; // 페이지당 문서 수
+
 const searchCriteria = ref({
   title: "",
   createUser: "",
@@ -32,99 +33,55 @@ const searchCriteria = ref({
 
 // 툴팁
 const tooltipVisible = ref(false);
-const tooltipText = "대기 문서란? \n" +
-    "내가 결재선에 포함되어 있고, 내가 결재할 차례인 문서"
-const tooltipWidth = "400px";
+const tooltipText = "발신함에서 볼 수 있는 문서는? \n" +
+    "내가 상신(생성, 전송)한 모든 문서"
+const tooltipWidth = "300px";
 
-// 대기 문서 목록 조회
-const fetchWaitingDocs = async (page = 1) => {
+// 발신함 목록 조회
+const fetchOutboxDocs = async (page = 1) => {
   try {
-
-    const response = (await api.get("/approval/waiting-docs", {
+    const response = (await api.get("approval/outbox", {
       params: {
-        page: page - 1, // Spring의 Pageable은 0부터 시작하므로 -1 처리
+        page: page - 1,
         size: pageSize,
       }
     }));
-    // api response 에서 데이터 추출
-    console.log("대기 문서 조회 결과: ", response.data.content);
+    console.log("문서 조회 결과: ", response.data.content);
 
-    waitingDocs.value = response.data.content;
+    OutboxDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
-    currentPage.value = response.data.number + 1; // Vue는 1부터 시작
-
+    currentPage.value = response.data.number + 1;
   } catch (error) {
-    console.error("대기 문서 목록 조회 실패", error);
-    waitingDocs.value = [];
+    console.error("문서 목록 조회 실패: ", error);
+    OutboxDocs.value = [];
   }
-}
-
-// 일괄 승인
-const bulkApproveDocs = async () => {
-  if (selectedRows.value.length === 0) {
-    alert("선택된 문서가 없습니다.");
-    return;
-  }
-
-  try {
-    console.log("선택된 데이터 확인: ", selectedRows.value)
-    const approvals = selectedRows.value.map((row) => ({
-      docId: row.docId,
-      empId: row.empId, // 현재 로그인 한 사용자의 empId
-      approveLineId: row.approveLineId,
-      approveSbjId: row.approveSbjId,
-      empDeptType: "EMPLOYEE",
-      status: "APPROVED",
-      comment: null,
-    }));
-
-    console.log("전달할 데이터: ", approvals);
-
-    const requestData = {approvals};
-    await api.put("approval/docs/bulk", requestData);
-
-    alert("문서들이 일괄 승인되었습니다.");
-
-    await fetchWaitingDocs(currentPage.value);  // 목록 새로 고침
-    selectedRows.value = [];  // 선택 초기화
-  } catch (error) {
-    console.error("일괄 승인 실패", error);
-    alert("일괄 승인에 실패하였습니다.");
-  }
-}
-
-// 선택된 문서 처리
-const handleRowSelected = (selected) => {
-  console.log("선택된 행 데이터:", selected);
-  selectedRows.value = selected;
-}
-
-// 검색 조건 변경 처리
-const handleSearch = () => {
-  console.log("검색 조건: ", searchCriteria.value);
-  currentPage.value = 1;  // 검색 시 페이지를 처음으로 초기화
-  fetchWaitingDocsWithCriteria();
 };
 
-// 특정 열(제목) 클릭 시
+// 특정 열(제목) 클릭 시 상세 페이지로 이동
 const handleTitleClick = (row) => {
 
   const templateId = row.templateId;
 
   if (templateId === 4) {
     // 기본 서식
-    router.push({ name: "basicDetail", query: { docId: row.docId, type: "waiting" } }, );
+    router.push({ name: "basicDetail", query: { docId: row.docId, type: "outbox", status: row.status } });
   } else if (templateId === 5) {
-    router.push({ name: "disbursementDetail", query: {docId: row.docId, type: "waiting" } })
+    router.push({ name: "disbursementDetail", query: {docId: row.docId, type: "outbox", status: row.status  } })
   } else if (templateId === 6) {
-    router.push({ name: "workReportDetail", query: {docId: row.docId, type: "waiting" } })
+    router.push({ name: "workReportDetail", query: {docId: row.docId, type: "outbox",  status: row.status } })
     // 업무 보고서
   } else {
     alert("올바르지 않은 서식입니다.");
   }
-}
+};
 
+// 검색 조건 변경 처리
+const handleSearch = () => {
+  console.log("검색 조건: ", searchCriteria.value);
+  currentPage.value = 1;  // 검색 시 페이지를 처음으로 초기화
+  fetchOutboxDocsWithCriteria();
+};
 
 // 날짜 형식 변경
 const formatDate = (date) => {
@@ -132,8 +89,7 @@ const formatDate = (date) => {
 }
 
 // 검색하기
-const fetchWaitingDocsWithCriteria = async (page = 1) => {
-  console.log("검색 조건으로 api 호출: ", searchCriteria.value);
+const fetchOutboxDocsWithCriteria = async(page = 1) => {
 
   const formattedCriteria = {
     ...searchCriteria.value,
@@ -142,29 +98,29 @@ const fetchWaitingDocsWithCriteria = async (page = 1) => {
   };
 
   try {
-    const response = await api.get("/approval/waiting-docs/search", {
+    const response = await api.get("approval/outbox/search", {
       params: {
         ...formattedCriteria,
         page: page - 1,
-        size: pageSize
+        size: pageSize,
       },
     });
-    waitingDocs.value = response.data.content;
+
+    OutboxDocs.value = response.data.content;
     totalPages.value = response.data.totalPages;
     totalItems.value = response.data.totalElements;
     currentPage.value = response.data.number + 1;
 
     console.log("검색 결과: ", response.data.content);
   } catch (error) {
-    console.error("검색 실패", error);
-    waitingDocs.value = [];
+    console.error("검색 실패: ", error);
+    OutboxDocs.value = [];
   }
-}
+};
 
 onMounted(() => {
-  fetchWaitingDocs();
-});
-
+  fetchOutboxDocs();
+})
 </script>
 
 <template>
@@ -172,7 +128,7 @@ onMounted(() => {
   <div id="header-div">
     <div id="header-top" class="flex-between">
       <div class="tooltip-container">
-        <p id="title">대기 문서</p>
+        <p id="title">발신함</p>
         <!-- 툴팁 -->
         <img
             src="@/assets/icons/tooltip.png"
@@ -185,7 +141,7 @@ onMounted(() => {
             :text="tooltipText"
             :visible="tooltipVisible"
             :width="tooltipWidth"
-            :position="{ bottom: '15px', left: '45%' }"
+            :position="{ bottom: '20px', left: '40%' }"
         />
       </div>
     </div>
@@ -199,11 +155,6 @@ onMounted(() => {
               type="text"
               width="500px"
               height="40px"
-          />
-          <SearchGroupBar
-              v-model ="searchCriteria.createUser"
-              placeholder="작성자"
-              type="text"
           />
           <SearchGroupBar
               v-model ="searchCriteria.fromDate"
@@ -226,25 +177,35 @@ onMounted(() => {
           />
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- 테이블과 버튼 컨테이너 -->
-  <div id="waiting-doc-container">
+  <div id="inbox-doc-container">
     <!-- 테이블 -->
-    <div id="waiting-doc-list">
+    <div id="inbox-doc-list">
       <TableCheck
+          row-key="docId"
+          :rows="OutboxDocs"
           :columns="columns"
-          :rows="waitingDocs"
-          rowKey="docId"
-          :showCheckbox="true"
-          @row-selected="handleRowSelected"
+          :columnWidths="columnWidths"
       >
+        <template #status = "{ row }">
+          <span
+              class ="status-tag"
+              :class="{
+                '진행': row.status === 'ACTIVATED',
+                '반려': row.status === 'REJECTED',
+                '승인': row.status === 'APPROVED',
+                '기타': !['ACTIVATED', 'REJECTED', 'APPROVED'].includes(row.status),
+              }"
+          >
+            {{ row.status === 'ACTIVATED' ? '진행' : row.status === 'REJECTED' ? '반려' : row.status === 'APPROVED' ? '승인' : '기타' }}
+          </span>
+        </template>
         <template #title="{ row }">
           <span
-            class="clickable-title"
-            @click.stop="handleTitleClick(row)"
+              class="clickable-title"
+              @click.stop="handleTitleClick(row)"
           >
             {{ row.title }}
           </span>
@@ -253,38 +214,23 @@ onMounted(() => {
         <template #createDatetime="{ value }">
           {{ new Date(value).toLocaleString() }}
         </template>
+        <template #processDatetime="{ value }">
+          {{ new Date(value).toLocaleString() }}
+        </template>
       </TableCheck>
-      <!-- 페이지네이션 -->
       <PagingBar
           :currentPage="currentPage"
           :totalPages="totalPages"
           :totalItems="totalItems"
           :pageSize="pageSize"
-          @page-changed="fetchWaitingDocs"
-      />
-    </div>
-
-    <!-- 버튼 -->
-    <div id="bulk-approve-container">
-      <ButtonBasic
-          color="orange"
-          size="medium"
-          label="일괄 승인하기"
-          @click="bulkApproveDocs"
+          @page-changed="fetchOutboxDocs"
       />
     </div>
   </div>
 </template>
 
 <style scoped>
-#waiting-doc-list {
-  display: flex;
-  flex-direction: column; /* 세로 방향으로 정렬 */
-  justify-content: center; /* 세로 중앙 정렬 */
-  align-items: center; /* 가로 중앙 정렬 */
-  gap: 10px; /* 각 요소 간의 간격 */
-  margin: 0 auto; /* 수평 중앙 정렬 */
-}
+
 #title {
   font-size: 35px;
   font-weight: bold;
@@ -301,24 +247,20 @@ onMounted(() => {
   margin-bottom: 10px;
   width: 900px;
 }
-
-#waiting-doc-container {
+#inbox-doc-container {
   display: flex;
   flex-direction: column; /* 테이블과 버튼을 세로로 배치 */
   gap: 10px; /* 테이블과 버튼 간 간격 */
   width: 900px; /* 테이블과 버튼이 같은 폭 */
   margin: 0 auto; /* 중앙 정렬 */
 }
-
-#waiting-doc-list {
+#inbox-doc-list {
   display: flex;
-  flex-direction: column; /* 테이블과 페이지네이션을 세로로 배치 */
-  gap: 10px; /* 테이블과 페이지네이션 간 간격 */
-}
-
-#bulk-approve-container {
-  display: flex;
-  justify-content: flex-end; /* 버튼을 오른쪽 끝으로 배치 */
+  flex-direction: column; /* 세로 방향으로 정렬 */
+  justify-content: center; /* 세로 중앙 정렬 */
+  align-items: center; /* 가로 중앙 정렬 */
+  gap: 10px; /* 각 요소 간의 간격 */
+  margin: 0 auto; /* 수평 중앙 정렬 */
 }
 
 /* 테이블 내 제목 컬럼 */
@@ -330,6 +272,7 @@ onMounted(() => {
   color: #f37321;
   text-decoration: underline;
 }
+
 
 /* 검색 컨테이너 */
 #search-container {
@@ -355,6 +298,37 @@ onMounted(() => {
   width: 100% /* 오른쪽 끝에 검색*/
 }
 
+.status-tag {
+  display: inline-block;
+  padding: 5px 5px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  min-width: 50px;
+}
+
+/* 승인 */
+.status-tag.승인 {
+  background-color: #4CAF50;
+}
+
+/* 반려 */
+.status-tag.반려 {
+  background-color: #FF9800;
+}
+
+/* 진행 */
+.status-tag.진행 {
+  background-color: #bd76f8;
+}
+
+/* 알 수 없음 */
+.status-tag.기타 {
+  background-color: #007bff; /* 회색 */
+}
+
 /* 툴팁 */
 .tooltip-container {
   display: flex;
@@ -376,4 +350,5 @@ onMounted(() => {
 .Tooltip {
   pointer-events: none;
 }
+
 </style>

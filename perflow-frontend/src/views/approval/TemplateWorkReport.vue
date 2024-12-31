@@ -8,7 +8,7 @@ import OrganizationTree from "@/components/approval/OrganizationTree.vue";
 import draggable from "vuedraggable";
 import {createNewDocument} from "@/config/approval.js";
 import router from "@/router/router.js";
-import ButtonDropDown from "@/components/common/ButtonDropDown.vue";
+import ButtonDropDown2 from "@/components/common/ButtonDropDown2.vue";
 import SearchGroupBar from "@/components/common/SearchGroupBar.vue";
 
 const selectedApprovalEmployees = ref([]); // 체크된 사원 목록
@@ -230,22 +230,25 @@ const goTo = (url) => {
 
       <div class="field-container">
 
-        <!-- 진행 기간 -->
-        <label class="label">
-          <span class="label-name">진행일시</span>
-          <span class="asterisk">*</span>
-        </label>
-        <SearchGroupBar
-            v-model="fromDate"
-            placeholder="시작일"
-            type="date"
-        />
-        <span class="tilde"> ~ </span>
-        <SearchGroupBar
-            v-model="toDate"
-            placeholder="완료일"
-            type="date"
-        />
+        <div class="date-selection-container">
+          <!-- 진행 기간 -->
+          <label class="label">
+            <span class="label-name">진행일시</span>
+            <span class="asterisk">*</span>
+          </label>
+          <SearchGroupBar
+              v-model="fromDate"
+              placeholder="시작일"
+              type="date"
+          />
+          <span class="tilde"> ~ </span>
+          <SearchGroupBar
+              v-model="toDate"
+              placeholder="완료일"
+              type="date"
+          />
+        </div>
+
         <!-- 제목 -->
         <InputField
             v-model="title"
@@ -306,7 +309,7 @@ const goTo = (url) => {
 
       <!-- 드롭 다운 -->
       <span class="dropdown-title">서식 선택</span>
-      <ButtonDropDown
+      <ButtonDropDown2
           :options="dropdownOptions"
           defaultOption="기본 서식"
           width="155px"
@@ -364,6 +367,12 @@ const goTo = (url) => {
                     color="white"
                     size="medium"
                     @click="addToApprovalList('합의')"
+                />
+                <ButtonBasic
+                    label="병렬"
+                    color="white"
+                    size="medium"
+                    @click="addToApprovalList('병렬')"
                 />
                 <ButtonBasic
                     label="병렬합의"
@@ -499,12 +508,15 @@ const goTo = (url) => {
 .main-container {
   display: flex;
   justify-content: center; /* 중앙 정렬 */
-  align-items: center; /* 세로 정렬 */
+  /* align-items: center; /* 세로 정렬 */
   gap: 0px;
+  min-width: 1200px;  /* 최소 너비 설정 */
+  padding: 0 50px;  /* 좌우 여백 */
 }
 
 .empty-container {
   flex: 0.3;
+  min-width: 200px;
   max-width: 300px;
 }
 
@@ -513,10 +525,17 @@ const goTo = (url) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0px;
-  width: 400px;
+  gap: 20px;
+  min-width: 600px;
   margin-top: 50px;
-  position: relative; /* 유동적인 위치 */
+  margin-right: 30px;
+}
+
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 700px;
 }
 
 .box-container {
@@ -524,6 +543,7 @@ const goTo = (url) => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin-top: 50px;
 }
 
 .button-group {
@@ -599,6 +619,24 @@ const goTo = (url) => {
   margin-top: 10px; /* 테이블과 버튼 사이의 간격 */
 }
 
+.date-selection-container {
+  display: flex;
+  align-items: center;
+  height: 40px; /* 고정 높이 설정 */
+  margin-bottom: 20px;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  width: 80px;
+}
+
+.tilde {
+  margin: 0 5px;
+  line-height: 40px;
+}
+
 .center {
   display: flex;
   align-items: center;
@@ -666,7 +704,6 @@ const goTo = (url) => {
   background-color: #f4f4f4;
   font-weight: bold;
 }
-
 
 #title {
   font-size: 35px;
