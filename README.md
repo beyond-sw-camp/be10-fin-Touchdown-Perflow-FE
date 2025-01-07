@@ -532,7 +532,7 @@ Perflow를 통해 실시간으로 KPI를 관리/추적하고, 시스템에서 **
 </details>
 
 ### 10. 통합테스트결과서
-![통합테스트결과서](https://docs.google.com/spreadsheets/d/1HEOPvMKUxjkFZVP_lD5nUrCPCD1RWVHZ1MAPrYw7X9c/edit?usp=sharing)
+[🔗테스트 보고서 링크](https://docs.google.com/spreadsheets/d/1HEOPvMKUxjkFZVP_lD5nUrCPCD1RWVHZ1MAPrYw7X9c/edit?usp=sharing)
 
 ### 11. 회고록
 |   팀원   | 회고 내용                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
